@@ -1,21 +1,21 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from src.users.controller import router as users_router
+from src.api import router
 
 app = FastAPI(title="BragBoard API")
 
-origins = ["http://localhost:5173"]
-
+# CORS (allow frontend to connect)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["http://localhost:5173"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-app.include_router(users_router)
+app.include_router(router)
+
 
 @app.get("/")
 def root():
-    return {"message": "BragBoard Backend Running"}
+    return {"message": "BragBoard API running 🚀"}
