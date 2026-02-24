@@ -7,10 +7,12 @@ export const shoutouts = [
       label: "Innovation Star",
     },
     department: "Engineering",
-    message: "Jessica absolutely crushed the sprint and delivered before deadline!",
+    message:
+      "Jessica absolutely crushed the sprint and delivered the new authentication module before the deadline, which allowed us to launch the feature a week early and impress our clients with the seamless user experience!",
     reactions: {
       hearts: 38,
       claps: 12,
+      stars: 15,
       comments: 5,
     },
     status: "Pinned",
@@ -24,10 +26,12 @@ export const shoutouts = [
       label: "Team Player",
     },
     department: "Design",
-    message: "David’s attention to detail made the UI perfect!",
+    message:
+      "David's meticulous attention to detail in the user interface design made the entire application look polished and professional, resulting in rave reviews from our beta testers!",
     reactions: {
       hearts: 24,
       claps: 9,
+      stars: 11,
       comments: 3,
     },
     status: "Active",
@@ -38,13 +42,15 @@ export const shoutouts = [
     author: "Emily Rodriguez",
     recipient: "Alex Thompson",
     badge: {
-      label: "Marketing Maven",
+      label: "Creative Genius",
     },
     department: "Marketing",
-    message: "Alex created an amazing campaign strategy!",
+    message:
+      "Alex developed a highly creative and innovative campaign strategy that not only increased our brand visibility but also drove a 25% increase in engagement across all social media platforms!",
     reactions: {
       hearts: 42,
       claps: 15,
+      stars: 18,
       comments: 8,
     },
     status: "Active",
@@ -55,13 +61,15 @@ export const shoutouts = [
     author: "James Walker",
     recipient: "Olivia Brown",
     badge: {
-      label: "Sales Champion",
+      label: "Leadership Excellence",
     },
     department: "Sales",
-    message: "Closed the biggest deal of the quarter!",
+    message:
+      "Olivia demonstrated exceptional leadership by closing the biggest deal of the quarter, securing a multi-million dollar contract that will significantly boost our company's revenue for the next year!",
     reactions: {
       hearts: 31,
       claps: 10,
+      stars: 9,
       comments: 4,
     },
     status: "Archived",
@@ -72,13 +80,15 @@ export const shoutouts = [
     author: "Sophia Martinez",
     recipient: "Daniel Lee",
     badge: {
-      label: "Culture Builder",
+      label: "Culture Champion",
     },
     department: "HR",
-    message: "Organized an incredible employee engagement event!",
+    message:
+      "Daniel organized an incredible employee engagement event that brought the entire team together, fostering a stronger company culture and resulting in higher morale and productivity across all departments!",
     reactions: {
       hearts: 19,
       claps: 7,
+      stars: 6,
       comments: 2,
     },
     status: "Active",
@@ -89,13 +99,15 @@ export const shoutouts = [
     author: "William Clark",
     recipient: "Emma Wilson",
     badge: {
-      label: "Refactor Hero",
+      label: "Problem Solver",
     },
     department: "Engineering",
-    message: "Refactored the legacy codebase beautifully.",
+    message:
+      "Emma skillfully refactored the legacy codebase, improving code maintainability, reducing technical debt, and making future development much more efficient for the entire engineering team!",
     reactions: {
       hearts: 27,
       claps: 14,
+      stars: 13,
       comments: 6,
     },
     status: "Pinned",
@@ -106,13 +118,15 @@ export const shoutouts = [
     author: "Isabella Moore",
     recipient: "Liam Anderson",
     badge: {
-      label: "Design Guru",
+      label: "Creative Genius",
     },
     department: "Design",
-    message: "Created stunning illustrations for the new landing page.",
+    message:
+      "Liam created stunning and visually appealing illustrations for the new landing page that perfectly captured our brand identity and significantly improved user engagement upon launch!",
     reactions: {
       hearts: 22,
       claps: 11,
+      stars: 10,
       comments: 5,
     },
     status: "Active",
@@ -123,16 +137,94 @@ export const shoutouts = [
     author: "Noah Taylor",
     recipient: "Mia Thomas",
     badge: {
-      label: "SEO Wizard",
+      label: "Problem Solver",
     },
     department: "Marketing",
-    message: "Improved SEO performance by 40% this month!",
+    message:
+      "Mia implemented strategic SEO optimizations that improved our website's search engine performance by 40% this month, leading to a substantial increase in organic traffic and potential leads!",
     reactions: {
       hearts: 29,
       claps: 13,
+      stars: 12,
       comments: 7,
     },
     status: "Archived",
     date: "2026-02-10",
+  },
+  {
+    id: 9,
+    author: "Priya Patel",
+    recipient: "Marcus Lee",
+    badge: {
+      label: "Problem Solver",
+    },
+    department: "Sales",
+    message:
+      "Marcus handled a critical customer escalation with exceptional grace and professionalism, turning a potentially damaging situation into a positive testimonial that strengthened our client relationships!",
+    reactions: {
+      hearts: 35,
+      claps: 18,
+      stars: 14,
+      comments: 9,
+    },
+    status: "Active",
+    date: "2026-02-09",
+  },
+  {
+    id: 10,
+    author: "Jonas Becker",
+    recipient: "Hannah Schmidt",
+    badge: {
+      label: "Leadership Excellence",
+    },
+    department: "HR",
+    message:
+      "Hannah designed a comprehensive new onboarding flow that streamlined the process for new hires, cutting ramp-up time in half and enabling them to contribute effectively much sooner to our projects!",
+    reactions: {
+      hearts: 21,
+      claps: 16,
+      stars: 9,
+      comments: 4,
+    },
+    status: "Active",
+    date: "2026-02-08",
+  },
+  {
+    id: 11,
+    author: "Carlos Rivera",
+    recipient: "Nina Lopez",
+    badge: {
+      label: "Problem Solver",
+    },
+    department: "Engineering",
+    message:
+      "Nina demonstrated outstanding problem-solving skills by closing over 30 production bugs in a single week without introducing any regressions, ensuring our application remained stable and reliable for users!",
+    reactions: {
+      hearts: 48,
+      claps: 22,
+      stars: 20,
+      comments: 11,
+    },
+    status: "Pinned",
+    date: "2026-02-07",
+  },
+  {
+    id: 12,
+    author: "Lena Novak",
+    recipient: "Tariq Khan",
+    badge: {
+      label: "Creative Genius",
+    },
+    department: "Marketing",
+    message:
+      "Tariq built an intuitive and user-friendly dashboard that finally made tracking campaign performance straightforward and actionable, empowering the marketing team to make data-driven decisions more effectively!",
+    reactions: {
+      hearts: 32,
+      claps: 19,
+      stars: 16,
+      comments: 6,
+    },
+    status: "Active",
+    date: "2026-02-06",
   },
 ];
