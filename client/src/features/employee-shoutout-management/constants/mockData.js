@@ -3,6 +3,9 @@ export const shoutouts = [
     id: 1,
     author: "Michael Chen",
     recipient: "Jessica Park",
+    badge: {
+      label: "Innovation Star",
+    },
     department: "Engineering",
     message: "Jessica absolutely crushed the sprint and delivered before deadline!",
     reactions: {
@@ -17,6 +20,9 @@ export const shoutouts = [
     id: 2,
     author: "Sarah Johnson",
     recipient: "David Kim",
+    badge: {
+      label: "Team Player",
+    },
     department: "Design",
     message: "David’s attention to detail made the UI perfect!",
     reactions: {
@@ -31,6 +37,9 @@ export const shoutouts = [
     id: 3,
     author: "Emily Rodriguez",
     recipient: "Alex Thompson",
+    badge: {
+      label: "Marketing Maven",
+    },
     department: "Marketing",
     message: "Alex created an amazing campaign strategy!",
     reactions: {
@@ -45,6 +54,9 @@ export const shoutouts = [
     id: 4,
     author: "James Walker",
     recipient: "Olivia Brown",
+    badge: {
+      label: "Sales Champion",
+    },
     department: "Sales",
     message: "Closed the biggest deal of the quarter!",
     reactions: {
@@ -59,6 +71,9 @@ export const shoutouts = [
     id: 5,
     author: "Sophia Martinez",
     recipient: "Daniel Lee",
+    badge: {
+      label: "Culture Builder",
+    },
     department: "HR",
     message: "Organized an incredible employee engagement event!",
     reactions: {
@@ -73,6 +88,9 @@ export const shoutouts = [
     id: 6,
     author: "William Clark",
     recipient: "Emma Wilson",
+    badge: {
+      label: "Refactor Hero",
+    },
     department: "Engineering",
     message: "Refactored the legacy codebase beautifully.",
     reactions: {
@@ -87,6 +105,9 @@ export const shoutouts = [
     id: 7,
     author: "Isabella Moore",
     recipient: "Liam Anderson",
+    badge: {
+      label: "Design Guru",
+    },
     department: "Design",
     message: "Created stunning illustrations for the new landing page.",
     reactions: {
@@ -101,6 +122,9 @@ export const shoutouts = [
     id: 8,
     author: "Noah Taylor",
     recipient: "Mia Thomas",
+    badge: {
+      label: "SEO Wizard",
+    },
     department: "Marketing",
     message: "Improved SEO performance by 40% this month!",
     reactions: {
