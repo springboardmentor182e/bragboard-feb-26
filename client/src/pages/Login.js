@@ -1,12 +1,8 @@
 import React from "react";
-import LoginForm from "../features/authentication/components/LoginForm";
+import PrackBoardAuth from "../features/authentication/services/PrackBoardAuth";
 
 const Login = () => {
-  return (
-    <div>
-      <LoginForm />
-    </div>
-  );
+  return <PrackBoardAuth />;
 };
 
 export default Login;
