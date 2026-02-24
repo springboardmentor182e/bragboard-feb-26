@@ -1,0 +1,84 @@
+.dashboard-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: #0f172a;
+  color: white;
+}
+
+.dashboard-content {
+  flex: 1;
+  padding: 20px;
+}
+
+.sidebar {
+  width: 240px;
+  background-color: #111827;
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.sidebar-title {
+  margin-bottom: 40px;
+}
+
+.sidebar-item {
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+.sidebar-item.active {
+  color: #8b5cf6;
+  font-weight: 600;
+  opacity: 1;
+}
+
+.top-navbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+.stats-container {
+  display: flex;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.stats-card {
+  background-color: #1e293b;
+  padding: 20px;
+  border-radius: 12px;
+  width: 200px;
+}
+
+.activity-card {
+  background-color: #1e293b;
+  padding: 15px;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+
+/* Sidebar hover */
+.sidebar-item:hover {
+  color: #8b5cf6;
+  opacity: 1;
+  transition: 0.2s ease;
+}
+
+/* Stats card hover */
+.stats-card:hover {
+  transform: translateY(-4px);
+  transition: 0.2s ease;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+transition: 0.2s ease;
+}
+
+/* Activity card hover */
+.activity-card:hover {
+  background-color: #334155;
+  transition: 0.2s ease;
+  cursor: pointer;
+}

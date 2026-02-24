@@ -1,8 +1,7 @@
-import React from "react";
-import Login from "./pages/Login";
+import EmployeeDashboard from "./features/employeeDashboard/EmployeeDashboard";
 
 function App() {
-  return <Login />;
+  return <EmployeeDashboard />;
 }
 
 export default App;
