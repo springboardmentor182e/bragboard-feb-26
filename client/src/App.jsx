@@ -1,56 +1,35 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Sidebar from "./features/employeeDashboard/components/Sidebar";
-import TopNavbar from "./features/employeeDashboard/components/TopNavbar";
-
-import SummaryCards from "./features/employeeDashboard/components/SummaryCards";
-
-import AchievementTable from "./features/employeeDashboard/components/AchievementTable";
-
-import Leaderboard from "./features/employeeDashboard/components/Leaderboard";
-
-import { AnimatePresence, motion } from "framer-motion";
-
-const EmployeeDashboard = () => {
-  return (
-   <div className="flex h-screen bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
-      
-      <Sidebar />
-
-      <div className="flex-1 flex flex-col">
-        <TopNavbar />
-
-        <main className="flex-1 p-6 space-y-6">
-            <h2 className="text-2xl font-bold text-gray-700">
-              Welcome to BragBoard 🚀
-            </h2>
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key="dashboard"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <SummaryCards />
-                  <AchievementTable />
-                  <Leaderboard />
-                </motion.div>
-              </AnimatePresence>
-        </main>
-      </div>
-
-    </div>
-  );
-};
+import { useState } from 'react'
+import reactLogo from './assets/react.svg'
+import viteLogo from '/vite.svg'
+import './App.css'
 
 function App() {
+  const [count, setCount] = useState(0)
+
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<EmployeeDashboard />} />
-      </Routes>
-    </BrowserRouter>
-  );
+    <>
+      <div>
+        <a href="https://vite.dev" target="_blank">
+          <img src={viteLogo} className="logo" alt="Vite logo" />
+        </a>
+        <a href="https://react.dev" target="_blank">
+          <img src={reactLogo} className="logo react" alt="React logo" />
+        </a>
+      </div>
+      <h1>Vite + React</h1>
+      <div className="card">
+        <button onClick={() => setCount((count) => count + 1)}>
+          count is {count}
+        </button>
+        <p>
+          Edit <code>src/App.jsx</code> and save to test HMR
+        </p>
+      </div>
+      <p className="read-the-docs">
+        Click on the Vite and React logos to learn more
+      </p>
+    </>
+  )
 }
 
-export default App;
+export default App
