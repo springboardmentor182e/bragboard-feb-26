@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { shoutouts as mockData } from "../constants/mockData";
+import { useState, useEffect } from "react";
 import TableRow from "./TableRow";
 import FilterBar from "./FilterBar";
 import ViewShoutoutModal from "./Modals/ViewShoutoutModal";
@@ -7,8 +6,29 @@ import EditShoutoutModal from "./Modals/EditShoutoutModal";
 import DeleteShoutoutModal from "./Modals/DeleteShoutoutModal";
 
 const ShoutoutTable = () => {
-  const [data, setData] = useState(mockData);
+  const [data, setData] = useState([]);
   const [selectedIds, setSelectedIds] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // 🔹 Fetch data from backend
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch("http://localhost:8000/api/shoutouts");
+        if (!response.ok) throw new Error("Failed to fetch shoutouts");
+        const json = await response.json();
+        setData(json);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   // 🔹 Modal states
   const [viewItem, setViewItem] = useState(null);
@@ -144,7 +164,21 @@ const ShoutoutTable = () => {
 
   return (
     <div className="space-y-4">
-      {/* 🔹 Filter Bar */}
+      {loading && (
+        <div className="p-8 text-center text-purple-600 animate-pulse font-medium">
+          Loading shoutouts from database...
+        </div>
+      )}
+
+      {error && (
+        <div className="p-4 bg-red-50 border border-red-200 text-red-600 rounded-xl text-center">
+          ⚠️ {error}
+        </div>
+      )}
+
+      {!loading && !error && (
+        <>
+          {/* 🔹 Filter Bar */}
       <FilterBar
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
@@ -255,6 +289,8 @@ const ShoutoutTable = () => {
         item={deleteItem}
         onDelete={handleDeleteOne}
       />
+        </>
+      )}
     </div>
   );
 };
