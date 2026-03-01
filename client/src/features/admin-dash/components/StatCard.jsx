@@ -1,11 +1,19 @@
-const StatCard = ({ title, value, growth }) => {
+import React from 'react';
+import { ArrowTrendingUpIcon } from '@heroicons/react/20/solid';
+
+const StatCard = ({ title, value, trend }) => {
   return (
-    <div className="bg-white p-6 rounded-2xl shadow-sm">
-      <div className="flex justify-between">
-        <span className="text-gray-500">{title}</span>
-        <span className="text-green-500 text-sm">{growth}</span>
+    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+      <h3 className="text-sm text-gray-500 mb-2">{title}</h3>
+      <div className="flex items-end justify-between">
+        <span className="text-3xl font-bold text-gray-900">{value}</span>
+        {trend && (
+          <span className="text-sm font-medium text-green-600 flex items-center bg-green-50 px-2 py-1 rounded">
+            <ArrowTrendingUpIcon className="w-4 h-4 mr-1" />
+            {trend}
+          </span>
+        )}
       </div>
-      <h2 className="text-2xl font-bold mt-4">{value}</h2>
     </div>
   );
 };
