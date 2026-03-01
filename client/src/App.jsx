@@ -5,6 +5,7 @@ import SummaryCards from "./features/employeeDashboard/components/SummaryCards";
 import AchievementTable from "./features/employeeDashboard/components/AchievementTable";
 import Leaderboard from "./features/employeeDashboard/components/Leaderboard";
 import AdminEmployees from "./pages/AdminEmployees";
+import SignupForm from "./features/authentication/pages/SignupPage";
 
 function Layout({ children }) {
   return (
@@ -50,6 +51,11 @@ function App() {
             </Layout>
           }
         />
+       
+       {/* ----SignupRoute--- */}
+
+       <Route path="/signup" element={<Signup />} />
+
       </Routes>
     </BrowserRouter>
   );
