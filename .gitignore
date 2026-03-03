@@ -11,9 +11,9 @@ client/yarn-error.log*
 client/pnpm-debug.log*
 
 # --- Backend (FastAPI/Python) ---
-server/__pycache__/
-server/*.py[cod]
-server/*$py.class
+**/__pycache__/
+**/*.py[cod]
+**/*$py.class
 server/.venv
 server/venv
 server/env

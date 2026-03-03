@@ -19,7 +19,6 @@ const ViewShoutoutModal = ({ isOpen, onClose, item, onEdit }) => {
             </div>
             <div>
               <h3 className="text-xl font-bold text-gray-900">{item.author}</h3>
-              <p className="text-sm text-gray-500">Senior Developer</p>
               <span className="mt-1 inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
                 {item.department}
               </span>

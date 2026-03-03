@@ -1,9 +1,13 @@
 import { useState, useEffect } from "react";
 import TableRow from "./TableRow";
 import FilterBar from "./FilterBar";
+import StatsSection from "./StatsSection";
+import ShoutoutHeader from "./ShoutoutHeader";
 import ViewShoutoutModal from "./Modals/ViewShoutoutModal";
 import EditShoutoutModal from "./Modals/EditShoutoutModal";
 import DeleteShoutoutModal from "./Modals/DeleteShoutoutModal";
+import CreateShoutoutModal from "./Modals/CreateShoutoutModal";
+import BulkDeleteConfirmModal from "./Modals/BulkDeleteConfirmModal";
 
 const ShoutoutTable = () => {
   const [data, setData] = useState([]);
@@ -34,6 +38,8 @@ const ShoutoutTable = () => {
   const [viewItem, setViewItem] = useState(null);
   const [editItem, setEditItem] = useState(null);
   const [deleteItem, setDeleteItem] = useState(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false);
 
   // 🔹 Filter states
   const [searchTerm, setSearchTerm] = useState("");
@@ -57,38 +63,95 @@ const ShoutoutTable = () => {
   };
 
   // 🔹 Delete Selected
-  const deleteSelected = () => {
-    const filtered = data.filter((item) => !selectedIds.includes(item.id));
-    setData(filtered);
-    setSelectedIds([]);
+  const deleteSelected = async () => {
+    try {
+      const response = await fetch("http://localhost:8000/api/shoutouts/bulk-delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(selectedIds),
+      });
+      if (!response.ok) throw new Error("Failed to delete shoutouts");
+      setData((prev) => prev.filter((item) => !selectedIds.includes(item.id)));
+      setSelectedIds([]);
+      setIsBulkDeleteModalOpen(false);
+    } catch (err) {
+      alert(err.message);
+    }
   };
 
   // 🔹 Toggle Pin
-  const togglePin = (id) => {
-    const updated = data.map((item) =>
-      item.id === id
-        ? {
-            ...item,
-            status: item.status === "Pinned" ? "Active" : "Pinned",
-          }
-        : item,
-    );
+  const togglePin = async (id) => {
+    const item = data.find((i) => i.id === id);
+    if (!item) return;
 
-    setData(updated);
+    const updatedItem = {
+      ...item,
+      status: item.status === "Pinned" ? "Active" : "Pinned",
+    };
+
+    try {
+      const response = await fetch(`http://localhost:8000/api/shoutouts/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedItem),
+      });
+      if (!response.ok) throw new Error("Failed to toggle pin");
+      const json = await response.json();
+      setData((prev) =>
+        prev.map((i) => (i.id === json.id ? json : i))
+      );
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
+  // 🔹 Create Shoutout
+  const handleCreate = async (newShoutout) => {
+    try {
+      const response = await fetch("http://localhost:8000/api/shoutouts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newShoutout),
+      });
+      if (!response.ok) throw new Error("Failed to create shoutout");
+      const json = await response.json();
+      setData((prev) => [json, ...prev]);
+    } catch (err) {
+      alert(err.message);
+    }
   };
 
   // 🔹 Update Shoutout
-  const handleUpdate = (updatedItem) => {
-    setData((prev) =>
-      prev.map((item) => (item.id === updatedItem.id ? updatedItem : item))
-    );
+  const handleUpdate = async (updatedItem) => {
+    try {
+      const response = await fetch(`http://localhost:8000/api/shoutouts/${updatedItem.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedItem),
+      });
+      if (!response.ok) throw new Error("Failed to update shoutout");
+      const json = await response.json();
+      setData((prev) =>
+        prev.map((item) => (item.id === json.id ? json : item))
+      );
+    } catch (err) {
+      alert(err.message);
+    }
   };
 
   // 🔹 Delete Single Shoutout
-  const handleDeleteOne = (id) => {
-    setData((prev) => prev.filter((item) => item.id !== id));
-    if (selectedIds.includes(id)) {
-      setSelectedIds((prev) => prev.filter((sid) => sid !== id));
+  const handleDeleteOne = async (id) => {
+    try {
+      const response = await fetch(`http://localhost:8000/api/shoutouts/${id}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) throw new Error("Failed to delete shoutout");
+      setData((prev) => prev.filter((item) => item.id !== id));
+      if (selectedIds.includes(id)) {
+        setSelectedIds((prev) => prev.filter((sid) => sid !== id));
+      }
+    } catch (err) {
+      alert(err.message);
     }
   };
 
@@ -178,6 +241,8 @@ const ShoutoutTable = () => {
 
       {!loading && !error && (
         <>
+          <ShoutoutHeader onCreateClick={() => setIsCreateModalOpen(true)} />
+          <StatsSection data={data} />
           {/* 🔹 Filter Bar */}
       <FilterBar
         searchTerm={searchTerm}
@@ -199,7 +264,7 @@ const ShoutoutTable = () => {
 
             <div className="flex gap-3">
               <button
-                onClick={deleteSelected}
+                onClick={() => setIsBulkDeleteModalOpen(true)}
                 className="bg-red-600 text-white px-4 py-1.5 rounded-lg text-sm"
               >
                 Delete Selected
@@ -288,6 +353,19 @@ const ShoutoutTable = () => {
         onClose={() => setDeleteItem(null)}
         item={deleteItem}
         onDelete={handleDeleteOne}
+      />
+
+      <CreateShoutoutModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSave={handleCreate}
+      />
+
+      <BulkDeleteConfirmModal
+        isOpen={isBulkDeleteModalOpen}
+        onClose={() => setIsBulkDeleteModalOpen(false)}
+        onConfirm={deleteSelected}
+        count={selectedIds.length}
       />
         </>
       )}
