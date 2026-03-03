@@ -1,49 +1,128 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import JSONResponse
+from fastapi.exceptions import RequestValidationError
+from starlette.exceptions import HTTPException
 from pathlib import Path
-import os
+
 from .database import engine
 from . import models
-from .user_router import router as user_router
-from .shoutout_router import router as shoutout_router
-from .leaderboard_router import router as leaderboard_router
+from .api import api_router
+from .core.response import error_response
+from .core.logging import logger
 
-app = FastAPI()
 
-# Create DB tables
+# -------------------------------------------------
+# Create FastAPI App
+# -------------------------------------------------
+app = FastAPI(
+    title="BragBoard API",
+    description="Professional Employee Recognition System",
+    version="1.0.0",
+    docs_url="/docs",
+    redoc_url="/redoc",
+)
+
+
+# -------------------------------------------------
+# Application Startup & Shutdown Events
+# -------------------------------------------------
+@app.on_event("startup")
+async def startup_event():
+    logger.info("🚀 BragBoard API Started")
+
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    logger.info("🛑 BragBoard API Stopped")
+
+
+# -------------------------------------------------
+# Global Exception Handlers
+# -------------------------------------------------
+
+@app.exception_handler(HTTPException)
+async def http_exception_handler(request: Request, exc: HTTPException):
+    logger.error(f"HTTP Exception: {exc.detail}")
+    return JSONResponse(
+        status_code=exc.status_code,
+        content=error_response(exc.detail),
+    )
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    logger.error(f"Validation Error: {exc.errors()}")
+    return JSONResponse(
+        status_code=422,
+        content=error_response("Validation failed", details=exc.errors()),
+    )
+
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    logger.error(f"Unhandled Exception: {str(exc)}")
+    return JSONResponse(
+        status_code=500,
+        content=error_response("Internal server error"),
+    )
+
+
+# -------------------------------------------------
+# Create Database Tables
+# -------------------------------------------------
 models.Base.metadata.create_all(bind=engine)
 
-# Base directory
+
+# -------------------------------------------------
+# Media Configuration
+# -------------------------------------------------
 BASE_DIR = Path(__file__).resolve().parent.parent
 MEDIA_DIR = BASE_DIR / "media"
 USERS_MEDIA_DIR = MEDIA_DIR / "users"
 
 USERS_MEDIA_DIR.mkdir(parents=True, exist_ok=True)
 
-# Mount media folder
 app.mount("/media", StaticFiles(directory=str(MEDIA_DIR)), name="media")
 
-# CORS
+
+# -------------------------------------------------
+# CORS Configuration
+# -------------------------------------------------
+origins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "http://127.0.0.1:8000",
-        "http://localhost:8000"
-    ],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Routers
-app.include_router(user_router)
-app.include_router(shoutout_router)
-app.include_router(leaderboard_router)
+
+# -------------------------------------------------
+# Register API Router (NO DOUBLE PREFIX)
+# -------------------------------------------------
+app.include_router(api_router)
 
 
-@app.get("/")
+# -------------------------------------------------
+# Health Check Endpoint
+# -------------------------------------------------
+@app.get("/", tags=["Health"])
 def root():
-    return {"message": "BragBoard API Running 🚀"}
+    return {
+        "success": True,
+        "message": "BragBoard API Running 🚀"
+    }
+
+
+@app.get("/health", tags=["Health"])
+def health_check():
+    return {
+        "status": "healthy"
+    }
