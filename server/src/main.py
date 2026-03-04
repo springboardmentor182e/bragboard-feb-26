@@ -2,7 +2,10 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from src.api import router
 
-app = FastAPI(title="BragBoard API")
+app = FastAPI(
+    title="BragBoard API",
+    version="1.0.0"
+)
 
 # CORS (allow frontend to connect)
 app.add_middleware(

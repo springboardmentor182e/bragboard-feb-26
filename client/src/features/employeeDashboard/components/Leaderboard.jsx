@@ -1,3 +1,5 @@
+import Card from "../../../components/ui/Card";
+
 const Leaderboard = () => {
   const users = [
     { name: "Rahul Sharma", points: 3200 },
@@ -6,7 +8,7 @@ const Leaderboard = () => {
     { name: "Vikas Patel", points: 1800 },
   ];
 
-  const getRankStyle = (index) => {
+  const getRankColor = (index) => {
     switch (index) {
       case 0:
         return "text-yellow-500"; // Gold
@@ -15,57 +17,68 @@ const Leaderboard = () => {
       case 2:
         return "text-amber-600"; // Bronze
       default:
-        return "text-gray-500 dark:text-gray-400";
+        return "text-slate-500";
     }
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow dark:shadow-gray-900/40 p-6 transition-all duration-300">
-      
+    <Card className="p-6">
+
+      {/* Header */}
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
+        <h2 className="text-xl font-bold text-slate-800">
           Leaderboard
         </h2>
-        <span className="text-sm text-gray-500 dark:text-gray-400">
+        <span className="text-sm text-slate-500">
           Top Performers
         </span>
       </div>
 
-      <ul className="space-y-3">
+      {/* List */}
+      <ul className="space-y-4">
         {users.map((user, index) => (
           <li
             key={index}
-            className={`flex justify-between items-center p-4 rounded-xl transition-all duration-200 ${
+            className={`flex justify-between items-center p-4 rounded-2xl transition-all duration-200 hover:bg-slate-50 ${
               user.name === "Satyam Dubey"
-                ? "bg-indigo-50 border border-indigo-200 dark:bg-indigo-900/40 dark:border-indigo-700"
-                : "hover:bg-gray-50 dark:hover:bg-gray-700"
+                ? "bg-indigo-50 border border-indigo-200"
+                : ""
             }`}
           >
+            {/* Left Section */}
             <div className="flex items-center gap-4">
-              
+
+              {/* Rank */}
               <span
-                className={`text-sm font-bold ${getRankStyle(index)}`}
+                className={`text-sm font-bold ${getRankColor(index)}`}
               >
                 #{index + 1}
               </span>
 
+              {/* Avatar */}
+              <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-indigo-700 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                {user.name.charAt(0)}
+              </div>
+
+              {/* Name */}
               <div className="flex flex-col">
-                <span className="font-medium text-gray-800 dark:text-gray-100">
+                <span className="font-semibold text-slate-800">
                   {user.name}
                 </span>
-                <span className="text-xs text-gray-500 dark:text-gray-400">
+                <span className="text-xs text-slate-500">
                   Employee
                 </span>
               </div>
             </div>
 
-            <span className="font-semibold text-gray-700 dark:text-gray-200">
+            {/* Points */}
+            <span className="font-semibold text-indigo-600">
               {user.points} pts
             </span>
           </li>
         ))}
       </ul>
-    </div>
+    </Card>
   );
 };
 
