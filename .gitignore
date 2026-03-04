@@ -1,0 +1,27 @@
+# Node.js
+client/node_modules/
+client/dist/
+client/.env*
+client/.eslintcache
+client/npm-debug.log*
+client/yarn-debug.log*
+client/yarn-error.log*
+
+# Python
+server/__pycache__/
+server/src/__pycache__/
+server/tests/__pycache__/
+server/.pytest_cache/
+server/.env
+server/venv/
+server/env/
+*.py[cod]
+*$py.class
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
