@@ -1,10 +1,21 @@
 from pydantic import BaseModel
 from typing import Literal
 
-class User(BaseModel):
-    id: int
+RoleType = Literal["Admin", "Manager", "Employee"]
+StatusType = Literal["Active", "Suspended"]
+
+
+class UserBase(BaseModel):
     name: str
     email: str
     department: str
-    role: Literal["Admin", "Manager", "Employee"]
-    status: Literal["Active", "Suspended"]
+    role: RoleType
+    status: StatusType
+
+
+class UserCreate(UserBase):
+    pass
+
+
+class User(UserBase):
+    id: int
