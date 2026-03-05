@@ -1,9 +1,3 @@
- import AdminDashboard from './adminShoutout/AdminDashboard'
-
-function App() {
-  return(
-    <AdminDashboard></AdminDashboard>
-  )
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Sidebar from "./features/employeeDashboard/components/Sidebar";
 import TopNavbar from "./features/employeeDashboard/components/TopNavbar";
@@ -61,4 +55,4 @@ function App() {
   );
 }
 
-export default App
+export default App;

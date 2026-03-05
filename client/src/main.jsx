@@ -1,12 +1,10 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App";
+import "./index.css";
 
-import './index.css'
-import AdminDashboard from './adminShoutout/AdminDashboard'
-
-ReactDOM.createRoot(document.getElementById('root')).render(
+ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    
-    <AdminDashboard></AdminDashboard>
-  </React.StrictMode>,
-)
+    <App />
+  </React.StrictMode>
+);
