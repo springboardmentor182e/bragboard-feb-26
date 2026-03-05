@@ -1,6 +1,14 @@
 import React from 'react';
-import { HomeIcon, ChartBarIcon, UserGroupIcon, MegaphoneIcon, FlagIcon } from '@heroicons/react/24/outline';
 
+import {
+  HomeIcon,
+  ChartBarIcon,
+  UserGroupIcon,
+  MegaphoneIcon,
+  FlagIcon,
+  DocumentTextIcon,
+  Cog6ToothIcon
+} from '@heroicons/react/24/outline';
 const Sidebar = () => {
   return (
     <div className="w-64 bg-[#1a1f36] h-screen fixed left-0 top-0 flex flex-col">
@@ -8,7 +16,7 @@ const Sidebar = () => {
       <div className="p-6 border-b border-gray-800">
         <h1 className="text-white text-xl font-bold tracking-wide">BRAGBOARD</h1>
       </div>
-      
+
       {/* Main Navigation */}
       <nav className="flex-1 p-4">
         <div className="space-y-1">
@@ -33,7 +41,7 @@ const Sidebar = () => {
             Analytics
           </a>
         </div>
-        
+
         {/* Reports Section */}
         <div className="mt-8">
           <h3 className="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Reports</h3>
@@ -50,7 +58,7 @@ const Sidebar = () => {
           </div>
         </div>
       </nav>
-      
+
       {/* User Profile - Exactly like screenshot */}
       <div className="p-4 border-t border-gray-800">
         <div className="flex items-center">
