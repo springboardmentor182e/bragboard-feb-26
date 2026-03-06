@@ -1,6 +1,16 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
+const timeAgo = (date) => {
+  const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+
+  if (seconds < 60) return "Just now";
+  if (seconds < 3600) return Math.floor(seconds / 60) + " mins ago";
+  if (seconds < 86400) return Math.floor(seconds / 3600) + " hrs ago";
+
+  return Math.floor(seconds / 86400) + " days ago";
+};
+
 const Recognition = () => {
   const [brags, setBrags] = useState([]);
   const [newBrag, setNewBrag] = useState("");
@@ -14,13 +24,8 @@ const Recognition = () => {
     axios.get("http://localhost:8000/brags")
       .then(res => {
         // Add frontend-only fields
-        const formatted = res.data.map(brag => ({
-          ...brag,
-          likes: 0,
-          liked: false,
-          comments: []
-        }));
-        setBrags(formatted);
+        
+        setBrags(res.data);
       })
       .catch(err => console.log(err));
   };
@@ -29,13 +34,21 @@ const Recognition = () => {
     if (!newBrag.trim()) return;
 
     axios.post("http://localhost:8000/brags", {
-      author: "You",
+      author: "Employee",
       content: newBrag
     }).then(() => {
       setNewBrag("");
       fetchBrags();
     }).catch(err => console.log(err));
   };
+
+  const handleLike = (id) => {
+  axios.post(`http://localhost:8000/brags/${id}/like`)
+    .then(() => {
+      fetchBrags();
+    })
+    .catch(err => console.log(err));
+};
 
   return (
     <div className="max-w-3xl mx-auto space-y-8">
@@ -76,18 +89,27 @@ const Recognition = () => {
                 {brag.author}
               </h4>
               <span className="text-xs text-lightText">
-                Just now
-              </span>
+  {timeAgo(brag.created_at)}
+</span>
             </div>
 
             <p className="text-lightText mt-3">
               {brag.content}
             </p>
+            <div className="flex gap-6 mt-4 text-sm font-medium">
+  <button
+    onClick={() => handleLike(brag.id)}
+    className="text-softBrown hover:text-accentBrown transition"
+  >
+    ❤️ {brag.likes}
+  </button>
+</div>
           </div>
         ))
       )}
     </div>
   );
+  
 };
 
 export default Recognition;

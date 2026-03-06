@@ -41,3 +41,18 @@ def create_brag(brag: dict):
     db.commit()
     db.close()
     return {"message": "Brag created"}
+
+@app.post("/brags/{brag_id}/like")
+def like_brag(brag_id: int):
+    db = get_db()
+    cursor = db.cursor()
+
+    cursor.execute(
+        "UPDATE brags SET likes = likes + 1 WHERE id = %s",
+        (brag_id,)
+    )
+
+    db.commit()
+    db.close()
+
+    return {"message": "Brag liked"}
