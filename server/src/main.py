@@ -5,6 +5,11 @@ from src.api import router
 app = FastAPI(title="BragBoard API")
 
 # CORS (allow frontend to connect)
+from src.admin.controller import router as admin_router
+
+app = FastAPI(title="BragBoard API")
+
+# Configure CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173"],
@@ -19,3 +24,19 @@ app.include_router(router)
 @app.get("/")
 def root():
     return {"message": "BragBoard API running 🚀"}
+# Include routers
+app.include_router(admin_router)
+
+@app.get("/")
+def root():
+    return {
+        "message": "BragBoard API is running",
+        "endpoints": {
+            "docs": "/docs",
+            "admin": "/api/admin"
+        }
+    }
+
+@app.get("/health")
+def health():
+    return {"status": "healthy"}
