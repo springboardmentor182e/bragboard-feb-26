@@ -1,3 +1,4 @@
+from src.auth.dependencies import require_admin
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from src.database.core import get_db
