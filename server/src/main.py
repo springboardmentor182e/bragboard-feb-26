@@ -1,13 +1,14 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from src.api import router
+from src.database.core import Base, engine
+from src.entities import user
 
-app = FastAPI(
-    title="BragBoard API",
-    version="1.0.0"
-)
+app = FastAPI(title="BragBoard API")
 
-# CORS (allow frontend to connect)
+# Create tables
+Base.metadata.create_all(bind=engine)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173"],
@@ -17,7 +18,6 @@ app.add_middleware(
 )
 
 app.include_router(router)
-
 
 @app.get("/")
 def root():

@@ -1,5 +1,7 @@
-from fastapi import APIRouter, HTTPException
-from .models import User
+from fastapi import APIRouter, HTTPException, Depends
+from sqlalchemy.orm import Session
+from src.database.core import get_db
+from .models import UserCreate
 from .service import (
     get_users,
     add_user,
@@ -11,40 +13,41 @@ from .service import (
 router = APIRouter()
 
 
-# GET ALL USERS
 @router.get("/")
-def fetch_users():
-    return get_users()
+def fetch_users(db: Session = Depends(get_db)):
+    return get_users(db)
 
 
-# ADD USER
 @router.post("/")
-def create_user(user: User):
-    return add_user(user)
+def create_user(user: UserCreate, db: Session = Depends(get_db)):
+    return add_user(db, user)
 
 
-# TOGGLE STATUS
 @router.put("/{user_id}/toggle-status")
-def toggle_status(user_id: int):
-    updated_user = update_user_status(user_id)
+def toggle_status(user_id: int, db: Session = Depends(get_db)):
+    updated_user = update_user_status(db, user_id)
+
     if not updated_user:
         raise HTTPException(status_code=404, detail="User not found")
+
     return updated_user
 
 
-# UPDATE ROLE
 @router.put("/{user_id}/role")
-def change_role(user_id: int, role: str):
-    updated_user = update_user_role(user_id, role)
+def change_role(user_id: int, role: str, db: Session = Depends(get_db)):
+    updated_user = update_user_role(db, user_id, role)
+
     if not updated_user:
         raise HTTPException(status_code=404, detail="User not found")
+
     return updated_user
 
 
-# DELETE USER
 @router.delete("/{user_id}")
-def remove_user(user_id: int):
-    deleted = delete_user(user_id)
+def remove_user(user_id: int, db: Session = Depends(get_db)):
+    deleted = delete_user(db, user_id)
+
     if not deleted:
         raise HTTPException(status_code=404, detail="User not found")
+
     return {"message": "User deleted successfully"}
