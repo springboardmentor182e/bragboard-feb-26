@@ -18,3 +18,31 @@ def login(user: dict):
         "access_token":access,
         "refresh_token":refresh
     }
+
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+from database.db import SessionLocal
+from entities.user import User
+from auth.password import hash_password
+
+router = APIRouter()
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+@router.post("/register")
+def register(user: dict, db: Session = Depends(get_db)):
+
+    new_user = User(
+        email=user["email"],
+        password=hash_password(user["password"])
+    )
+
+    db.add(new_user)
+    db.commit()
+
+    return {"message": "User created"}   
