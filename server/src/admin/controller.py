@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
 from typing import List
-
+from src.admin.models import Report  # Import your Post model
 from src.database.core import get_db
 from src.admin import schemas, service
 from src.auth.service import get_password_hash  # Now this will work!
@@ -71,3 +71,68 @@ async def get_activity_logs(
     """Get activity logs"""
     admin_service = service.AdminService(db)
     return admin_service.get_activity_logs(skip, limit)
+
+
+
+@router.get("/reports", response_model=List[schemas.ReportResponse])
+async def get_reports(
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_db)
+):
+    """Get all reports"""
+    admin_service = service.AdminService(db)
+    return admin_service.get_reports(skip, limit)
+
+@router.post("/reports/{report_id}/resolve")
+async def resolve_report(
+    report_id: int,
+    db: Session = Depends(get_db)
+):
+    """Resolve a report"""
+    try:
+        admin_service = service.AdminService(db)
+        result = admin_service.resolve_report(report_id)
+        
+        if not result:
+            raise HTTPException(
+                status_code=404, 
+                detail="Report not found or could not be resolved"
+            )
+            
+        return {"message": "Report resolved successfully", "report_id": report_id}
+        
+    except Exception as e:
+        print(f"Error in resolve_report endpoint: {e}")
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Failed to resolve report: {str(e)}"
+        )
+
+@router.delete("/posts/{post_id}")
+async def delete_post(post_id: int, db: Session = Depends(get_db)):
+    try:
+        # Log that we received the request
+        print(f"Attempting to delete post with ID: {post_id}")
+        
+        # Find the post
+        post = db.query(Report).filter(Report.id == post_id).first()
+        
+        if not post:
+            print(f"Post {post_id} not found")
+            return {"error": "Post not found"}, 404
+            
+        # Check for foreign key constraints (if post has comments, likes, etc.)
+        # You might need to delete related records first
+        
+        db.delete(post)
+        db.commit()
+        print(f"Post {post_id} deleted successfully")
+        return {"message": "Post deleted successfully"}
+        
+    except Exception as e:
+        print(f"ERROR deleting post {post_id}: {str(e)}")
+        import traceback
+        traceback.print_exc()  # This will print the full stack trace
+        db.rollback()
+        return {"error": str(e)}, 500

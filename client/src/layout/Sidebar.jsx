@@ -9,7 +9,7 @@ import {
   DocumentTextIcon,
   Cog6ToothIcon
 } from '@heroicons/react/24/outline';
-const Sidebar = () => {
+const Sidebar_admin = () => {
   return (
     <div className="w-64 bg-[#1a1f36] h-screen fixed left-0 top-0 flex flex-col">
       {/* Logo */}
@@ -76,4 +76,4 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar;
+export default Sidebar_admin;
