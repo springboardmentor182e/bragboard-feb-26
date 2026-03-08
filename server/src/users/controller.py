@@ -45,4 +45,26 @@ def register(user: dict, db: Session = Depends(get_db)):
     db.add(new_user)
     db.commit()
 
-    return {"message": "User created"}   
+    return {"message": "User created"}  
+
+from auth.password import verify_password
+from auth.jwt_handler import create_access_token, create_refresh_token
+
+@router.post("/login")
+def login(user: dict, db: Session = Depends(get_db)):
+
+    db_user = db.query(User).filter(User.email == user["email"]).first()
+
+    if not db_user:
+        return {"error": "User not found"}
+
+    if not verify_password(user["password"], db_user.password):
+        return {"error": "Invalid password"}
+
+    access = create_access_token({"sub": db_user.email})
+    refresh = create_refresh_token({"sub": db_user.email})
+
+    return {
+        "access_token": access,
+        "refresh_token": refresh
+    }
