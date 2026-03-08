@@ -13,7 +13,7 @@ function StatBox({ icon: Icon, label, value, iconClass }) {
   );
 }
 
-export default function TeamCard({ member }) {
+export default function TeamCard({ member, onViewProfile }) {
   const { name, role, department, avatar, shoutOuts, claps, stars } = member;
 
   return (
@@ -39,8 +39,8 @@ export default function TeamCard({ member }) {
         <StatBox icon={Star}     label="Stars"      value={stars}     iconClass="text-amber-400" />
       </div>
 
-      {/* View Profile Button */}
       <button
+        onClick={onViewProfile}
         className="w-full py-3 rounded-xl text-white font-semibold flex items-center justify-center gap-2 text-sm cursor-pointer hover:opacity-90 transition-opacity"
         style={{ background: 'linear-gradient(to right, #6D28D9, #7C3AED)' }}
       >

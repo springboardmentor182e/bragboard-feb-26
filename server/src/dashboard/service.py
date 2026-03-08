@@ -2,7 +2,8 @@ from typing import List, Optional
 from .models import (
     User, Badge, Shoutout, Notification, Activity,
     AnalyticsMetric, TopContributor, DepartmentEngagement,
-    LeaderboardStat, TopPerformer, FullRanking, Campaign
+    LeaderboardStat, TopPerformer, FullRanking, Campaign,
+    Sender, Recipient, BadgeInfo, Reactions
 )
 
 

@@ -11,9 +11,6 @@ export default function WelcomeBanner() {
       </div>
       <div>
         <h1 className="text-3xl font-bold leading-tight">Welcome back, Alex 👋</h1>
-        <p className="text-white/80 mt-1.5 text-base">
-          You've received 3 new recognitions this week. Keep inspiring the team!
-        </p>
       </div>
     </div>
   );
