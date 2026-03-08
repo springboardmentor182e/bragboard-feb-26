@@ -22,4 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-node_modules/
+client/node_modules/
+server/venv/
+server/__pycache__/
+*.pyc
+.vscode/
+.env
