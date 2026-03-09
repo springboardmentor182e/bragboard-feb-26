@@ -1,9 +1,7 @@
 import { useState } from "react";
-import ForgotPassword from "./ForgotPassword"; // new component for resetting password
-import Signup from "./Signup"; // new component for user signup
-import { loginUser } from "./login";
+import { signupUser } from "./signupApi";
 
-const styles = `
+const authStyles = `
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -83,27 +81,6 @@ const styles = `
     margin-bottom: 28px;
   }
 
-  .secure-banner {
-    background: rgba(120,53,15,0.35);
-    border: 1px solid rgba(234,88,12,0.3);
-    border-radius: 12px;
-    padding: 14px 16px;
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    margin-bottom: 24px;
-    animation: slideDown 0.4s ease;
-  }
-
-  @keyframes slideDown {
-    from { opacity: 0; transform: translateY(-8px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  .secure-banner svg { flex-shrink: 0; margin-top: 2px; }
-  .secure-banner .banner-title { color: #f97316; font-size: 14px; font-weight: 700; }
-  .secure-banner .banner-sub   { color: #f97316; font-size: 12px; opacity: 0.8; margin-top: 2px; }
-
   .field-group { margin-bottom: 18px; }
   .field-label {
     display: block;
@@ -168,10 +145,6 @@ const styles = `
     border-color: rgba(124,58,237,0.5);
     box-shadow: 0 0 0 3px rgba(124,58,237,0.12);
   }
-  .admin-mode .input-field:focus {
-    border-color: rgba(234,88,12,0.5);
-    box-shadow: 0 0 0 3px rgba(234,88,12,0.12);
-  }
 
   .toggle-pw {
     position: absolute;
@@ -185,45 +158,6 @@ const styles = `
     transition: color 0.2s;
   }
   .toggle-pw:hover { color: #9ca3af; }
-
-  .row-utils {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 22px;
-    gap: 12px;
-  }
-
-  .remember-wrap {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    user-select: none;
-  }
-  .remember-wrap input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
-    accent-color: #7c3aed;
-    cursor: pointer;
-    border-radius: 4px;
-  }
-  .admin-mode .remember-wrap input[type="checkbox"] { accent-color: #ea580c; }
-  .remember-wrap span { color: #9ca3af; font-size: 14px; }
-
-  .forgot-link {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 600;
-    font-family: 'Inter', sans-serif;
-    transition: opacity 0.2s;
-    white-space: nowrap;
-  }
-  .forgot-link:hover { opacity: 0.8; }
-  .forgot-link.employee { color: #7c3aed; }
-  .forgot-link.admin    { color: #f97316; }
 
   .btn-primary {
     width: 100%;
@@ -242,23 +176,6 @@ const styles = `
   .btn-primary:active { transform: scale(0.98); }
   .btn-primary.employee { background: linear-gradient(135deg, #7c3aed, #6d28d9); }
   .btn-primary.admin    { background: linear-gradient(135deg, #ea580c, #c2410c); }
-
-  .divider {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 18px;
-  }
-  .divider-line { flex: 1; height: 1px; background: rgba(255,255,255,0.08); }
-  .divider-text {
-    background: #1f2533;
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 6px;
-    padding: 3px 10px;
-    color: #6b7280;
-    font-size: 12px;
-    font-weight: 500;
-  }
 
   .btn-secondary {
     width: 100%;
@@ -320,161 +237,84 @@ const UserIcon = () => (
   </svg>
 );
 
-const ShieldIcon = ({ size = 32, color = "white" }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-  </svg>
-);
-
-// Demo credentials - kept for reference, now using backend API
-// eslint-disable-next-line no-unused-vars
-const _EMPLOYEE_CREDENTIALS = { email: "john.doe@company.com", password: "employee123" };
-// eslint-disable-next-line no-unused-vars
-const _ADMIN_CREDENTIALS = { email: "admin@prackboard.com", password: "admin123" };
-
-export { MailIcon };
-export const authStyles = styles;
-export default function PrackBoardAuth() {
-  const [mode, setMode] = useState("employee"); // "employee" | "admin"
-  const [isSignUp, setIsSignUp] = useState(false); // toggle between login and signup
-  const [forgot, setForgot] = useState(false); // show forgot password screen
+export default function Signup({ onBack }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPw, setShowPw] = useState(false);
-  const [remember, setRemember] = useState(false);
+  const [showConfirmPw, setShowConfirmPw] = useState(false);
   const [error, setError] = useState("");
   const [info, setInfo] = useState("");
-  const [loggedIn, setLoggedIn] = useState(false);
-  const [loggedInAs, setLoggedInAs] = useState("");
 
-  const isAdmin = mode === "admin";
-
-  const handleSwitch = (next) => {
-    setMode(next);
-    setIsSignUp(false);
-    setForgot(false);
-    setEmail("");
-    setPassword("");
-    setError("");
-    setInfo("");
-    setShowPw(false);
-  };
-
-  const validateCredentials = () => {
+  const validateForm = () => {
     if (!email.trim()) {
       setError("Please enter your email address.");
       return false;
     }
+    if (!email.includes("@")) {
+      setError("Please enter a valid email address.");
+      return false;
+    }
     if (!password.trim()) {
-      setError("Please enter your password.");
+      setError("Please enter a password.");
+      return false;
+    }
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters long.");
+      return false;
+    }
+    if (!confirmPassword.trim()) {
+      setError("Please confirm your password.");
+      return false;
+    }
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
       return false;
     }
     return true;
   };
 
-  const handleSubmit = async () => {
+  const handleSignUp = async () => {
     setError("");
     setInfo("");
-    if (!validateCredentials()) return;
+    if (!validateForm()) return;
 
-    const role = isAdmin ? "admin" : "employee";
-    const result = await loginUser(email, password, role);
-
+    // Call the signup API
+    const result = await signupUser(email, password, "employee");
+    
     if (result.success) {
-      setLoggedIn(true);
-      setLoggedInAs(isAdmin ? "Admin" : "Employee");
-      if (remember && result.data?.access_token) {
-        localStorage.setItem("auth_token", result.data.access_token);
-        localStorage.setItem("user_email", email);
-        localStorage.setItem("user_role", role);
-      }
+      setInfo("Account created successfully! You can now sign in.");
+      setTimeout(() => {
+        setEmail("");
+        setPassword("");
+        setConfirmPassword("");
+        onBack();
+      }, 2000);
     } else {
-      setError(result.error || "Invalid email or password. Please try again.");
+      setError(result.error || "Signup failed. Please try again.");
     }
   };
 
-
-
-  if (isSignUp) {
-    return <Signup onBack={() => setIsSignUp(false)} />;
-  }
-
-  if (loggedIn) {
-    return (
-      <>
-        <style>{styles}</style>
-        <div className="auth-bg" />
-        <div className="auth-wrapper">
-          <div className="card" style={{ textAlign: "center" }}>
-            <div className={`icon-wrap ${loggedInAs === "Admin" ? "admin" : "employee"}`}>
-              {loggedInAs === "Admin" ? <ShieldIcon /> : <UserIcon />}
-            </div>
-            <div className="card-title">Welcome back!</div>
-            <p style={{ color: "#6b7280", fontSize: 15, marginTop: 8, marginBottom: 24 }}>
-              You're signed in as <strong style={{ color: "#e5e7eb" }}>{loggedInAs}</strong>.
-            </p>
-            <button
-              className={`btn-primary ${loggedInAs === "Admin" ? "admin" : "employee"}`}
-              onClick={() => {
-                setLoggedIn(false);
-                setEmail("");
-                setPassword("");
-                setError("");
-              }}
-            >
-              Sign Out
-            </button>
-          </div>
-        </div>
-      </>
-    );
-  }
-
-  if (forgot) {
-    return <ForgotPassword onBack={() => setForgot(false)} />;
-  }
-
   return (
     <>
-      <style>{styles}</style>
+      <style>{authStyles}</style>
       <div className="auth-bg" />
       <div className="auth-wrapper">
-        <div className={`card ${isAdmin ? "admin-mode" : ""}`}>
-          {/* Icon */}
-          <div className={`icon-wrap ${isAdmin ? "admin" : "employee"}`}>
-            {isAdmin ? <ShieldIcon /> : <UserIcon />}
+        <div className="card">
+          <div className="icon-wrap employee">
+            <UserIcon />
           </div>
-
-          {/* Title */}
-          <div className="card-title">
-            {isAdmin ? "Admin Portal" : "Welcome to PrackBoard"}
-          </div>
+          <div className="card-title">Create Account</div>
           <div className="card-subtitle">
-            {isAdmin ? "Sign in to manage PrackBoard" : "Sign in to your employee account"}
+            Sign up for a new employee account
           </div>
 
-          {/* Secure Access Banner (admin only) */}
-          {isAdmin && (
-            <div className="secure-banner">
-              <ShieldIcon size={18} color="#f97316" />
-              <div>
-                <div className="banner-title">Secure Access</div>
-                <div className="banner-sub">
-                  Administrative access is restricted and monitored
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Error / Info Message */}
           {error && <div className="error-msg">{error}</div>}
           {info && <div className="info-msg">{info}</div>}
 
           {/* Email Field */}
           <div className="field-group">
-            <label className="field-label">
-              {isAdmin ? "Admin Email" : "Email Address"}
-            </label>
+            <label className="field-label">Email Address</label>
             <div className="input-wrap">
               <span className="input-icon">
                 <MailIcon />
@@ -482,7 +322,7 @@ export default function PrackBoardAuth() {
               <input
                 className="input-field"
                 type="email"
-                placeholder={isAdmin ? "admin@prackboard.com" : "john.doe@company.com"}
+                placeholder="your.email@company.com"
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value);
@@ -494,9 +334,7 @@ export default function PrackBoardAuth() {
 
           {/* Password Field */}
           <div className="field-group">
-            <label className="field-label">
-              {isAdmin ? "Admin Password" : "Password"}
-            </label>
+            <label className="field-label">Password</label>
             <div className="input-wrap">
               <span className="input-icon">
                 <LockIcon />
@@ -504,13 +342,12 @@ export default function PrackBoardAuth() {
               <input
                 className="input-field"
                 type={showPw ? "text" : "password"}
-                placeholder={isAdmin ? "Enter admin password" : "Enter your password"}
+                placeholder="Enter a strong password"
                 value={password}
                 onChange={(e) => {
                   setPassword(e.target.value);
                   setError("");
                 }}
-                onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
               />
               <button
                 className="toggle-pw"
@@ -523,61 +360,51 @@ export default function PrackBoardAuth() {
             </div>
           </div>
 
-          {/* Remember Me + Forgot Password */}
-          <div className="row-utils">
-            <label className="remember-wrap">
+          {/* Confirm Password Field */}
+          <div className="field-group">
+            <label className="field-label">Confirm Password</label>
+            <div className="input-wrap">
+              <span className="input-icon">
+                <LockIcon />
+              </span>
               <input
-                type="checkbox"
-                checked={remember}
-                onChange={(e) => setRemember(e.target.checked)}
+                className="input-field"
+                type={showConfirmPw ? "text" : "password"}
+                placeholder="Confirm your password"
+                value={confirmPassword}
+                onChange={(e) => {
+                  setConfirmPassword(e.target.value);
+                  setError("");
+                }}
+                onKeyDown={(e) => e.key === "Enter" && handleSignUp()}
               />
-              <span>Remember me</span>
-            </label>
-            <button
-              className={`forgot-link ${isAdmin ? "admin" : "employee"}`}
-              type="button"
-              onClick={() => setForgot(true)}
-            >
-              Forgot Password?
-            </button>
-          </div>
-
-          {/* Primary Sign In Button */}
-          <button
-            className={`btn-primary ${isAdmin ? "admin" : "employee"}`}
-            onClick={handleSubmit}
-          >
-            {isAdmin ? "Sign In as Admin" : "Sign In"}
-          </button>
-
-          {/* Divider */}
-          <div className="divider">
-            <div className="divider-line" />
-            <span className="divider-text">or</span>
-            <div className="divider-line" />
-          </div>
-
-          {/* Mode Toggle Button */}
-          <button
-            className="btn-secondary"
-            onClick={() => handleSwitch(isAdmin ? "employee" : "admin")}
-          >
-            {isAdmin ? "Employee Login →" : "Admin Login →"}
-          </button>
-
-          {/* Sign Up Link */}
-          <div style={{ marginTop: 16, textAlign: "center" }}>
-            <span>
-              Don't have an account?{' '}
               <button
+                className="toggle-pw"
+                onClick={() => setShowConfirmPw((v) => !v)}
                 type="button"
-                className="forgot-link employee"
-                onClick={() => setIsSignUp(true)}
+                aria-label="Toggle confirm password visibility"
               >
-                Sign Up
+                <EyeIcon open={showConfirmPw} />
               </button>
-            </span>
+            </div>
           </div>
+
+          {/* Sign Up Button */}
+          <button
+            className="btn-primary employee"
+            onClick={handleSignUp}
+          >
+            Sign Up
+          </button>
+
+          {/* Back Button */}
+          <button
+            type="button"
+            className="btn-secondary"
+            onClick={onBack}
+          >
+            Back to login
+          </button>
         </div>
       </div>
     </>

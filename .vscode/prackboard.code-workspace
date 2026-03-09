@@ -1,0 +1,30 @@
+{
+    "folders": [
+        {
+            "path": "."
+        },
+        {
+            "path": "server"
+        }
+    ],
+    "settings": {
+        "python.analysis.autoImportCompletions": true,
+        "python.analysis.typeCheckingMode": "basic",
+        "python.analysis.diagnosticMode": "workspace",
+        "python.analysis.importAutoCompletion": true,
+        "python.analysis.extraPaths": [
+            "C:/Python314/Lib/site-packages",
+            "C:/Python314"
+        ],
+        "python.defaultInterpreterPath": "C:/Python314/python.exe",
+        "files.associations": {
+            "*.json": "jsonc"
+        },
+        "files.exclude": {
+            "**/terminal*.py": true
+        },
+        "search.exclude": {
+            "**/terminal*.py": true
+        }
+    }
+}

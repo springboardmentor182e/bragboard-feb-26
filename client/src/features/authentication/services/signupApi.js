@@ -1,8 +1,8 @@
 const API_BASE_URL = "http://localhost:8000/api/v1/auth";
 
-export const loginUser = async (email, password, role = "employee") => {
+export const signupUser = async (email, password, role = "employee") => {
   try {
-    const response = await fetch(`${API_BASE_URL}/login`, {
+    const response = await fetch(`${API_BASE_URL}/signup`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -10,6 +10,7 @@ export const loginUser = async (email, password, role = "employee") => {
       body: JSON.stringify({
         email,
         password,
+        confirm_password: password,
         role,
       }),
     });
@@ -19,7 +20,7 @@ export const loginUser = async (email, password, role = "employee") => {
     if (!response.ok) {
       return {
         success: false,
-        error: data.detail || "Login failed",
+        error: data.detail || "Signup failed",
       };
     }
 
@@ -28,7 +29,7 @@ export const loginUser = async (email, password, role = "employee") => {
       data: data,
     };
   } catch (error) {
-    console.error("Login error:", error);
+    console.error("Signup error:", error);
     return {
       success: false,
       error: "Network error. Please try again.",
