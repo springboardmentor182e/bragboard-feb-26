@@ -8,7 +8,7 @@ import AdminEmployees from "./pages/AdminEmployees";
 import Signup from "./features/authentication/pages/SignupPage";
 import Login from "./features/authentication/pages/LoginPage"
 
-function Layout({ children }) {
+function EmployeeLayout({ children }) {
   return (
     <div className="flex h-screen bg-gray-100">
       <Sidebar />
@@ -36,28 +36,31 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+
+        {/* Employee Area */}
         <Route
           path="/"
           element={
-            <Layout>
+            <EmployeeLayout>
               <EmployeeDashboard />
-            </Layout>
+            </EmployeeLayout>
           }
         />
+
+        {/* Admin Area — NO EmployeeLayout */}
         <Route
           path="/admin/employees"
-          element={
-            <Layout>
-              <AdminEmployees />
-            </Layout>
-          }
+          element={<AdminEmployees />}
         />
+
        
        {/* ----SignupRoute--- */}
 
        <Route path="/signup" element={<Signup />} />
 
 <Route path="/login" element={<Login />} />
+
+
 
       </Routes>
     </BrowserRouter>
