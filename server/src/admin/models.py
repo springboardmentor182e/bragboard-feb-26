@@ -1,7 +1,8 @@
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text, JSON, Boolean
 from sqlalchemy.sql import func
+from sqlalchemy.orm import relationship
 from src.database.core import Base
-
+from src.entities.user import User 
 class Report(Base):
     __tablename__ = "reports"
     
@@ -11,7 +12,8 @@ class Report(Base):
     content = Column(JSON, nullable=True)  # Store report data as JSON
     created_by = Column(Integer, ForeignKey("users.id"))
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-    
+    status = Column(String, default="pending")  # 'pending', 'resolved', 'dismissed'
+
 class ActivityLog(Base):
     __tablename__ = "activity_logs"
     
@@ -31,3 +33,18 @@ class DashboardStats(Base):
     # CHANGED: Renamed 'metadata' to 'stat_metadata' to avoid reserved word
     stat_metadata = Column(JSON, nullable=True)  # Renamed from 'metadata'
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+
+class UserContribution(Base):
+    __tablename__ = "user_contributions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), unique=True)
+    user_name = Column(String, nullable=False)
+    shoutouts_given = Column(Integer, default=0)
+    shoutouts_received = Column(Integer, default=0)
+    total_interactions = Column(Integer, default=0)
+    last_updated = Column(DateTime(timezone=True), onupdate=func.now())
+
+    # Relationship to get user details if needed
+    user = relationship("User", back_populates="contributions")

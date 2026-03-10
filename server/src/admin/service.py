@@ -7,6 +7,16 @@ from src.entities.user import User
 from src.admin.models import Report, ActivityLog, DashboardStats
 from src.admin import schemas
 from src.auth.service import get_password_hash
+from src.admin.models import UserContribution
+
+# Try to import Shoutout model
+try:
+    from src.entities.shoutout import Shoutout  # type: ignore
+    SHOUTOUT_AVAILABLE = True
+except (ImportError, ModuleNotFoundError):
+    SHOUTOUT_AVAILABLE = False
+    Shoutout = None
+    print("⚠️ Shoutout model not available - posts/reactions will be 0")
 
 class AdminService:
     def __init__(self, db: Session):
@@ -20,27 +30,67 @@ class AdminService:
         return self.db.query(User).filter(User.id == user_id).first()
     
     def get_dashboard_stats(self) -> Dict[str, Any]:
-        """Get dashboard statistics"""
+        """Get REAL dashboard statistics from database"""
         try:
+            # 1️⃣ TOTAL USERS
             total_users = self.db.query(User).count()
+            
+            # 2️⃣ ADMIN COUNT
             admin_count = self.db.query(User).filter(User.is_admin == True).count()
             
-            try:
-                total_reports = self.db.query(Report).count()
-            except:
-                total_reports = 0
-                
+            # 3️⃣ ACTIVE USERS TODAY
+            today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+            active_users_today = self.db.query(ActivityLog).filter(
+                ActivityLog.timestamp >= today_start
+            ).distinct(ActivityLog.user_id).count()
+            
+            # 4️⃣ NEW USERS THIS WEEK
+            week_ago = datetime.now() - timedelta(days=7)
+            new_users_this_week = self.db.query(User).filter(
+                User.created_at >= week_ago
+            ).count()
+            
+            # 5️⃣ TOTAL REPORTS
+            total_reports = self.db.query(Report).count()
+            
+            # 6️⃣ TOTAL POSTS & REACTIONS (if Shoutout model exists)
+            total_posts = 0
+            total_reactions = 0
+            
+            if SHOUTOUT_AVAILABLE and Shoutout is not None:
+                try:
+                    total_posts = self.db.query(Shoutout).count()
+                    
+                    # Sum all likes/reactions
+                    result = self.db.query(func.sum(Shoutout.likes_count)).scalar()
+                    total_reactions = result if result is not None else 0
+                    
+                    print(f"📊 Found {total_posts} posts with {total_reactions} reactions")
+                except Exception as e:
+                    print(f"Error counting posts: {e}")
+            
+            # 7️⃣ REPORTS PENDING
+            # If you have a status column, uncomment this
+            # reports_pending = self.db.query(Report).filter(Report.status == 'pending').count()
+            
             return {
                 "total_users": total_users,
-                "active_users_today": 0,
-                "total_posts": 0,
-                "total_reactions": 0,
+                "active_users_today": active_users_today,
+                "active_users": active_users_today,  # Alias for frontend
+                "total_posts": total_posts,
+                "total_shoutouts": total_posts,  # Alias for frontend
+                "total_reactions": total_reactions,
                 "total_reports": total_reports,
-                "new_users_this_week": 0,
-                "admin_count": admin_count
+                "reports": total_reports,  # Alias for frontend
+                "new_users_this_week": new_users_this_week,
+                "admin_count": admin_count,
+                # "reports_pending": reports_pending
             }
+            
         except Exception as e:
-            print(f"Error in get_dashboard_stats: {e}")
+            print(f"❌ Error in get_dashboard_stats: {e}")
+            import traceback
+            traceback.print_exc()
             return {
                 "total_users": 0,
                 "active_users_today": 0,
@@ -51,78 +101,192 @@ class AdminService:
                 "admin_count": 0
             }
     
-    def get_reports(self, skip: int = 0, limit: int = 100) -> List[Report]:
-        """Get all reports"""
-        return self.db.query(Report).offset(skip).limit(limit).all()
-    
-    # ✨ NEW: Resolve report method
-    def resolve_report(self, report_id: int) -> bool:
-        """Resolve a report"""
+    def get_reports(self, skip: int = 0, limit: int = 100, status: str = None) -> List[Report]:
+        """Get all reports, optionally filtered by status"""
         try:
-            print(f"Attempting to resolve report {report_id}")
+            query = self.db.query(Report)
+            
+            # Filter by status if provided
+            if status:
+                query = query.filter(Report.status == status)
+            else:
+                # Default: show all except resolved? Or all?
+                # You can decide. I'll show all for now
+                pass
+                
+            reports = query.order_by(
+                Report.created_at.desc()
+            ).offset(skip).limit(limit).all()
+            
+            print(f"📋 Found {len(reports)} reports")
+            return reports
+        except Exception as e:
+            print(f"Error fetching reports: {e}")
+            return []
+    
+    def resolve_report(self, report_id: int) -> bool:
+        """Resolve a report - ACTUALLY update the status"""
+
+        try:
+            print(f"🔍 Attempting to resolve report {report_id}")
             
             # Find the report
             report = self.db.query(Report).filter(Report.id == report_id).first()
             
             if not report:
-                print(f"Report {report_id} not found")
+                print(f"❌ Report {report_id} not found")
                 return False
+            
+            # ✅ IMPORTANT: Actually update the status
+            report.status = "resolved"  # This changes the database!
             
             # Log activity
             log = ActivityLog(
-                user_id=1,  # Current user ID (update this with real user)
+                user_id=1,  # TODO: Get from actual logged-in user
                 action="resolve_report",
-                details={"report_id": report_id, "timestamp": str(datetime.now())}
+                details={
+                    "report_id": report_id, 
+                    "timestamp": str(datetime.now()),
+                    "report_title": report.title
+                }
             )
             self.db.add(log)
             
-            # Optional: Update report status (if you have status column)
-            # report.status = "resolved"
-            
             self.db.commit()
-            print(f"✅ Report {report_id} resolved successfully")
+            print(f"✅ Report {report_id} resolved successfully (status updated to 'resolved')")
             return True
-            
+        
         except Exception as e:
             print(f"❌ Error resolving report {report_id}: {e}")
             self.db.rollback()
             return False
     
-    # ✨ NEW: Delete post method
-def delete_post(self, post_id: int) -> bool:
-    """Delete a post"""
-    try:
-        print(f"🔍 Attempting to delete post/report {post_id}")
-        
-        # Find the report/post
-        report = self.db.query(Report).filter(Report.id == post_id).first()
-        
-        if not report:
-            print(f"❌ Report {post_id} not found")
-            return False
-        
-        # Pehle delete karo
-        self.db.delete(report)
-        self.db.flush()  # Temporary commit
-        
-        # Phir log add karo
-        log = ActivityLog(
-            user_id=1,
-            action="delete_post",
-            details={
-                "post_id": post_id, 
-                "timestamp": str(datetime.now()),
-                "deleted_report": str(report.__dict__)  # Log me store karo
+    def delete_post(self, post_id: int) -> bool:
+        """Delete a post/report"""
+        try:
+            print(f"🔍 Attempting to delete post/report {post_id}")
+            
+            # Find the report/post
+            report = self.db.query(Report).filter(Report.id == post_id).first()
+            
+            if not report:
+                print(f"❌ Report {post_id} not found")
+                return False
+            
+            # Store info for logging before deletion
+            report_info = {
+                "id": report.id,
+                "title": report.title,
+                "type": report.type,
+                "created_at": str(report.created_at)
             }
-        )
-        self.db.add(log)
-        
-        # Final commit
-        self.db.commit()
-        print(f"✅ Post {post_id} deleted successfully and logged")
-        return True
-        
-    except Exception as e:
-        print(f"❌ Error deleting post {post_id}: {e}")
-        self.db.rollback()
-        return False
+            
+            # Delete the report
+            self.db.delete(report)
+            self.db.flush()
+            
+            # Log the deletion
+            log = ActivityLog(
+                user_id=1,  # TODO: Get from actual logged-in user
+                action="delete_post",
+                details={
+                    "post_id": post_id,
+                    "deleted_report": report_info,
+                    "timestamp": str(datetime.now())
+                }
+            )
+            self.db.add(log)
+            
+            self.db.commit()
+            print(f"✅ Post {post_id} deleted successfully and logged")
+            return True
+            
+        except Exception as e:
+            print(f"❌ Error deleting post {post_id}: {e}")
+            self.db.rollback()
+            return False
+    
+    def get_top_contributors(self, limit: int = 5) -> List[Dict]:
+        """Get top contributors from database"""
+        try:
+            contributors = self.db.query(
+                UserContribution.user_name,
+                UserContribution.total_interactions
+            ).order_by(
+                UserContribution.total_interactions.desc()
+            ).limit(limit).all()
+            
+            colors = ['#3882F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6']
+            result = []
+            
+            for idx, (name, value) in enumerate(contributors):
+                result.append({
+                    "name": name,
+                    "value": value or 0,
+                    "fill": colors[idx % len(colors)]
+                })
+            
+            return result
+        except Exception as e:
+            print(f"Error getting top contributors: {e}")
+            return []
+    
+    def update_user_contributions(self):
+        """Calculate and update user contributions based on actual data"""
+        try:
+            if not SHOUTOUT_AVAILABLE:
+                print("⚠️ Shoutout model not available, cannot update contributions")
+                return False
+                
+            # Get all users
+            users = self.db.query(User).all()
+            updated_count = 0
+            
+            for user in users:
+                try:
+                    # Calculate shoutouts given
+                    shoutouts_given = self.db.query(Shoutout).filter(
+                        Shoutout.given_by == user.id
+                    ).count()
+                    
+                    # Calculate shoutouts received
+                    shoutouts_received = self.db.query(Shoutout).filter(
+                        Shoutout.given_to == user.id
+                    ).count()
+                    
+                    total = shoutouts_given + shoutouts_received
+                    
+                    # Update or create contribution record
+                    contribution = self.db.query(UserContribution).filter(
+                        UserContribution.user_id == user.id
+                    ).first()
+                    
+                    if contribution:
+                        contribution.shoutouts_given = shoutouts_given
+                        contribution.shoutouts_received = shoutouts_received
+                        contribution.total_interactions = total
+                        contribution.user_name = user.full_name or user.username or f"User {user.id}"
+                    else:
+                        contribution = UserContribution(
+                            user_id=user.id,
+                            user_name=user.full_name or user.username or f"User {user.id}",
+                            shoutouts_given=shoutouts_given,
+                            shoutouts_received=shoutouts_received,
+                            total_interactions=total
+                        )
+                        self.db.add(contribution)
+                    
+                    updated_count += 1
+                    
+                except Exception as e:
+                    print(f"Error updating user {user.id}: {e}")
+                    continue
+            
+            self.db.commit()
+            print(f"✅ Updated contributions for {updated_count} users")
+            return True
+            
+        except Exception as e:
+            print(f"❌ Error updating contributions: {e}")
+            self.db.rollback()
+            return False

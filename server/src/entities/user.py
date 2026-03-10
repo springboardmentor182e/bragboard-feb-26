@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, Boolean, DateTime
 from sqlalchemy.sql import func
+from sqlalchemy.orm import relationship
 from src.database.core import Base
 
 class User(Base):
@@ -20,3 +21,4 @@ class User(Base):
     avatar_url = Column(String, nullable=True)
     department = Column(String, nullable=True)
     position = Column(String, nullable=True)
+    contributions = relationship("UserContribution", back_populates="user", uselist=False)

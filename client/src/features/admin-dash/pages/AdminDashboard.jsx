@@ -10,7 +10,10 @@ const AdminDashboard = () => {
     total_shoutouts: 0,
     total_reactions: 0,
     active_users: 0,
-    reports: 0
+    reports: 0,
+    // Add trend data if needed
+    shoutout_trend: '+0%',
+    reaction_trend: '+0%'
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -24,13 +27,19 @@ const AdminDashboard = () => {
       setLoading(true);
       // Fetch dashboard stats from backend
       const response = await adminAPI.getDashboardStats();
+      const data = response.data;
       
-      // Map backend response to your UI needs
+      // Calculate trends (you can implement this logic based on your backend)
+      // For now, we'll set them dynamically or fetch from backend if available
       setStats({
-        total_shoutouts: response.data.total_posts || 1247,
-        total_reactions: response.data.total_reactions || 8592,
-        active_users: response.data.active_users_today || 342,
-        reports: response.data.total_reports || 4
+        total_shoutouts: data.total_posts || data.total_shoutouts || 0,
+        total_reactions: data.total_reactions || 0,
+        active_users: data.active_users_today || data.active_users || 0,
+        reports: data.total_reports || 0,
+        // You can calculate trends based on previous period data
+        // or fetch from backend if available
+        shoutout_trend: data.shoutout_trend || '+0%',
+        reaction_trend: data.reaction_trend || '+0%'
       });
       
       setError(null);
@@ -67,10 +76,24 @@ const AdminDashboard = () => {
       
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
-        <StatCard title="Total Shout-Outs" value={stats.total_shoutouts.toLocaleString()} trend="+18%" />
-        <StatCard title="Total Reactions" value={stats.total_reactions.toLocaleString()} trend="+12%" />
-        <StatCard title="Active Users" value={stats.active_users} />
-        <StatCard title="Reports" value={stats.reports} />
+        <StatCard 
+          title="Total Shout-Outs" 
+          value={stats.total_shoutouts.toLocaleString()} 
+          trend={stats.shoutout_trend}
+        />
+        <StatCard 
+          title="Total Reactions" 
+          value={stats.total_reactions.toLocaleString()} 
+          trend={stats.reaction_trend}
+        />
+        <StatCard 
+          title="Active Users" 
+          value={stats.active_users.toLocaleString()} 
+        />
+        <StatCard 
+          title="Reports" 
+          value={stats.reports.toLocaleString()} 
+        />
       </div>
       
       {/* Charts Row */}
