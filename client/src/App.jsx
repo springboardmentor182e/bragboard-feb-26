@@ -6,7 +6,7 @@ import AchievementTable from "./features/employeeDashboard/components/Achievemen
 import Leaderboard from "./features/employeeDashboard/components/Leaderboard";
 import AdminEmployees from "./pages/AdminEmployees";
 
-function Layout({ children }) {
+function EmployeeLayout({ children }) {
   return (
     <div className="flex h-screen bg-gray-100">
       <Sidebar />
@@ -34,22 +34,23 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+
+        {/* Employee Area */}
         <Route
           path="/"
           element={
-            <Layout>
+            <EmployeeLayout>
               <EmployeeDashboard />
-            </Layout>
+            </EmployeeLayout>
           }
         />
+
+        {/* Admin Area — NO EmployeeLayout */}
         <Route
           path="/admin/employees"
-          element={
-            <Layout>
-              <AdminEmployees />
-            </Layout>
-          }
+          element={<AdminEmployees />}
         />
+
       </Routes>
     </BrowserRouter>
   );
