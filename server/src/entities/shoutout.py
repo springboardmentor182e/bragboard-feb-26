@@ -9,5 +9,4 @@ class Shoutout(Base):
     sender = Column(String)
     message = Column(String)
     department = Column(String)
-    date = Column(String)
-    status = Column(String, default="pending")
+    date = Column(String) 

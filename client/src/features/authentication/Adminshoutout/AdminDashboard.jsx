@@ -1,16 +1,10 @@
 import React, { useEffect, useState } from "react";
-import {
-  getShoutouts,
-  approveShoutout,
-  rejectShoutout,
-  deleteShoutout,
-} from "../../../api";
+import { getShoutouts, deleteShoutout } from "../../../api";
 
 const AdminDashboard = () => {
   const [shoutouts, setShoutouts] = useState([]);
   const [search, setSearch] = useState("");
   const [department, setDepartment] = useState("");
-  const [status, setStatus] = useState("");
 
   const fetchShoutouts = async () => {
     const res = await getShoutouts();
@@ -18,64 +12,46 @@ const AdminDashboard = () => {
   };
 
   useEffect(() => {
-    fetchShoutouts();
+    fetchShoutouts(); 
   }, []);
-
-  const handleApprove = async (id) => {
-    await approveShoutout(id);
-    fetchShoutouts();
-  };
-
-  const handleReject = async (id) => {
-    await rejectShoutout(id);
-    fetchShoutouts();
-  };
 
   const handleDelete = async (id) => {
     await deleteShoutout(id);
     fetchShoutouts();
   };
 
-  // Filters
+  // Filter Logic
   const filtered = shoutouts.filter((s) => {
     return (
       s.sender.toLowerCase().includes(search.toLowerCase()) &&
-      (department === "" || s.department === department) &&
-      (status === "" || s.status === status)
+      (department === "" || s.department === department)
     );
   });
 
   const total = shoutouts.length;
-  const approved = shoutouts.filter((s) => s.status === "approved").length;
-  const pending = shoutouts.filter((s) => s.status === "pending").length;
-  const rejected = shoutouts.filter((s) => s.status === "rejected").length;
 
   return (
     <div className="p-8 bg-gray-100 min-h-screen">
 
-      <h1 className="text-3xl font-bold mb-6">Admin Shoutout Management</h1>
+      {/* Page Title */}
+      <h1 className="text-3xl font-bold mb-6">
+        Admin Shoutout Management
+      </h1>
 
-      {/* Stats */}
-      <div className="grid grid-cols-4 gap-4 mb-6">
+      {/* Total Stats Bar */}
+      <div className="mb-6">
 
-        <div className="bg-white shadow p-6 rounded text-center">
-          <h2>Total</h2>
-          <p className="text-2xl font-bold">{total}</p>
-        </div>
+        <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-6 rounded-lg shadow flex items-center justify-between">
 
-        <div className="bg-green-100 shadow p-6 rounded text-center">
-          <h2>Approved</h2>
-          <p className="text-2xl font-bold text-green-700">{approved}</p>
-        </div>
+          <div>
+            <h2 className="text-lg font-medium">Total Shoutouts</h2>
+            <p className="text-3xl font-bold">{total}</p>
+          </div>
 
-        <div className="bg-yellow-100 shadow p-6 rounded text-center">
-          <h2>Pending</h2>
-          <p className="text-2xl font-bold text-yellow-700">{pending}</p>
-        </div>
+          <div className="text-5xl opacity-70">
+            📊
+          </div>
 
-        <div className="bg-red-100 shadow p-6 rounded text-center">
-          <h2>Rejected</h2>
-          <p className="text-2xl font-bold text-red-700">{rejected}</p>
         </div>
 
       </div>
@@ -100,38 +76,27 @@ const AdminDashboard = () => {
           <option>HR</option>
         </select>
 
-        <select
-          className="border p-2 rounded"
-          onChange={(e) => setStatus(e.target.value)}
-        >
-          <option value="">All Status</option>
-          <option value="approved">Approved</option>
-          <option value="pending">Pending</option>
-          <option value="rejected">Rejected</option>
-        </select>
-
       </div>
 
       {/* Table */}
-      <div className="bg-white shadow rounded">
+      <div className="bg-white shadow rounded-lg overflow-hidden">
 
         <table className="w-full">
 
           <thead className="bg-blue-600 text-white">
             <tr>
-              <th className="p-3">Sender</th>
-              <th>Message</th>
-              <th>Department</th>
-              <th>Date</th>
-              <th>Status</th>
-              <th>Actions</th>
+              <th className="p-3 text-left">Sender</th>
+              <th className="text-left">Message</th>
+              <th className="text-left">Department</th>
+              <th className="text-left">Date</th>
+              <th className="text-left">Actions</th>
             </tr>
           </thead>
 
           <tbody>
 
             {filtered.map((s) => (
-              <tr key={s.id} className="border-t text-center">
+              <tr key={s.id} className="border-t hover:bg-gray-50">
 
                 <td className="p-3">{s.sender}</td>
                 <td>{s.message}</td>
@@ -139,42 +104,12 @@ const AdminDashboard = () => {
                 <td>{s.date}</td>
 
                 <td>
-                  <span
-                    className={`px-2 py-1 rounded text-white ${
-                      s.status === "approved"
-                        ? "bg-green-500"
-                        : s.status === "pending"
-                        ? "bg-yellow-500"
-                        : "bg-red-500"
-                    }`}
-                  >
-                    {s.status}
-                  </span>
-                </td>
-
-                <td className="space-x-2">
-
-                  <button
-                    onClick={() => handleApprove(s.id)}
-                    className="bg-green-500 text-white px-3 py-1 rounded"
-                  >
-                    Approve
-                  </button>
-
-                  <button
-                    onClick={() => handleReject(s.id)}
-                    className="bg-yellow-500 text-white px-3 py-1 rounded"
-                  >
-                    Reject
-                  </button>
-
                   <button
                     onClick={() => handleDelete(s.id)}
-                    className="bg-red-500 text-white px-3 py-1 rounded"
+                    className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
                   >
                     Delete
                   </button>
-
                 </td>
 
               </tr>
@@ -185,6 +120,7 @@ const AdminDashboard = () => {
         </table>
 
       </div>
+
     </div>
   );
 };
