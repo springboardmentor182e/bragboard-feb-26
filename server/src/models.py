@@ -1,9 +1,8 @@
 from sqlalchemy import Column, Integer, String
-from src.database.core import Base
+from core import Base
 
-class User(Base):
-
-    __tablename__ = "users"
+class Employee(Base):
+    __tablename__ = "employees"
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)

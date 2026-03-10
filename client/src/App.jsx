@@ -1,112 +1,84 @@
-import { useEffect, useState } from "react";
-import StatCard from "./components/StatCard";
-import TopPerformerCard from "./components/TopPerformerCard";
-import RankingTable from "./components/RankingTable";
+import {useEffect,useState} from "react"
+import StatCard from "./components/StatCard"
+import TopPerformer from "./components/TopPerformer"
+import Rankings from "./components/Rankings"
 
-function App() {
-  const [stats, setStats] = useState({
-    top_score: 0,
-    total_badges: 0,
-    growth_percent: 0,
-  });
+export default function App(){
 
-  const [topUsers, setTopUsers] = useState([]);
-  const [allUsers, setAllUsers] = useState([]);
+  const [leaders,setLeaders]=useState([])
+  const [top,setTop]=useState([])
 
-  useEffect(() => {
-    fetch("http://localhost:8000/leaderboard/stats")
-      .then((res) => res.json())
-      .then((data) => {
-        setStats({
-          top_score: data.top_score || 0,
-          total_badges: data.total_badges || 0,
-          growth_percent: data.growth_percent || 0,
-        });
-      })
-      .catch(() => {
-        console.log("Stats API failed");
-      });
+  useEffect(()=>{
 
-    fetch("http://localhost:8000/leaderboard/top")
-      .then((res) => res.json())
-      .then((data) => setTopUsers(data))
-      .catch(() => {
-        console.log("Top users API failed");
-      });
+    fetch("http://127.0.0.1:8000/leaderboard/full")
+      .then(res=>res.json())
+      .then(data=>setLeaders(data))
 
-    fetch("http://localhost:8000/leaderboard/full")
-      .then((res) => res.json())
-      .then((data) => setAllUsers(data))
-      .catch(() => {
-        console.log("Full leaderboard API failed");
-      });
-  }, []);
+    fetch("http://127.0.0.1:8000/leaderboard/top")
+      .then(res=>res.json())
+      .then(data=>setTop(data))
 
-  return (
-    <div className="min-h-screen bg-[#E9EEF6] py-14">
-      <div className="max-w-6xl mx-auto px-6">
+  },[])
 
-        {/* Header */}
-        <div className="mb-12">
-          <h1 className="text-4xl font-bold text-gray-900">
-            Leaderboard
-          </h1>
-          <p className="text-gray-600 mt-2">
-            Top performers based on recognition and engagement
-          </p>
-        </div>
+  const totalBadges=leaders.reduce((a,b)=>a+(b.badges||0),0)
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-14">
+  return(
 
-          <StatCard
-            title="Top Score"
-            value={stats.top_score}
-            subtitle={topUsers[0]?.name || ""}
-            variant="yellow"
-          />
+    <div className="bg-gray-100 min-h-screen p-12">
 
-          <StatCard
-            title="Total Badges"
-            value={stats.total_badges}
-            subtitle="Awarded this month"
-            variant="blue"
-          />
+      <h1 className="text-3xl font-bold">
+        Leaderboard
+      </h1>
 
-          <StatCard
-            title="Growth"
-            value={`+${stats.growth_percent}%`}
-            subtitle="vs last month"
-            variant="green"
-          />
+      <p className="text-gray-500 mb-8">
+        Top performers based on recognition and engagement
+      </p>
 
-        </div>
+      <div className="grid md:grid-cols-3 gap-6 mb-10">
 
-        {/* Top Performers */}
-        <div className="bg-[#F3F4F6] rounded-3xl p-10 mb-14">
-          <h2 className="text-xl font-semibold text-gray-900 mb-8">
-            Top Performers
-          </h2>
+        <StatCard
+          title="Top Score"
+          value={top[0]?.points}
+          subtitle={top[0]?.name}
+          color="yellow"
+        />
 
-          <div className="flex flex-col md:flex-row justify-center gap-8">
-            {topUsers[1] && (
-              <TopPerformerCard user={topUsers[1]} rank={2} />
-            )}
-            {topUsers[0] && (
-              <TopPerformerCard user={topUsers[0]} rank={1} />
-            )}
-            {topUsers[2] && (
-              <TopPerformerCard user={topUsers[2]} rank={3} />
-            )}
-          </div>
-        </div>
+        <StatCard
+          title="Total Badges"
+          value={totalBadges}
+          subtitle="Awarded this month"
+          color="blue"
+        />
 
-        {/* Ranking Table */}
-        <RankingTable data={allUsers.slice(3)} />
+        <StatCard
+          title="Growth"
+          value="+24%"
+          subtitle="vs last month"
+          color="green"
+        />
 
       </div>
-    </div>
-  );
-}
 
-export default App;
+      <div className="bg-white rounded-xl p-8 mb-10">
+
+        <h2 className="text-xl font-semibold mb-6">
+          Top Performers
+        </h2>
+
+        <div className="flex justify-center gap-8">
+
+          {top[1] && <TopPerformer rank={2} data={top[1]} />}
+          {top[0] && <TopPerformer rank={1} data={top[0]} />}
+          {top[2] && <TopPerformer rank={3} data={top[2]} />}
+
+        </div>
+
+      </div>
+
+      <Rankings leaders={leaders}/>
+
+    </div>
+
+  )
+
+}
