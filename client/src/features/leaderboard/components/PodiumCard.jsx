@@ -21,15 +21,15 @@ export default function PodiumCard({ user, place }) {
   };
 
   const departmentStyles = {
-    Design: "bg-blue-500/20 text-blue-900",
-    Engineering: "bg-purple-500/20 text-purple-900",
-    Marketing: "bg-green-500/20 text-green-900",
+    Design: "bg-blue-200 text-blue-900",
+    Engineering: "bg-purple-200 text-purple-900",
+    Marketing: "bg-green-200 text-green-900",
   };
 
   const current = rankConfig[place];
   const deptStyle =
     departmentStyles[user.department] ||
-    "bg-white/30 text-gray-800";
+    "bg-white/40 text-gray-800";
 
   return (
     <div
@@ -61,25 +61,27 @@ export default function PodiumCard({ user, place }) {
       <img
         src={`http://127.0.0.1:8000${user.photo_url}`}
         alt={user.name}
-        className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover mb-4 shadow-lg border-4 border-white transition duration-300"
+        className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover mb-4 shadow-lg border-4 border-white"
       />
 
+      {/* Name */}
       <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
         {user.name}
       </h2>
 
+      {/* Department */}
       <span
         className={`
           mt-3 px-4 py-1
           text-xs sm:text-sm
           rounded-full font-medium
-          backdrop-blur-md
           ${deptStyle}
         `}
       >
         {user.department}
       </span>
 
+      {/* Points */}
       <p className="mt-5 text-3xl font-bold text-gray-900">
         {user.points}
       </p>

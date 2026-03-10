@@ -12,7 +12,7 @@ export default function Leaderboard() {
 
   const usersPerPage = 5;
 
-  // Sort users by points
+  // Sort users
   const sorted = useMemo(() => {
     return [...leaderboard].sort((a, b) => b.points - a.points);
   }, [leaderboard]);
@@ -32,7 +32,7 @@ export default function Leaderboard() {
     });
   }, [sorted, search, departmentFilter]);
 
-  // Reset page when search/filter changes
+  // Reset page when filter changes
   useEffect(() => {
     setCurrentPage(1);
   }, [search, departmentFilter]);
@@ -45,7 +45,7 @@ export default function Leaderboard() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen bg-slate-900 text-white text-lg">
+      <div className="flex justify-center items-center h-screen bg-amber-50 dark:bg-slate-900 text-gray-900 dark:text-white text-lg">
         Loading Leaderboard...
       </div>
     );
@@ -53,7 +53,7 @@ export default function Leaderboard() {
 
   if (error) {
     return (
-      <div className="flex justify-center items-center h-screen bg-slate-900 text-red-500 text-lg">
+      <div className="flex justify-center items-center h-screen bg-amber-50 dark:bg-slate-900 text-red-500 text-lg">
         {error}
       </div>
     );
@@ -63,42 +63,68 @@ export default function Leaderboard() {
   const second = sorted[1];
   const third = sorted[2];
 
-  const departments = [
-    "All",
-    ...new Set(sorted.map((u) => u.department)),
-  ];
+  const departments = ["All", ...new Set(sorted.map((u) => u.department))];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white px-4 md:px-8 py-8">
+    <div className="min-h-screen bg-amber-50 dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 text-gray-900 dark:text-white px-4 md:px-8 py-8 transition-all duration-300">
 
       {/* Title */}
       <h1 className="text-3xl md:text-4xl font-bold text-center mb-10 tracking-wide">
         🏆 Leaderboard
       </h1>
 
-      {/* Search & Filter */}
+      {/* Search + Filter */}
       <div className="max-w-5xl mx-auto flex flex-col md:flex-row gap-4 mb-10">
+
+        {/* Search */}
         <input
           type="text"
           placeholder="Search employees..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="flex-1 p-3 rounded-xl bg-slate-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition"
+          className="
+          flex-1 p-3 rounded-xl
+          bg-orange-100 text-gray-900
+          placeholder-orange-500
+          border border-orange-300
+          focus:outline-none focus:ring-2 focus:ring-orange-400
+
+          dark:bg-slate-700
+          dark:text-white
+          dark:placeholder-gray-400
+          dark:border-slate-600
+          dark:focus:ring-slate-500
+          transition
+          "
         />
 
-        <select
-          value={departmentFilter}
-          onChange={(e) => setDepartmentFilter(e.target.value)}
-          className="p-3 rounded-xl bg-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-yellow-400 transition"
-        >
-          {departments.map((dept) => (
-            <option key={dept}>{dept}</option>
-          ))}
-        </select>
+      <select
+  value={departmentFilter}
+  onChange={(e) => setDepartmentFilter(e.target.value)}
+  className="
+  p-3 rounded-xl
+  bg-orange-100
+  text-orange-600
+  border border-orange-300
+  focus:outline-none focus:ring-2 focus:ring-orange-400
+
+  dark:bg-slate-700
+  dark:text-gray-300
+  dark:border-slate-600
+  dark:focus:ring-slate-500
+
+  transition
+  "
+>
+  {departments.map((dept) => (
+    <option key={dept}>{dept}</option>
+  ))}
+</select>
+
       </div>
 
-      {/* Podium Section */}
-      <div className="flex justify-center items-end gap-3 md:gap-5 mb-14 flex-wrap">
+      {/* Podium */}
+      <div className="flex justify-center items-end gap-4 md:gap-6 mb-14 flex-wrap">
 
         {second && (
           <div className="transition duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-gray-400/40 rounded-3xl">
@@ -120,12 +146,22 @@ export default function Leaderboard() {
 
       </div>
 
-      {/* Table Section */}
-      <div className="max-w-5xl mx-auto bg-white text-black rounded-3xl shadow-2xl p-4 md:p-6 transition-all duration-300">
+      {/* Table */}
+      <div
+        className="
+        max-w-5xl mx-auto
+        bg-orange-50 border border-orange-200
+        dark:bg-slate-800 dark:border-slate-700
+        text-gray-900 dark:text-white
+        rounded-3xl shadow-xl
+        p-4 md:p-6
+        transition-all duration-300
+        "
+      >
         {currentUsers.length > 0 ? (
           <LeaderboardTable users={currentUsers} />
         ) : (
-          <p className="text-center py-10 text-gray-500">
+          <p className="text-center py-10 text-gray-500 dark:text-gray-400">
             No employees found.
           </p>
         )}
@@ -134,21 +170,24 @@ export default function Leaderboard() {
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex justify-center mt-8 gap-2 flex-wrap">
+
           {Array.from({ length: totalPages }, (_, i) => (
             <button
               key={i}
               onClick={() => setCurrentPage(i + 1)}
               className={`px-4 py-2 rounded-xl text-sm font-semibold transition ${
                 currentPage === i + 1
-                  ? "bg-yellow-500 text-black shadow-lg"
-                  : "bg-slate-700 hover:bg-slate-600"
+                  ? "bg-orange-400 text-black shadow-lg"
+                  : "bg-orange-100 text-gray-800 hover:bg-orange-200 dark:bg-slate-700 dark:text-gray-300 dark:hover:bg-slate-600"
               }`}
             >
               {i + 1}
             </button>
           ))}
+
         </div>
       )}
+
     </div>
   );
 }
