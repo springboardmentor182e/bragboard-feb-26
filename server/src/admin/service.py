@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import func
+from sqlalchemy import func,text
 from datetime import datetime, timedelta
 from typing import List, Optional, Dict, Any
 
@@ -122,40 +122,43 @@ class AdminService:
             return reports
         except Exception as e:
             print(f"Error fetching reports: {e}")
-            return []
-    
-    def resolve_report(self, report_id: int) -> bool:
-        """Resolve a report - ACTUALLY update the status"""
+        return []
 
+    def resolve_report(self, report_id: int) -> bool:
+        """Resolve a report - database locked error fix"""
         try:
             print(f"🔍 Attempting to resolve report {report_id}")
             
-            # Find the report
+            # SQLite ke liye special handling
+            if 'sqlite' in str(self.db.bind.url):
+                self.db.execute(text("PRAGMA journal_mode=WAL"))
+                self.db.execute(text("BEGIN IMMEDIATE"))
+            
+            # Report dhundho
             report = self.db.query(Report).filter(Report.id == report_id).first()
             
             if not report:
                 print(f"❌ Report {report_id} not found")
                 return False
             
-            # ✅ IMPORTANT: Actually update the status
-            report.status = "resolved"  # This changes the database!
+            # Status update karo
+            report.status = "resolved"
             
-            # Log activity
-            log = ActivityLog(
-                user_id=1,  # TODO: Get from actual logged-in user
-                action="resolve_report",
-                details={
-                    "report_id": report_id, 
-                    "timestamp": str(datetime.now()),
-                    "report_title": report.title
-                }
-            )
-            self.db.add(log)
+            # Activity log - safe way
+            try:
+                log = ActivityLog(
+                    user_id=1,
+                    action="resolve_report",
+                    details={"report_id": report_id, "timestamp": str(datetime.now())}
+                )
+                self.db.add(log)
+            except Exception as log_error:
+                print(f"⚠️ Log error (non-critical): {log_error}")
             
             self.db.commit()
-            print(f"✅ Report {report_id} resolved successfully (status updated to 'resolved')")
+            print(f"✅ Report {report_id} resolved successfully")
             return True
-        
+            
         except Exception as e:
             print(f"❌ Error resolving report {report_id}: {e}")
             self.db.rollback()

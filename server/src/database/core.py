@@ -1,41 +1,27 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from dotenv import load_dotenv
 import os
 
-# Use SQLite for development (easier to start)
-SQLALCHEMY_DATABASE_URL = "sqlite:///./bragboard.db"
-# For PostgreSQL later:
-# SQLALCHEMY_DATABASE_URL = "postgresql://user:password@localhost/bragboard"
+# .env file load karo
+load_dotenv()
 
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, 
-    connect_args={"check_same_thread": False}  # Only for SQLite
-)
+# Pehle .env se URL lene ki koshish karo, nahi to default use karo
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./bragboard.db")
+
+# SQLite ke liye special argument
+connect_args = {}
+if DATABASE_URL.startswith("sqlite"):
+    connect_args = {"check_same_thread": False}
+
+engine = create_engine(DATABASE_URL, connect_args=connect_args)
+
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
 
 # Dependency to get DB session
-from sqlalchemy.orm import sessionmaker, declarative_base
-from dotenv import load_dotenv
-import os
-
-load_dotenv()
-
-DATABASE_URL = os.getenv("DATABASE_URL")
-
-engine = create_engine(DATABASE_URL)
-
-SessionLocal = sessionmaker(
-    autocommit=False,
-    autoflush=False,
-    bind=engine
-)
-
-Base = declarative_base()
-
-
 def get_db():
     db = SessionLocal()
     try:
