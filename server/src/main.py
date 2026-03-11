@@ -2,10 +2,6 @@ from fastapi import FastAPI
 
 app = FastAPI()
 
-@app.post("/login")
-def login():
-    return {"access_token":"sampletoken"}
-
-@app.post("/register")
-def register():
-    return {"message":"User created"}
+@app.get("/")
+def home():
+    return {"message": "FastAPI server running"}
