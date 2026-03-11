@@ -1,4 +1,7 @@
 from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, declarative_base
+
+DATABASE_URL = "postgresql://postgres:jeevan@localhost:5432/bragboard_db"
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from dotenv import load_dotenv
@@ -7,6 +10,8 @@ import os
 # .env file load karo
 load_dotenv()
 
+DATABASE_URL = os.getenv("DATABASE_URL")
+engine = create_engine(DATABASE_URL)
 # Pehle .env se URL lene ki koshish karo, nahi to default use karo
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./bragboard.db")
 
