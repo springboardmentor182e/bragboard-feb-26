@@ -9,6 +9,12 @@ from src.entities import user
 
 app = FastAPI()
 
+# CORS (allow frontend to connect)
+from src.admin.controller import router as admin_router
+
+app = FastAPI(title="BragBoard API")
+
+# Configure CORS
 # Create tables
 Base.metadata.create_all(bind=engine)
 app.add_middleware(
@@ -25,3 +31,19 @@ app.include_router(router)
 def root():
     return {"message": "BragBoard API running 🚀"}
 
+# Include routers
+app.include_router(admin_router)
+
+@app.get("/")
+def root():
+    return {
+        "message": "BragBoard API is running",
+        "endpoints": {
+            "docs": "/docs",
+            "admin": "/api/admin"
+        }
+    }
+
+@app.get("/health")
+def health():
+    return {"status": "healthy"}
