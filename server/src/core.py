@@ -4,7 +4,7 @@ conn = psycopg2.connect(
     host="localhost",
     database="bragboard_db",
     user="postgres",
-    password="yourpassword",
+    password="reshma894",
     port="5432"
 )
 
