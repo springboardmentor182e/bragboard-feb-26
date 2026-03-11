@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://localhost:8000/api/v1/auth";
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:8000/api/v1/auth";
 
 export const forgotPassword = async (email) => {
   try {

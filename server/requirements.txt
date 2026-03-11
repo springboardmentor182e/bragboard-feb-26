@@ -7,4 +7,5 @@ bcrypt
 python-jose
 python-dotenv
 pyjwt
+requests
 
