@@ -1,0 +1,19 @@
+{
+    "python.analysis.autoImportCompletions": true,
+    "python.analysis.typeCheckingMode": "basic",
+    "python.analysis.diagnosticMode": "workspace",
+    "python.analysis.importAutoCompletion": true,
+    "python.analysis.extraPaths": [
+        "C:/Python314/Lib/site-packages",
+        "C:/Python314"
+    ],
+    "python.defaultInterpreterPath": "C:/Python314/python.exe",
+    "files.associations": {
+        "*.json": "jsonc"
+    },
+    "python.analysis.diagnostics": {
+        "reportMissingTypeStubs": false
+    },
+    "python.analysis.indexer": true,
+    "python.analysis.useLibraryCodeForTypes": true
+}
