@@ -1,9 +1,13 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useLeaderboard } from "../features/leaderboard/hooks/useLeaderboard";
+import { useLeaderboardFilter } from "../features/leaderboard/hooks/useLeaderboardFilter";
 import PodiumCard from "../features/leaderboard/components/PodiumCard";
 import LeaderboardTable from "../features/leaderboard/components/LeaderboardTable";
+import ErrorMessage from "../components/ErrorMessage";
+import Loader from "../components/Loader";
 
 export default function Leaderboard() {
+
   const { leaderboard = [], loading, error } = useLeaderboard();
 
   const [search, setSearch] = useState("");
@@ -12,58 +16,29 @@ export default function Leaderboard() {
 
   const usersPerPage = 5;
 
-  // Sort users
-  const sorted = useMemo(() => {
-    return [...leaderboard].sort((a, b) => b.points - a.points);
-  }, [leaderboard]);
+  // Use custom hook for sorting, filtering, pagination
+  const { sorted, currentUsers, totalPages } = useLeaderboardFilter(
+    leaderboard,
+    search,
+    departmentFilter,
+    currentPage,
+    usersPerPage
+  );
 
-  // Filter users
-  const filteredUsers = useMemo(() => {
-    return sorted.filter((user) => {
-      const matchesSearch = user.name
-        .toLowerCase()
-        .includes(search.toLowerCase());
-
-      const matchesDepartment =
-        departmentFilter === "All" ||
-        user.department === departmentFilter;
-
-      return matchesSearch && matchesDepartment;
-    });
-  }, [sorted, search, departmentFilter]);
-
-  // Reset page when filter changes
+  // Reset page when search/filter changes
   useEffect(() => {
     setCurrentPage(1);
   }, [search, departmentFilter]);
 
-  // Pagination
-  const indexOfLast = currentPage * usersPerPage;
-  const indexOfFirst = indexOfLast - usersPerPage;
-  const currentUsers = filteredUsers.slice(indexOfFirst, indexOfLast);
-  const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+  /* ---------------- LOADING ---------------- */
+  if (loading) return <Loader />;
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen bg-amber-50 dark:bg-slate-900 text-gray-900 dark:text-white text-lg">
-        Loading Leaderboard...
-      </div>
-    );
-  }
+  /* ---------------- ERROR ---------------- */
+  if (error) return <ErrorMessage message={error} />;
 
-  if (error) {
-    return (
-      <div className="flex justify-center items-center h-screen bg-amber-50 dark:bg-slate-900 text-red-500 text-lg">
-        {error}
-      </div>
-    );
-  }
+  const [first, second, third] = sorted;
 
-  const first = sorted[0];
-  const second = sorted[1];
-  const third = sorted[2];
-
-  const departments = ["All", ...new Set(sorted.map((u) => u.department))];
+  const departments = ["All", ...new Set(leaderboard.map((u) => u.department))];
 
   return (
     <div className="min-h-screen bg-amber-50 dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 text-gray-900 dark:text-white px-4 md:px-8 py-8 transition-all duration-300">
@@ -88,7 +63,6 @@ export default function Leaderboard() {
           placeholder-orange-500
           border border-orange-300
           focus:outline-none focus:ring-2 focus:ring-orange-400
-
           dark:bg-slate-700
           dark:text-white
           dark:placeholder-gray-400
@@ -98,28 +72,26 @@ export default function Leaderboard() {
           "
         />
 
-      <select
-  value={departmentFilter}
-  onChange={(e) => setDepartmentFilter(e.target.value)}
-  className="
-  p-3 rounded-xl
-  bg-orange-100
-  text-orange-600
-  border border-orange-300
-  focus:outline-none focus:ring-2 focus:ring-orange-400
-
-  dark:bg-slate-700
-  dark:text-gray-300
-  dark:border-slate-600
-  dark:focus:ring-slate-500
-
-  transition
-  "
->
-  {departments.map((dept) => (
-    <option key={dept}>{dept}</option>
-  ))}
-</select>
+        {/* Department Filter */}
+        <select
+          value={departmentFilter}
+          onChange={(e) => setDepartmentFilter(e.target.value)}
+          className="
+          p-3 rounded-xl
+          bg-orange-100 text-orange-600
+          border border-orange-300
+          focus:outline-none focus:ring-2 focus:ring-orange-400
+          dark:bg-slate-700
+          dark:text-gray-300
+          dark:border-slate-600
+          dark:focus:ring-slate-500
+          transition
+          "
+        >
+          {departments.map((dept) => (
+            <option key={dept}>{dept}</option>
+          ))}
+        </select>
 
       </div>
 
@@ -146,7 +118,7 @@ export default function Leaderboard() {
 
       </div>
 
-      {/* Table */}
+      {/* Leaderboard Table */}
       <div
         className="
         max-w-5xl mx-auto
@@ -170,7 +142,6 @@ export default function Leaderboard() {
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex justify-center mt-8 gap-2 flex-wrap">
-
           {Array.from({ length: totalPages }, (_, i) => (
             <button
               key={i}
@@ -184,7 +155,6 @@ export default function Leaderboard() {
               {i + 1}
             </button>
           ))}
-
         </div>
       )}
 

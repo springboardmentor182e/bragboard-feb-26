@@ -1,34 +1,40 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { getLeaderboard } from "../services/leaderboardService";
 
 export function useLeaderboard() {
+
   const [leaderboard, setLeaderboard] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Prevent double fetch in React StrictMode
+  const fetchedRef = useRef(false);
+
   useEffect(() => {
+
+    if (fetchedRef.current) return;
+    fetchedRef.current = true;
+
     const fetchLeaderboard = async () => {
       try {
-        const response = await fetch(
-          "http://127.0.0.1:8000/api/v1/leaderboard/"
-        );
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch leaderboard");
-        }
+        const users = await getLeaderboard();
 
-        const data = await response.json();
-
-        // SAFE FIX
-        setLeaderboard(Array.isArray(data) ? data : data.data || []);
+        setLeaderboard(users);
 
       } catch (err) {
-        setError(err.message);
+
+        setError(err.message || "Unable to load leaderboard");
+
       } finally {
+
         setLoading(false);
+
       }
     };
 
     fetchLeaderboard();
+
   }, []);
 
   return { leaderboard, loading, error };
