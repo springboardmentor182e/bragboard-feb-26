@@ -79,6 +79,23 @@ function App() {
             </Routes>
           </EmployeeLayout>
         } />
+
+        {/* Employee Area */}
+        <Route
+          path="/"
+          element={
+            <EmployeeLayout>
+              <EmployeeDashboard />
+            </EmployeeLayout>
+          }
+        />
+
+        {/* Admin Area — NO EmployeeLayout */}
+        <Route
+          path="/admin/employees"
+          element={<AdminEmployees />}
+        />
+
       </Routes>
     </BrowserRouter>
   );

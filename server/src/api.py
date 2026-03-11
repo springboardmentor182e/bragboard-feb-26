@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 from src.users.controller import router as users_router
+from src.auth.controller import router as auth_router
 
 router = APIRouter()
 
@@ -16,3 +17,4 @@ api_router.include_router(admin_controller.router)
 # Include other routers (auth, todos, users, etc.)
 # api_router.include_router(auth_controller.router)
 # api_router.include_router(todos_controller.router)
+router.include_router(auth_router, prefix="/auth", tags=["Auth"])

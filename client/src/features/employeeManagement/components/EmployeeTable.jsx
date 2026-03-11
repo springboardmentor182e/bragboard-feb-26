@@ -1,62 +1,52 @@
 import { motion } from "framer-motion";
 
-function EmployeeTable({ employees, setEmployees }) {
-
-  const toggleStatus = (id) => {
-    setEmployees((prev) =>
-      prev.map((emp) =>
-        emp.id === id
-          ? {
-              ...emp,
-              status: emp.status === "Active" ? "Suspended" : "Active",
-            }
-          : emp
-      )
-    );
-  };
-
-  const changeRole = (id, newRole) => {
-    setEmployees((prev) =>
-      prev.map((emp) =>
-        emp.id === id ? { ...emp, role: newRole } : emp
-      )
-    );
-  };
-
+function EmployeeTable({
+  employees,
+  onToggleStatus,
+  onRoleChange,
+  onDeleteEmployee,
+}) {
   return (
-    <div className="bg-white/90 backdrop-blur-md rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
+    <div className="bg-white rounded-[28px] shadow-sm border border-slate-200 overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full text-left">
-          <thead className="bg-slate-50 text-slate-500 text-sm uppercase tracking-wide">
+
+          {/* HEADER */}
+          <thead className="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
             <tr>
-              <th className="px-6 py-4">Name</th>
-              <th className="px-6 py-4">Department</th>
-              <th className="px-6 py-4">Role</th>
-              <th className="px-6 py-4">Status</th>
-              <th className="px-6 py-4 text-right">Actions</th>
+              <th className="px-10 py-6">Name</th>
+              <th className="px-8 py-6">Department</th>
+              <th className="px-8 py-6">Role</th>
+              <th className="px-8 py-6">Status</th>
+              <th className="px-10 py-6 text-right">Actions</th>
             </tr>
           </thead>
 
+          {/* BODY */}
           <tbody className="divide-y divide-slate-100">
             {employees.map((employee, index) => (
               <motion.tr
                 key={employee.id}
-                initial={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
-                className="hover:bg-slate-50 transition-all duration-200"
+                transition={{ delay: index * 0.04 }}
+                whileHover={{ backgroundColor: "rgba(99,102,241,0.04)" }}
+                className="transition-all duration-200"
               >
-                {/* NAME WITH AVATAR */}
-                <td className="px-6 py-5">
+
+                {/* NAME */}
+                <td className="px-10 py-7">
                   <div className="flex items-center gap-4">
-                    <div className="w-11 h-11 flex items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 text-white font-semibold shadow-md">
+                    <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white font-semibold shadow-md">
                       {employee.name.charAt(0)}
                     </div>
+
                     <div>
-                      <p className="font-semibold text-slate-800">
+                      <p className="font-semibold text-slate-800 text-sm">
                         {employee.name}
                       </p>
-                      <p className="text-sm text-slate-500">
+
+                      <p className="text-xs text-slate-500 mt-1">
                         {employee.email}
                       </p>
                     </div>
@@ -64,29 +54,29 @@ function EmployeeTable({ employees, setEmployees }) {
                 </td>
 
                 {/* DEPARTMENT */}
-                <td className="px-6 py-5 text-slate-600 font-medium">
+                <td className="px-8 py-7 text-slate-600 font-medium text-sm">
                   {employee.department}
                 </td>
 
-                {/* ROLE DROPDOWN */}
-                <td className="px-6 py-5">
+                {/* ROLE */}
+                <td className="px-8 py-7">
                   <select
                     value={employee.role}
                     onChange={(e) =>
-                      changeRole(employee.id, e.target.value)
+                      onRoleChange(employee.id, e.target.value)
                     }
                     className="px-4 py-2 rounded-xl border border-slate-200 bg-white shadow-sm text-sm font-medium focus:ring-2 focus:ring-indigo-500 outline-none transition"
                   >
-                    <option>Admin</option>
-                    <option>Manager</option>
-                    <option>Employee</option>
+                    <option value="Admin">Admin</option>
+                    <option value="Manager">Manager</option>
+                    <option value="Employee">Employee</option>
                   </select>
                 </td>
 
-                {/* STATUS BADGE */}
-                <td className="px-6 py-5">
+                {/* STATUS */}
+                <td className="px-8 py-7">
                   <span
-                    className={`px-4 py-1 text-sm font-medium rounded-full ${
+                    className={`px-4 py-1.5 text-xs font-semibold rounded-full ${
                       employee.status === "Active"
                         ? "bg-emerald-100 text-emerald-700"
                         : "bg-rose-100 text-rose-700"
@@ -96,24 +86,39 @@ function EmployeeTable({ employees, setEmployees }) {
                   </span>
                 </td>
 
-                {/* ACTION BUTTON */}
-                <td className="px-6 py-5 text-right">
-                  <button
-                    onClick={() => toggleStatus(employee.id)}
-                    className={`px-4 py-2 text-sm font-medium rounded-xl shadow-md transition-all duration-300 ${
-                      employee.status === "Active"
-                        ? "bg-rose-500 text-white hover:bg-rose-600 hover:scale-105"
-                        : "bg-emerald-500 text-white hover:bg-emerald-600 hover:scale-105"
-                    }`}
-                  >
-                    {employee.status === "Active"
-                      ? "Suspend"
-                      : "Activate"}
-                  </button>
+                {/* ACTIONS */}
+                <td className="px-10 py-7">
+                  <div className="flex justify-end gap-3">
+
+                    {/* Suspend / Activate */}
+                    <button
+                      onClick={() => onToggleStatus(employee.id)}
+                      className={`px-5 py-2.5 text-xs font-semibold rounded-xl shadow-sm transition-all duration-200 active:scale-95 ${
+                        employee.status === "Active"
+                          ? "bg-rose-500 text-white hover:bg-rose-600 hover:shadow-md"
+                          : "bg-emerald-500 text-white hover:bg-emerald-600 hover:shadow-md"
+                      }`}
+                    >
+                      {employee.status === "Active"
+                        ? "Suspend"
+                        : "Activate"}
+                    </button>
+
+                    {/* Delete */}
+                    <button
+                      onClick={() => onDeleteEmployee(employee.id)}
+                      className="px-5 py-2.5 text-xs font-semibold rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-100 transition-all"
+                    >
+                      Delete
+                    </button>
+
+                  </div>
                 </td>
+
               </motion.tr>
             ))}
           </tbody>
+
         </table>
       </div>
     </div>
