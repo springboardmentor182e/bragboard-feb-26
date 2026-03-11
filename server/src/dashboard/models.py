@@ -79,17 +79,30 @@ class Reactions(BaseModel):
     comment: int = 0
 
 
+class Comment(BaseModel):
+    id: int
+    author: str
+    avatar: str
+    text: str
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
 class ShoutoutBase(BaseModel):
     message: str
 
 
 class Shoutout(ShoutoutBase):
     id: int
+    sender_id: int
     sender: Sender
     recipient: Recipient
     badge: BadgeInfo
     time_ago: str
     reactions: Reactions
+    comments: list[Comment] = []
 
     class Config:
         from_attributes = True
@@ -99,6 +112,10 @@ class ShoutoutCreate(BaseModel):
     recipient_id: int
     badge_id: int
     message: str
+
+
+class CommentCreate(BaseModel):
+    text: str
 
 
 # Notification Models
@@ -114,6 +131,7 @@ class Notification(BaseModel):
 # Activity Models
 class Activity(BaseModel):
     id: int
+    user_id: int
     text: str
     time_ago: str
 

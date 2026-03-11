@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { X } from 'lucide-react';
-import { teamMembers, badgesList } from '../../../data/mockData';
+import { useAnalytics } from '../../../context/AnalyticsContext';
 import { useShoutouts } from '../../../context/ShoutoutContext';
 
-const BADGE_OPTIONS = badgesList.slice(0, 6);
-
 export default function CreateShoutoutModal({ isOpen, onClose }) {
+  const { users: teamMembers, badges: badgesList } = useAnalytics();
   const [selectedEmployee, setSelectedEmployee] = useState('');
   const [selectedBadge, setSelectedBadge] = useState(null);
   const [message, setMessage] = useState('');
@@ -13,17 +12,18 @@ export default function CreateShoutoutModal({ isOpen, onClose }) {
 
   if (!isOpen) return null;
 
+  const BADGE_OPTIONS = badgesList?.slice(0, 6) || [];
   const isFormValid = selectedEmployee && selectedBadge && message.trim();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!isFormValid) return;
 
-    const employee = teamMembers.find(m => m.id === selectedEmployee);
+    const employee = teamMembers?.find(m => m.id === parseInt(selectedEmployee));
     
     addShoutout({
-      recipientName: employee?.name || 'Unknown',
-      badge: selectedBadge,
+      recipientId: parseInt(selectedEmployee),
+      badgeId: selectedBadge.id,
       message: message,
     });
     

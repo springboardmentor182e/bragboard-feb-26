@@ -1,4 +1,4 @@
-import { leaderboardStats } from '../../../data/mockData';
+import { useAnalytics } from '../../../context/AnalyticsContext';
 
 const VARIANT_STYLES = {
   yellow: 'bg-yellow-50 border border-yellow-200',
@@ -17,9 +17,34 @@ function StatCard({ label, value, sub, variant }) {
 }
 
 export default function LeaderboardStats() {
+  // Get raw data from API
+  const { leaderboard } = useAnalytics();
+  
+  // Calculate stats from data
+  const stats = [
+    {
+      label: "Top Score",
+      value: leaderboard && leaderboard.length > 0 ? leaderboard[0]?.points || "—" : "—",
+      sub: leaderboard && leaderboard.length > 0 ? leaderboard[0]?.name || "—" : "—",
+      variant: "yellow"
+    },
+    {
+      label: "Total Badges",
+      value: leaderboard ? leaderboard.reduce((sum, r) => sum + (r.badges || 0), 0) : "—",
+      sub: "Awarded this month",
+      variant: "gray"
+    },
+    {
+      label: "Growth",
+      value: "+24%",
+      sub: "vs last month",
+      variant: "green"
+    },
+  ];
+
   return (
     <div className="grid grid-cols-3 gap-5">
-      {leaderboardStats.map((stat) => (
+      {stats.map((stat) => (
         <StatCard key={stat.label} {...stat} />
       ))}
     </div>

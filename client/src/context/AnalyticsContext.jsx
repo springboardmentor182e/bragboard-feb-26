@@ -11,6 +11,8 @@ export function AnalyticsProvider({ children }) {
   const [shoutouts, setShoutouts] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [activities, setActivities] = useState([]);
+  const [departments, setDepartments] = useState([]);
+  const [leaderboard, setLeaderboard] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -60,6 +62,42 @@ export function AnalyticsProvider({ children }) {
     }
   };
 
+  const fetchDepartments = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/api/dashboard/analytics/department-engagement`);
+      setDepartments(response.data);
+    } catch (err) {
+      console.error('Error fetching department engagement:', err);
+    }
+  };
+
+  const fetchLeaderboard = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/api/dashboard/leaderboard/rankings`);
+      setLeaderboard(response.data);
+    } catch (err) {
+      console.error('Error fetching leaderboard:', err);
+    }
+  };
+
+  const markNotificationRead = async (notificationId) => {
+    try {
+      await axios.post(`${API_BASE_URL}/api/dashboard/notifications/${notificationId}/read`);
+      await fetchNotifications();
+    } catch (err) {
+      console.error('Error marking notification as read:', err);
+    }
+  };
+
+  const markAllNotificationsRead = async () => {
+    try {
+      await axios.post(`${API_BASE_URL}/api/dashboard/notifications/read-all`);
+      await fetchNotifications();
+    } catch (err) {
+      console.error('Error marking all notifications as read:', err);
+    }
+  };
+
   const fetchAll = async () => {
     setLoading(true);
     setError(null);
@@ -69,7 +107,9 @@ export function AnalyticsProvider({ children }) {
         fetchUsers(),
         fetchShoutouts(),
         fetchNotifications(),
-        fetchActivities()
+        fetchActivities(),
+        fetchDepartments(),
+        fetchLeaderboard()
       ]);
     } catch (err) {
       setError(err.message);
@@ -89,6 +129,8 @@ export function AnalyticsProvider({ children }) {
       shoutouts,
       notifications,
       activities,
+      departments,
+      leaderboard,
       loading,
       error,
       fetchBadges,
@@ -96,6 +138,10 @@ export function AnalyticsProvider({ children }) {
       fetchShoutouts,
       fetchNotifications,
       fetchActivities,
+      fetchDepartments,
+      fetchLeaderboard,
+      markNotificationRead,
+      markAllNotificationsRead,
       fetchAll
     }}>
       {children}

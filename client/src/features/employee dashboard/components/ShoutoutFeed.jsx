@@ -2,7 +2,8 @@ import ShoutoutCard from './ShoutoutCard';
 import { useShoutouts } from '../../../context/ShoutoutContext';
 
 export default function ShoutoutFeed() {
-  const { shoutouts, addReaction, addComment } = useShoutouts();
+  const currentUserId = 6; // placeholder for logged-in user
+  const { shoutouts, addReaction, addComment, deleteShoutout, deleteComment, reactingTo } = useShoutouts();
 
   const handleReaction = (shoutoutId, reactionType) => {
     addReaction(shoutoutId, reactionType);
@@ -10,6 +11,18 @@ export default function ShoutoutFeed() {
 
   const handleComment = (shoutoutId, commentText) => {
     addComment(shoutoutId, commentText);
+  };
+
+  const handleDeleteShoutout = (shoutoutId) => {
+    if (window.confirm('Delete this shoutout?')) {
+      deleteShoutout(shoutoutId, currentUserId);
+    }
+  };
+
+  const handleDeleteComment = (shoutoutId, commentId) => {
+    if (window.confirm('Delete this comment?')) {
+      deleteComment(shoutoutId, commentId);
+    }
   };
 
   return (
@@ -20,6 +33,9 @@ export default function ShoutoutFeed() {
           shoutout={shoutout} 
           onReaction={handleReaction}
           onComment={handleComment}
+          onDeleteShoutout={handleDeleteShoutout}
+          onDeleteComment={handleDeleteComment}
+          reactingTo={reactingTo}
         />
       ))}
     </div>

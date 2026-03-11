@@ -1,7 +1,7 @@
 import {
   PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend,
 } from 'recharts';
-import { departmentEngagement } from '../../../data/mockData';
+import { useAnalytics } from '../../../context/AnalyticsContext';
 
 const CustomTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
@@ -31,6 +31,9 @@ const renderLegend = (props) => {
 };
 
 export default function DepartmentEngagementChart() {
+  const { departments } = useAnalytics();
+  const departmentEngagement = departments || [];
+
   return (
     <div className="bg-white rounded-2xl p-6 shadow-sm">
       <h3 className="text-base font-bold text-gray-900 mb-2">Department Engagement</h3>

@@ -1,8 +1,8 @@
-import { Search, Bell, Plus, Menu, X, Users, Home, Trophy, Award } from 'lucide-react';
+import { Search, Bell, Plus, Menu, X, Users, Home, Trophy, Award, LogOut, Settings } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import CreateShoutoutModal from '../features/employee dashboard/components/CreateShoutoutModal';
-import { teamMembers, badgesList, shoutouts } from '../data/mockData';
+import { useAnalytics } from '../context/AnalyticsContext';
 
 const currentUser = {
   name: 'Alex Thompson',
@@ -18,11 +18,17 @@ const menuItems = [
 ];
 
 export default function Navbar() {
+  const { users: teamMembers, badges: badgesList, shoutouts, notifications, markNotificationRead, markAllNotificationsRead } = useAnalytics();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
   const [shoutoutModalOpen, setShoutoutModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState({ people: [], badges: [], shoutouts: [] });
   const location = useLocation();
+
+  // Count unread notifications
+  const unreadCount = notifications?.filter(n => !n.read).length || 0;
 
   const handleSearch = (query) => {
     setSearchQuery(query);
@@ -149,29 +155,114 @@ export default function Navbar() {
               <span className="hidden sm:inline">Create Shout-Out</span>
             </button>
 
-            <button className="relative p-2 hover:bg-gray-100 rounded-full cursor-pointer">
-              <Bell size={22} className="text-gray-700" strokeWidth={1.8} />
-              <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white" />
-            </button>
+            {/* Notifications Button */}
+            <div className="relative">
+              <button 
+                onClick={() => {
+                  setNotificationsOpen(!notificationsOpen);
+                  setProfileOpen(false);
+                }}
+                className="relative p-2 hover:bg-gray-100 rounded-full cursor-pointer transition-colors"
+              >
+                <Bell size={22} className="text-gray-700" strokeWidth={1.8} />
+                {unreadCount > 0 && (
+                  <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white" />
+                )}
+              </button>
 
-            {/* Profile Info Wrapper */}
-            <div className="flex items-center gap-2.5 cursor-pointer ml-2">
-              <div className="relative shrink-0">
-                <img
-                  src={currentUser.avatar}
-                  alt={currentUser.name}
-                  className="w-10 h-10 rounded-full object-cover border-2 border-primary-light"
-                />
-                <span className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-primary rounded-full flex items-center justify-center text-white text-[8px] font-bold border-2 border-white">
-                  A
-                </span>
+              {/* Notifications Dropdown */}
+              {notificationsOpen && (
+                <div className="absolute top-full right-0 mt-2 w-80 bg-white rounded-xl shadow-lg border border-gray-200 z-[60]">
+                  <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+                    <h3 className="font-bold text-gray-900">Notifications</h3>
+                    {unreadCount > 0 && (
+                      <button
+                        onClick={() => markAllNotificationsRead()}
+                        className="text-xs font-medium text-primary hover:text-primary-dark cursor-pointer transition-colors"
+                      >
+                        Mark all as read
+                      </button>
+                    )}
+                  </div>
+                  <div className="max-h-96 overflow-y-auto">
+                    {notifications && notifications.length > 0 ? (
+                      notifications.map((notif) => (
+                        <div
+                          key={notif.id}
+                          className={`px-4 py-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors ${
+                            !notif.read ? 'bg-blue-50' : ''
+                          }`}
+                          onClick={() => {
+                            if (!notif.read) {
+                              markNotificationRead(notif.id);
+                            }
+                          }}
+                        >
+                          <div className="flex items-start gap-3">
+                            {!notif.read && (
+                              <div className="w-2 h-2 rounded-full bg-primary mt-1.5 shrink-0" />
+                            )}
+                            <p className="text-sm text-gray-700">{notif.text}</p>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="px-4 py-6 text-center text-gray-500 text-sm">
+                        No notifications yet
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Profile Dropdown */}
+            <div className="relative">
+              <div
+                onClick={() => {
+                  setProfileOpen(!profileOpen);
+                  setNotificationsOpen(false);
+                }}
+                className="flex items-center gap-2.5 cursor-pointer ml-2 p-1 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <div className="relative shrink-0">
+                  <img
+                    src={currentUser.avatar}
+                    alt={currentUser.name}
+                    className="w-10 h-10 rounded-full object-cover border-2 border-primary-light"
+                  />
+                  <span className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-primary rounded-full flex items-center justify-center text-white text-[8px] font-bold border-2 border-white">
+                    A
+                  </span>
+                </div>
+                <div className="leading-tight hidden md:block">
+                  <p className="text-sm font-semibold text-gray-900">{currentUser.name}</p>
+                  <p className="text-xs font-medium text-primary">{currentUser.role}</p>
+                </div>
               </div>
-              <div className="leading-tight hidden md:block">
-                <p className="text-sm font-semibold text-gray-900">{currentUser.name}</p>
-                <p className="text-xs font-medium text-primary">{currentUser.role}</p>
-              </div>
-            </div> {/* Closes Profile Info Wrapper */}
-          </div> {/* Closes Right Actions section */}
+
+              {/* Profile Menu Dropdown */}
+              {profileOpen && (
+                <div className="absolute top-full right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-[60]">
+                  <div className="px-4 py-3 border-b border-gray-100">
+                    <p className="text-sm font-bold text-gray-900">{currentUser.name}</p>
+                    <p className="text-xs text-gray-500 mt-0.5">{currentUser.role}</p>
+                  </div>
+                  <button className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer">
+                    <Settings size={16} />
+                    Settings & Privacy
+                  </button>
+                  <button 
+                    onClick={() => alert('Logout functionality coming soon!')}
+                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                  >
+                    <LogOut size={16} />
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
         </div> {/* Closes main centered container */}
       </nav>
 

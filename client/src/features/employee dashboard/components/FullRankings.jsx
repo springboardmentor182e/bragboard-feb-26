@@ -1,6 +1,6 @@
 import { TrendingUp, TrendingDown } from 'lucide-react';
 import DepartmentPill from './DepartmentPill';
-import { fullRankings } from '../../../data/mockData';
+import { useAnalytics } from '../../../context/AnalyticsContext';
 
 function TrendBadge({ trend }) {
   if (trend === 'up') {
@@ -20,6 +20,9 @@ function TrendBadge({ trend }) {
 }
 
 export default function FullRankings() {
+  const { leaderboard } = useAnalytics();
+  const fullRankings = leaderboard || [];
+
   return (
     <div className="bg-white rounded-2xl p-7 shadow-sm">
       <h2 className="text-lg font-bold text-gray-900 mb-6">Full Rankings</h2>

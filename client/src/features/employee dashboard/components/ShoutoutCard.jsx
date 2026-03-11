@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { Trash2 } from 'lucide-react';
 import BadgePill from './BadgePill';
 import ReactionBar from './ReactionBar';
 
-export default function ShoutoutCard({ shoutout, onReaction, onComment }) {
+export default function ShoutoutCard({ shoutout, onReaction, onComment, onDeleteShoutout, onDeleteComment, reactingTo }) {
+  const currentUserId = 6; // placeholder for logged-in user
   const [showComments, setShowComments] = useState(false);
-  const { id, sender, recipient, badge, message, timeAgo, reactions, comments } = shoutout;
+  const { id, sender_id, sender, recipient, badge, message, time_ago, reactions, comments } = shoutout;
 
   return (
     <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-4 transition-all hover:shadow-md">
@@ -22,12 +24,23 @@ export default function ShoutoutCard({ shoutout, onReaction, onComment }) {
               {recipient.name}
             </p>
             <p className="text-sm text-gray-500 mt-0.5">
-              {sender.role} · {timeAgo}
+              {sender.role} · {time_ago}
             </p>
           </div>
-        </div> 
-        
-        <BadgePill badge={badge} />
+        </div>
+
+        <div className="flex items-center gap-2">
+          <BadgePill badge={badge} />
+          {onDeleteShoutout && sender_id === currentUserId && (
+            <button
+              onClick={() => onDeleteShoutout(id)}
+              className="text-red-500 hover:text-red-700 p-1 rounded-full"
+              aria-label="Delete shoutout"
+            >
+              <Trash2 size={16} />
+            </button>
+          )}
+        </div>
       </div>
       <p className="text-gray-700 mt-4 text-sm leading-relaxed whitespace-pre-wrap">
         {message}
@@ -35,16 +48,27 @@ export default function ShoutoutCard({ shoutout, onReaction, onComment }) {
       {showComments && comments && comments.length > 0 && (
         <div className="mt-5 pt-5 border-t border-gray-100 space-y-4">
           {comments.map((comment) => (
-            <div key={comment.id} className="flex gap-3 items-start">
-              <img
-                src={comment.avatar}
-                alt={comment.author}
-                className="w-8 h-8 rounded-full object-cover shrink-0"
-              />
-              <div className="bg-slate-50 rounded-2xl px-4 py-2 flex-1">
-                <p className="text-xs font-bold text-gray-900">{comment.author}</p>
-                <p className="text-sm text-gray-600 mt-0.5">{comment.text}</p>
+            <div key={comment.id} className="flex gap-3 items-start justify-between">
+              <div className="flex gap-3 items-start flex-1">
+                <img
+                  src={comment.avatar}
+                  alt={comment.author}
+                  className="w-8 h-8 rounded-full object-cover shrink-0"
+                />
+                <div className="bg-slate-50 rounded-2xl px-4 py-2 flex-1">
+                  <p className="text-xs font-bold text-gray-900">{comment.author}</p>
+                  <p className="text-sm text-gray-600 mt-0.5">{comment.text}</p>
+                </div>
               </div>
+              {onDeleteComment && (
+                <button
+                  onClick={() => onDeleteComment(id, comment.id)}
+                  className="text-red-500 hover:text-red-700 p-1 rounded-full"
+                  aria-label="Delete comment"
+                >
+                  <Trash2 size={14} />
+                </button>
+              )}
             </div>
           ))}
         </div>
@@ -57,6 +81,7 @@ export default function ShoutoutCard({ shoutout, onReaction, onComment }) {
           onComment={onComment}
           showComments={showComments}
           onToggleComments={() => setShowComments(!showComments)}
+          reactingTo={reactingTo}
         />
       </div>
     </div> 

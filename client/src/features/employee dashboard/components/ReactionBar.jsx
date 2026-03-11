@@ -1,11 +1,16 @@
 import { useState } from 'react';
 import { Heart, ThumbsUp, Star, MessageCircle, Send } from 'lucide-react';
 
-export default function ReactionBar({ reactions, shoutoutId, onReaction, onComment, onToggleComments, showComments }) {
+export default function ReactionBar({ reactions, shoutoutId, onReaction, onComment, onToggleComments, showComments, reactingTo }) {
   const [commentText, setCommentText] = useState('');
+  const isReacting = reactingTo === shoutoutId;
   
-  const reactionTypes = ['heart', 'thumbsUp', 'star'];
-  const icons = [Heart, ThumbsUp, Star];
+  // Map reaction types to their display values
+  const reactionMap = [
+    { key: 'heart', icon: Heart, label: 'Heart' },
+    { key: 'thumbs_up', icon: ThumbsUp, label: 'ThumbsUp' },
+    { key: 'star', icon: Star, label: 'Star' }
+  ];
   
   const handleSubmitComment = (e) => {
     e.preventDefault();
@@ -17,28 +22,33 @@ export default function ReactionBar({ reactions, shoutoutId, onReaction, onComme
 
   return (
     <div className="flex items-center gap-4">
-      {reactionTypes.map((reactionType, i) => {
-        const Icon = icons[i];
-        return (
-          <button
-            key={reactionType}
-            onClick={() => onReaction && onReaction(shoutoutId, reactionType)}
-            className="flex items-center gap-1.5 text-gray-400 hover:text-red-500 transition-colors text-sm cursor-pointer"
-          >
-            <Icon size={18} strokeWidth={1.5} />
-            <span>{reactions[reactionType]}</span>
-          </button>
-        );
-      })}
+      {reactionMap.map(({ key, icon: Icon, label }) => (
+        <button
+          key={key}
+          onClick={() => onReaction && onReaction(shoutoutId, label)}
+          disabled={isReacting}
+          className={`flex items-center gap-1.5 transition-colors text-sm ${
+            isReacting 
+              ? 'text-gray-300 cursor-not-allowed opacity-50' 
+              : 'text-gray-400 hover:text-red-500 cursor-pointer'
+          }`}
+        >
+          <Icon size={18} strokeWidth={1.5} />
+          <span>{reactions[key] || 0}</span>
+        </button>
+      ))}
       
       <button
         onClick={onToggleComments}
-        className={`flex items-center gap-1.5 transition-colors text-sm cursor-pointer ${
-          showComments ? 'text-blue-500' : 'text-gray-400'
+        disabled={isReacting}
+        className={`flex items-center gap-1.5 transition-colors text-sm ${
+          isReacting 
+            ? 'text-gray-300 cursor-not-allowed opacity-50'
+            : showComments ? 'text-blue-500 cursor-pointer' : 'text-gray-400 cursor-pointer'
         }`}
       >
         <MessageCircle size={18} strokeWidth={1.5} />
-        <span>{reactions.comment}</span>
+        <span>{reactions.comment || 0}</span>
       </button>
       
       {showComments && (
@@ -47,12 +57,20 @@ export default function ReactionBar({ reactions, shoutoutId, onReaction, onComme
             type="text"
             value={commentText}
             onChange={(e) => setCommentText(e.target.value)}
+            disabled={isReacting}
             placeholder="Write a comment..."
-            className="flex-1 px-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-primary"
+            className={`flex-1 px-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-primary ${
+              isReacting ? 'bg-gray-100 cursor-not-allowed' : ''
+            }`}
           />
           <button 
             type="submit"
-            className="p-1.5 bg-primary text-white rounded-lg hover:bg-primary-dark"
+            disabled={isReacting}
+            className={`p-1.5 rounded-lg transition-colors ${
+              isReacting 
+                ? 'bg-gray-300 cursor-not-allowed text-gray-400' 
+                : 'bg-primary text-white hover:bg-primary-dark'
+            }`}
           >
             <Send size={14} />
           </button>

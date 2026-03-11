@@ -1,6 +1,6 @@
 import { Trophy, Crown, Medal, TrendingUp } from 'lucide-react';
 import DepartmentPill from './DepartmentPill';
-import { topPerformers } from '../../../data/mockData';
+import { useAnalytics } from '../../../context/AnalyticsContext';
 
 const RANK_CONFIG = {
   1: { 
@@ -86,6 +86,15 @@ function PerformerCard({ performer }) {
 }
 
 export default function TopPerformers() {
+  const { leaderboard } = useAnalytics();
+  // Get top 3 performers
+  const topPerformers = leaderboard?.slice(0, 3)?.map((performer, idx) => ({
+    ...performer,
+    score: performer.points,
+    badges: performer.badges,
+    rank: idx + 1,
+  })) || [];
+
   return (
     <div className="bg-white rounded-2xl p-7 shadow-sm">
       <div className="flex items-center gap-3 mb-6">

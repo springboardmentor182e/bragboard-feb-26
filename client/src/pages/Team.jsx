@@ -2,11 +2,12 @@ import { useState, useMemo } from 'react';
 import { Search, ChevronDown, X } from 'lucide-react';
 import Navbar from '../layout/Navbar';
 import TeamCard from '../features/employee dashboard/components/TeamCard';
-import { teamMembers } from '../data/mockData';
+import { useAnalytics } from '../context/AnalyticsContext';
 
 const DEPARTMENTS = ['All Departments', 'Engineering', 'Design', 'Marketing', 'Sales'];
 
 export default function Team() {
+  const { users: teamMembers } = useAnalytics();
   const [query, setQuery] = useState('');
   const [dept, setDept] = useState('All Departments');
   const [selectedMember, setSelectedMember] = useState(null);
@@ -92,7 +93,7 @@ export default function Team() {
                 </p>
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-4 mb-3">Performance Stats</p>
                 <div className="flex justify-between items-center bg-white p-3 rounded-xl border border-slate-100">
-                  <span className="text-sm">🎉 {selectedMember.shoutOuts} Shout-Outs</span>
+                  <span className="text-sm">🎉 {selectedMember.shout_outs} Shout-Outs</span>
                   <div className="w-px h-4 bg-slate-200" />
                   <span className="text-sm">👏 {selectedMember.claps} Claps</span>
                   <div className="w-px h-4 bg-slate-200" />
