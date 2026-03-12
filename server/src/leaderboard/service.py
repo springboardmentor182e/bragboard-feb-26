@@ -1,68 +1,129 @@
-from sqlalchemy.orm import Session
-from sqlalchemy import desc
-from src.entities.user import User
-
-def calculate_trend(current, previous):
-
-    if current > previous:
-        return "up"
-    elif current < previous:
-        return "down"
-    else:
-        return "stable"
+from src.db import get_connection
 
 
-def get_full_ranking(db: Session):
+def get_full_leaderboard():
+    conn = get_connection()
+    cur = conn.cursor()
 
-    users = db.query(User).order_by(desc(User.score)).all()
+    cur.execute("""
+        SELECT name, department, points, badges, trend
+        FROM users
+        ORDER BY points DESC
+    """)
 
-    ranking = []
+    rows = cur.fetchall()
 
-    for index, user in enumerate(users):
+    result = []
+    rank = 1
 
-        ranking.append({
-            "rank": index + 1,
-            "id": user.id,
-            "name": user.name,
-            "department": user.department,
-            "points": user.score,
-            "badges": user.badges,
-            "trend": calculate_trend(user.score, user.last_month_score)
+    for r in rows:
+        result.append({
+            "rank": rank,
+            "name": r[0],
+            "department": r[1],
+            "points": r[2],
+            "badges": r[3],
+            "trend": r[4]
         })
+        rank += 1
 
-    return ranking
-
-
-def get_top_three(db: Session):
-
-    return get_full_ranking(db)[:3]
+    return result
 
 
-def get_stats(db: Session):
+def get_top_users():
+    conn = get_connection()
+    cur = conn.cursor()
 
-    users = db.query(User).all()
+    cur.execute("""
+        SELECT name, department, points, badges, trend
+        FROM users
+        ORDER BY points DESC
+        LIMIT 3
+    """)
 
-    if not users:
-        return {
-            "top_score": 0,
-            "total_badges": 0,
-            "growth_percent": 0
-        }
+    rows = cur.fetchall()
 
-    top_score = max(user.score for user in users)
+    result = []
+    rank = 1
 
-    total_badges = sum(user.badges for user in users)
+    for r in rows:
+        result.append({
+            "rank": rank,
+            "name": r[0],
+            "department": r[1],
+            "points": r[2],
+            "badges": r[3],
+            "trend": r[4]
+        })
+        rank += 1
 
-    total_current = sum(user.score for user in users)
-    total_previous = sum(user.last_month_score for user in users)
+    return result
 
-    growth = 0
 
-    if total_previous != 0:
-        growth = ((total_current - total_previous) / total_previous) * 100
+def get_stats():
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("SELECT SUM(points), SUM(badges) FROM users")
+
+    total_points, total_badges = cur.fetchone()
+
+    growth_percent = round((total_points / 10000) * 100, 2)
 
     return {
-        "top_score": top_score,
+        "total_points": total_points,
         "total_badges": total_badges,
-        "growth_percent": round(growth, 2)
+        "growth_percent": growth_percent
     }
+
+
+def search_users(name):
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute(
+        "SELECT name, department, points, badges, trend FROM users WHERE name ILIKE %s",
+        (f"%{name}%",)
+    )
+
+    rows = cur.fetchall()
+
+    result = []
+    for r in rows:
+        result.append({
+            "name": r[0],
+            "department": r[1],
+            "points": r[2],
+            "badges": r[3],
+            "trend": r[4]
+        })
+
+    return result
+
+
+def filter_department(dept):
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute(
+        "SELECT name, department, points, badges, trend FROM users WHERE department=%s ORDER BY points DESC",
+        (dept,)
+    )
+
+    rows = cur.fetchall()
+
+    result = []
+    rank = 1
+
+    for r in rows:
+        result.append({
+            "rank": rank,
+            "name": r[0],
+            "department": r[1],
+            "points": r[2],
+            "badges": r[3],
+            "trend": r[4]
+        })
+        rank += 1
+
+    return result
