@@ -2,12 +2,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-DATABASE_URL = "sqlite:///./bragboard.db"
+DATABASE_URL = "postgresql://postgres:password@localhost:5432/bragboard"
 
-engine = create_engine(
-    DATABASE_URL,
-    connect_args={"check_same_thread": False}
-)
+engine = create_engine(DATABASE_URL)
 
 SessionLocal = sessionmaker(
     autocommit=False,
@@ -17,8 +14,6 @@ SessionLocal = sessionmaker(
 
 Base = declarative_base()
 
-
-# ✅ This was missing
 def get_db():
     db = SessionLocal()
     try:
