@@ -21,29 +21,27 @@ const Recognition = () => {
   }, []);
 
   const fetchBrags = () => {
-    axios.get("http://localhost:8000/brags")
-      .then(res => {
-        // Add frontend-only fields
-        
-        setBrags(res.data);
-      })
-      .catch(err => console.log(err));
-  };
+  axios.get(`${process.env.REACT_APP_API_URL}/brags`)
+    .then(res => setBrags(res.data))
+    .catch(err => console.log(err));
+};
 
-  const handlePostBrag = () => {
-    if (!newBrag.trim()) return;
+const handlePostBrag = () => {
+  if (!newBrag.trim()) return;
 
-    axios.post("http://localhost:8000/brags", {
-      author: "Employee",
-      content: newBrag
-    }).then(() => {
-      setNewBrag("");
-      fetchBrags();
-    }).catch(err => console.log(err));
-  };
+  axios.post(`${process.env.REACT_APP_API_URL}/brags`, {
+    author: "Employee",
+    content: newBrag
+  })
+  .then(() => {
+    setNewBrag("");
+    fetchBrags();
+  })
+  .catch(err => console.log(err));
+};
 
   const handleLike = (id) => {
-  axios.post(`http://localhost:8000/brags/${id}/like`)
+  axios.post(`${process.env.REACT_APP_API_URL}/brags/${id}/like`)
     .then(() => {
       fetchBrags();
     })

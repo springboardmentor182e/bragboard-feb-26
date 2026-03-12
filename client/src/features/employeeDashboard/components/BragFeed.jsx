@@ -1,24 +1,8 @@
 import { useState } from "react";
 
-const mockBrags = [
-  {
-    id: 1,
-    author: "Aisha",
-    content: "Completed the new dashboard feature!",
-    likes: 4,
-    comments: ["Great job!", "Amazing work 👏"]
-  },
-  {
-    id: 2,
-    author: "Rahul",
-    content: "Resolved 12 support tickets today 💪",
-    likes: 2,
-    comments: []
-  }
-];
 
 const BragFeed = () => {
-  const [brags, setBrags] = useState(mockBrags);
+  const [brags, setBrags] = useState([]);
 
   const handleLike = (id) => {
     setBrags(brags.map(brag =>

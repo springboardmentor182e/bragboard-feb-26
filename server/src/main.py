@@ -1,58 +1,15 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import mysql.connector
+from routes.brag import router as brag_router
 
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Database connection
-def get_db():
-    return mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="AnasAnsari@Sana7411g",
-        database="bragboard"
-    )
-
-@app.get("/brags")
-def get_brags():
-    db = get_db()
-    cursor = db.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM brags ORDER BY id DESC")
-    result = cursor.fetchall()
-    db.close()
-    return result
-
-@app.post("/brags")
-def create_brag(brag: dict):
-    db = get_db()
-    cursor = db.cursor()
-    cursor.execute(
-        "INSERT INTO brags (author, content) VALUES (%s, %s)",
-        (brag["author"], brag["content"])
-    )
-    db.commit()
-    db.close()
-    return {"message": "Brag created"}
-
-@app.post("/brags/{brag_id}/like")
-def like_brag(brag_id: int):
-    db = get_db()
-    cursor = db.cursor()
-
-    cursor.execute(
-        "UPDATE brags SET likes = likes + 1 WHERE id = %s",
-        (brag_id,)
-    )
-
-    db.commit()
-    db.close()
-
-    return {"message": "Brag liked"}
+app.include_router(brag_router)
