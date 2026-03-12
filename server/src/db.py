@@ -6,7 +6,7 @@ def get_connection():
         host="localhost",
         database="bragboard_db",
         user="postgres",
-        password="reshma894"  # mee postgres password
+        password="reshma894" 
     )
 
     return conn
