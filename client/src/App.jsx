@@ -1,17 +1,20 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import AdminDashboard from './features/admin-dash/pages/AdminDashboard';
-import Sidebar_admin from './layout/Sidebar';
-import Navbar from './layout/Navbar';
+import React from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+import AdminDashboard from "./features/admin-dash/pages/AdminDashboard";
+import AdminEmployees from "./pages/AdminEmployees";
+
+import SidebarAdmin from "./layout/Sidebar";
+import Navbar from "./layout/Navbar";
+
 import Sidebar from "./features/employeeDashboard/components/Sidebar";
 import TopNavbar from "./features/employeeDashboard/components/TopNavbar";
 import SummaryCards from "./features/employeeDashboard/components/SummaryCards";
 import AchievementTable from "./features/employeeDashboard/components/AchievementTable";
 import Leaderboard from "./features/employeeDashboard/components/Leaderboard";
-import AdminEmployees from "./pages/AdminEmployees";
 
-function Layout({ children }) {
-// Employee Dashboard Layout Component
+
+/* ---------------- Employee Layout ---------------- */
 function EmployeeLayout({ children }) {
   return (
     <div className="flex h-screen bg-gray-100">
@@ -26,7 +29,8 @@ function EmployeeLayout({ children }) {
   );
 }
 
-// Employee Dashboard Main Component
+
+/* ---------------- Employee Dashboard ---------------- */
 function EmployeeDashboard() {
   return (
     <>
@@ -37,11 +41,12 @@ function EmployeeDashboard() {
   );
 }
 
-// Admin Layout Component
+
+/* ---------------- Admin Layout ---------------- */
 function AdminLayout({ children }) {
   return (
     <div className="relative">
-      <Sidebar_admin />
+      <SidebarAdmin />
       <div className="ml-64">
         <Navbar />
         <main className="min-h-screen bg-gray-100 p-6">
@@ -52,52 +57,88 @@ function AdminLayout({ children }) {
   );
 }
 
+
+/* ---------------- Main App ---------------- */
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Admin Routes */}
-        <Route path="/admin/*" element={
-          <AdminLayout>
-            <Routes>
-              <Route path="/" element={<AdminDashboard />} />
-              <Route path="dashboard" element={<AdminDashboard />} />
-              <Route path="employees" element={<AdminEmployees />} />
-            </Routes>
-          </AdminLayout>
-        } />
-        
-        {/* Employee Routes - Default route */}
-        <Route path="/*" element={
-          <EmployeeLayout>
-            <Routes>
-              <Route path="/" element={<EmployeeDashboard />} />
-              <Route path="feed" element={<EmployeeDashboard />} />
-              <Route path="leaderboard" element={<div>Leaderboard Page</div>} />
-              <Route path="team" element={<div>Team Page</div>} />
-              <Route path="badges" element={<div>Badges Page</div>} />
-              <Route path="analytics" element={<div>Analytics Page</div>} />
-            </Routes>
-          </EmployeeLayout>
-        } />
 
-        {/* Employee Area */}
+        {/* Admin Routes */}
         <Route
-          path="/"
+          path="/admin/dashboard"
           element={
-            <Layout>
-              <EmployeeDashboard />
-            </Layout>
+            <AdminLayout>
+              <AdminDashboard />
+            </AdminLayout>
           }
         />
+
         <Route
           path="/admin/employees"
           element={
-            <Layout>
+            <AdminLayout>
               <AdminEmployees />
-            </Layout>
+            </AdminLayout>
           }
         />
+
+
+        {/* Employee Routes */}
+        <Route
+          path="/"
+          element={
+            <EmployeeLayout>
+              <EmployeeDashboard />
+            </EmployeeLayout>
+          }
+        />
+
+        <Route
+          path="/feed"
+          element={
+            <EmployeeLayout>
+              <EmployeeDashboard />
+            </EmployeeLayout>
+          }
+        />
+
+        <Route
+          path="/leaderboard"
+          element={
+            <EmployeeLayout>
+              <Leaderboard />
+            </EmployeeLayout>
+          }
+        />
+
+        <Route
+          path="/team"
+          element={
+            <EmployeeLayout>
+              <div>Team Page</div>
+            </EmployeeLayout>
+          }
+        />
+
+        <Route
+          path="/badges"
+          element={
+            <EmployeeLayout>
+              <div>Badges Page</div>
+            </EmployeeLayout>
+          }
+        />
+
+        <Route
+          path="/analytics"
+          element={
+            <EmployeeLayout>
+              <div>Analytics Page</div>
+            </EmployeeLayout>
+          }
+        />
+
       </Routes>
     </BrowserRouter>
   );

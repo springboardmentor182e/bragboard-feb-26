@@ -1,4 +1,6 @@
+# -----------------------------
 # Logs
+# -----------------------------
 logs
 *.log
 npm-debug.log*
@@ -7,24 +9,47 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
+# -----------------------------
+# Node / React
+# -----------------------------
+node_modules/
+dist/
+dist-ssr/
 *.local
 
-# Editor directories and files
-.vscode/*
+# -----------------------------
+# Python / FastAPI
+# -----------------------------
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+server/venv/
+
+# -----------------------------
+# Environment files
+# -----------------------------
+.env
+
+# -----------------------------
+# Uploads / media
+# -----------------------------
+server/media/
+
+# -----------------------------
+# IDE / Editor
+# -----------------------------
+.vscode/
 !.vscode/extensions.json
-.idea
+.idea/
+
+# -----------------------------
+# OS files
+# -----------------------------
 .DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
-client/node_modules/
-server/venv/
-server/__pycache__/
-*.pyc
-.vscode/
-.env
