@@ -1,28 +1,27 @@
 from pydantic import BaseModel
+from datetime import datetime
 
 
 class ShoutoutCreate(BaseModel):
-    teammate: str
+    sender_name: str
+    receiver_name: str
     badge: str
-    campaign: str = ""
+    campaign: str | None = None
     message: str
-
-
-class ReactionsOut(BaseModel):
-    like: int
-    star: int
-    clap: int
 
 
 class ShoutoutOut(BaseModel):
     id: int
-    teammate: str
+    sender_name: str
+    receiver_name: str
     badge: str
     campaign: str | None
     message: str
-    points: int
-    reactions: ReactionsOut
-    createdAt: str
+    level: int
+    likes: int
+    comments: int
+    shares: int
+    created_at: datetime
 
     model_config = {"from_attributes": True}
 

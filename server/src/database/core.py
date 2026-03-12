@@ -4,7 +4,12 @@ from sqlalchemy.orm import sessionmaker, DeclarativeBase
 DATABASE_URL = "postgresql://postgres:richie@localhost:5432/bragboard"
 
 engine = create_engine(DATABASE_URL, pool_pre_ping=True)
-SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
+
+SessionLocal = sessionmaker(
+    bind=engine,
+    autocommit=False,
+    autoflush=False
+)
 
 
 class Base(DeclarativeBase):
