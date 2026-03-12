@@ -1,18 +1,85 @@
+# -----------------------
+# Node / React
+# -----------------------
 node_modules/
 dist/
-# Node
-client/node_modules
-client/dist
+build/
+client/node_modules/
+client/dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
+# -----------------------
 # Python
-server/venv
-server/__pycache__
+# -----------------------
+__pycache__/
 *.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
 
-# Env
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+server/venv/
+server/.venv/
+
+# -----------------------
+# Environment variables
+# -----------------------
+.env
+.env.*
 client/.env
 server/.env
 
-# OS
+# -----------------------
+# Python tools
+# -----------------------
+.mypy_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# -----------------------
+# OS files
+# -----------------------
 .DS_Store
 Thumbs.db
+desktop.ini
+
+# -----------------------
+# IDE / Editor
+# -----------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# -----------------------
+# Logs
+# -----------------------
+logs/
+*.log
+
+# -----------------------
+# Build / temp
+# -----------------------
+.tmp/
+temp/
+.cache/
+
+# -----------------------
+# Database
+# -----------------------
+*.db
+*.sqlite
+*.sqlite3
+
+__pycache__/
+*.pyc
+*.pyo
+*.pyd

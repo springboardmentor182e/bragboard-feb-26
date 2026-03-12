@@ -9,4 +9,8 @@ export default {
     extend: {},
   },
   plugins: [],
+<<<<<<< HEAD
 };
+=======
+}
+>>>>>>> fe9b7421 (add leaderboard feature)
