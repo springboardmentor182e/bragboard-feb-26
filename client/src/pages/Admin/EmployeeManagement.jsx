@@ -34,6 +34,13 @@ const EmployeeManagement = () => {
       setEmployees(data.employees);
       setTotal(data.total);
     } catch (err) {
+      // If unauthorized, redirect to login
+      if (err.response?.status === 401) {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+        return;
+      }
       setError(err.response?.data?.detail || "Failed to fetch employees");
       console.error("Error fetching employees:", err);
     } finally {

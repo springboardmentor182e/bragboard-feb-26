@@ -1,0 +1,1 @@
+DATABASE_URL = "postgresql://postgres:mahi@localhost:5432/bragboard"
