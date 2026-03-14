@@ -21,7 +21,8 @@ export default function Login() {
       
     }
     catch(err){
-      alert("Login Failed")
+      console.log(err);  
+      alert("Login Failed");
     }
   }
 
