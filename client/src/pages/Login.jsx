@@ -11,11 +11,12 @@ export default function Login() {
 
     try{
       const res = await loginUser({email,password});
+      localStorage.setItem("token",res.data.access_token);
       console.log(res.data);
       alert("Login Success");
     }
     catch(err){
-      alert("Login Failed");
+      alert("Login Failed")
     }
   }
 
