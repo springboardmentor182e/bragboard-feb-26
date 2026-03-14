@@ -1,5 +1,7 @@
 import { Routes, Route } from "react-router-dom";
-import ShoutoutManagementPage from "./features/employee-shoutout-management/pages/ShoutoutManagementPage";
+import ShoutoutManagementPage from "./features/admin-shoutout-management/pages/ShoutoutManagementPage";
+import MyShoutoutsPage from "./features/employee-shoutout/pages/MyShoutoutsPage";
+import ShoutoutFeedPage from "./features/employee-shoutout/pages/ShoutoutFeedPage";
 
 function App() {
   return (
@@ -18,9 +20,15 @@ function App() {
 
       {/* Shoutout Page */}
       <Route
-        path="/shoutout-management"
+        path="/admin/shoutouts"
         element={<ShoutoutManagementPage />}
       />
+
+      {/* Employee My Shoutouts Page */}
+      <Route path="/my-shoutouts" element={<MyShoutoutsPage />} />
+
+      {/* Main Shoutout Feed */}
+      <Route path="/shoutouts" element={<ShoutoutFeedPage />} />
     </Routes>
   );
 }

@@ -3,13 +3,13 @@ import TableRow from "./TableRow";
 import FilterBar from "./FilterBar";
 import StatsSection from "./StatsSection";
 import ShoutoutHeader from "./ShoutoutHeader";
-import ViewShoutoutModal from "./Modals/ViewShoutoutModal";
-import EditShoutoutModal from "./Modals/EditShoutoutModal";
-import DeleteShoutoutModal from "./Modals/DeleteShoutoutModal";
-import CreateShoutoutModal from "./Modals/CreateShoutoutModal";
+import ViewShoutoutModal from "../../employee-shoutout/components/Modals/ViewShoutoutModal";
+import EditShoutoutModal from "../../employee-shoutout/components/Modals/EditShoutoutModal";
+import DeleteShoutoutModal from "../../employee-shoutout/components/Modals/DeleteShoutoutModal";
+import CreateShoutoutModal from "../../employee-shoutout/components/Modals/CreateShoutoutModal";
 import BulkDeleteConfirmModal from "./Modals/BulkDeleteConfirmModal";
 
-const ShoutoutTable = () => {
+const AdminShoutoutTable = () => {
   const [data, setData] = useState([]);
   const [selectedIds, setSelectedIds] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -373,4 +373,4 @@ const ShoutoutTable = () => {
   );
 };
 
-export default ShoutoutTable;
+export default AdminShoutoutTable;
