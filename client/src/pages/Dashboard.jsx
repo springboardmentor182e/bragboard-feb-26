@@ -1,28 +1,39 @@
+import React from "react";
+
 export default function Dashboard(){
 
-const logout = ()=>{
-localStorage.removeItem("token")
-window.location.href="/"
-}
+  const token = localStorage.getItem("token");
 
-return(
+  if(!token){
+    window.location.href="/";
+  }
 
-<div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+  const logout = () =>{
+    localStorage.removeItem("token");
+    window.location.href="/";
+  }
 
-<h1 className="text-3xl font-bold mb-6">
-Welcome to Dashboard
-</h1>
+  return(
 
-<button
-onClick={logout}
-className="bg-red-500 text-white px-6 py-3 rounded">
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
 
-Logout
+      <div className="bg-white p-8 rounded-xl shadow-lg text-center">
 
-</button>
+        <h2 className="text-2xl font-bold mb-6">
+          Welcome to Dashboard
+        </h2>
 
-</div>
+        <button
+        onClick={logout}
+        className="bg-red-500 text-white p-3 rounded hover:bg-red-600">
 
-)
+        Logout
 
+        </button>
+
+      </div>
+
+    </div>
+
+  )
 }
