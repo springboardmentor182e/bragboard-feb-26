@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from auth import create_access_token
+from src.auth import create_access_token
 
 app = FastAPI()
 
