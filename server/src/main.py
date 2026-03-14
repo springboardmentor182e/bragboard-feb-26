@@ -31,7 +31,7 @@ def register(user: User):
 
 @app.post("/login")
 def login(user: User):
-    token = create_access_token({"sub": user.email})
+ .  token = create_access_token({"sub": user.email})
 
     return {
         "access_token": token,
