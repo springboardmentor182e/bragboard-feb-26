@@ -1,29 +1,28 @@
-import { useEffect } from "react"
+export default function Dashboard(){
 
-function Dashboard(){
-
-useEffect(()=>{
-
-const token = localStorage.getItem("access")
-
-if(!token){
-window.location="/login"
+const logout = ()=>{
+localStorage.removeItem("token")
+window.location.href="/"
 }
-
-},[])
 
 return(
 
-<div className="flex justify-center items-center h-screen">
+<div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
 
-<h1 className="text-3xl font-bold">
+<h1 className="text-3xl font-bold mb-6">
 Welcome to Dashboard
 </h1>
+
+<button
+onClick={logout}
+className="bg-red-500 text-white px-6 py-3 rounded">
+
+Logout
+
+</button>
 
 </div>
 
 )
 
 }
-
-export default Dashboard
