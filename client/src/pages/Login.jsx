@@ -11,10 +11,14 @@ export default function Login() {
 
     try{
       const res = await loginUser({email,password});
+
       localStorage.setItem("token",res.data.access_token);
-      window.location.href="/dashboard";
-      console.log(res.data);
+      
       alert("Login Success");
+      
+      window.location.href="/dashboard";
+      
+      
     }
     catch(err){
       alert("Login Failed")
