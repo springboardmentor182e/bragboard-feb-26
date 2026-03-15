@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-const API = "http://127.0.0.1:8000";
-
+const API = import.meta.env.VITE_API_URL 
 export default function MyShoutouts() {
   const [shoutouts, setShoutouts] = useState([]);
   const [stats, setStats] = useState({ total_given: 0, total_received: 0, points_earned: 0 });
