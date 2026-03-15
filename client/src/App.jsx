@@ -5,8 +5,8 @@ import SummaryCards from "./features/employeeDashboard/components/SummaryCards";
 import AchievementTable from "./features/employeeDashboard/components/AchievementTable";
 import Leaderboard from "./features/employeeDashboard/components/Leaderboard";
 import AdminEmployees from "./pages/AdminEmployees";
-import Signup from "./features/authentication/pages/SignupPage";
-import Login from "./features/authentication/pages/LoginPage"
+import Signup from "./pages/SignupPage";
+import Login from "./pages/LoginPage"
 
 function EmployeeLayout({ children }) {
   return (
