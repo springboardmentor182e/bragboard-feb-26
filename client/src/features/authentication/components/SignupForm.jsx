@@ -2,6 +2,7 @@ import { Star } from "lucide-react";
 import { Link } from "react-router-dom";
 
 function SignupForm() {
+  console.log("SignupForm component loaded"); 
   return (
     <div className="w-full max-w-4xl rounded-3xl shadow-2xl overflow-hidden bg-gradient-to-br from-indigo-600 via-blue-500 to-indigo-400 relative flex">
 
@@ -14,7 +15,7 @@ function SignupForm() {
       <h1 className="text-3xl font-bold mb-8">
           BragBoard
         </h1>
-
+   
         <h2 className="text-2xl font-semibold flex items-center justify-center gap-3 mb-4">
           Celebrate Wins
           <Star className="text-yellow-300 fill-yellow-300" size={24} />
