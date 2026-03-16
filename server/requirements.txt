@@ -1,5 +1,5 @@
 # Web Framework
-fastapi==0.95.2  # Older version that works with Pydantic 1.x
+fastapi==0.94.0  # Older version that works with Pydantic 1.x
 uvicorn[standard]==0.22.0
 
 # Database
