@@ -15,7 +15,7 @@ def get_leaderboard_service(db: Session):
             LeaderboardUser(
                 rank=rank,
                 id=user.id,
-                name=user.name,
+                full_name=user.full_name,
                 department=user.department,
                 photo_url=user.photo_url,
                 points=user.points

@@ -1,13 +1,19 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from .database import get_db
-from .models import Shoutout, User
-from .schemas import ShoutoutResponse
+from src.database.core import get_db
+from src.entities.user import User
 
 router = APIRouter(prefix="/shoutouts", tags=["Shoutouts"])
 
-@router.post("/", response_model=ShoutoutResponse)
-def create_shoutout(message: str, points: int, receiver_id: int, db: Session = Depends(get_db)):
+
+# ADD POINTS
+@router.post("/")
+def create_shoutout(
+    message: str,
+    points: int,
+    receiver_id: int,
+    db: Session = Depends(get_db)
+):
 
     if points <= 0:
         raise HTTPException(status_code=400, detail="Points must be greater than 0")
@@ -17,34 +23,35 @@ def create_shoutout(message: str, points: int, receiver_id: int, db: Session = D
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    new_shoutout = Shoutout(
-        message=message,
-        points=points,
-        receiver_id=receiver_id
-    )
-
     user.points += points
 
-    db.add(new_shoutout)
     db.commit()
-    db.refresh(new_shoutout)
+    db.refresh(user)
 
-    return new_shoutout
+    return {
+        "message": message,
+        "points_added": points,
+        "total_points": user.points
+    }
 
-@router.delete("/{shoutout_id}")
-def delete_shoutout(shoutout_id: int, db: Session = Depends(get_db)):
 
-    shoutout = db.query(Shoutout).filter(Shoutout.id == shoutout_id).first()
+# REMOVE POINTS
+@router.delete("/{receiver_id}")
+def remove_points(receiver_id: int, points: int = 10, db: Session = Depends(get_db)):
 
-    if not shoutout:
-        raise HTTPException(status_code=404, detail="Shoutout not found")
+    user = db.query(User).filter(User.id == receiver_id).first()
 
-    # reduce points from user
-    user = db.query(User).filter(User.id == shoutout.receiver_id).first()
-    if user:
-        user.points -= shoutout.points
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
 
-    db.delete(shoutout)
+    user.points -= points
+
+    if user.points < 0:
+        user.points = 0
+
     db.commit()
 
-    return {"message": "Shoutout deleted successfully"}
+    return {
+        "message": "Points removed",
+        "remaining_points": user.points
+    }

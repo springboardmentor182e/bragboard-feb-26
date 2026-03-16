@@ -3,18 +3,20 @@ from sqlalchemy.orm import Session
 from pathlib import Path
 import shutil
 import uuid
-
-from .database import get_db
-from .models import User
-from .schemas import UserResponse, UserUpdate
 from typing import List
+
+from src.database.core import get_db
+from src.entities.user import User
+from src.schemas import UserResponse, UserUpdate
 
 router = APIRouter(
     prefix="/users",
     tags=["Users"]
 )
 
-# ===== MEDIA FOLDER SETUP =====
+# ==============================
+# MEDIA FOLDER SETUP
+# ==============================
 BASE_DIR = Path(__file__).resolve().parent.parent
 MEDIA_DIR = BASE_DIR / "media"
 USERS_DIR = MEDIA_DIR / "users"
@@ -33,33 +35,34 @@ def create_user(
     db: Session = Depends(get_db)
 ):
 
-    # Validate image type
     if not photo.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="Only image files allowed")
 
-    # Generate unique filename
-    file_extension = photo.filename.split(".")[-1]
-    unique_filename = f"{uuid.uuid4()}.{file_extension}"
+    extension = photo.filename.split(".")[-1]
+    filename = f"{uuid.uuid4()}.{extension}"
+    filepath = USERS_DIR / filename
 
-    file_path = USERS_DIR / unique_filename
-
-    # Save file
-    with open(file_path, "wb") as buffer:
+    with open(filepath, "wb") as buffer:
         shutil.copyfileobj(photo.file, buffer)
 
-    # Save to DB
-    new_user = User(
-        name=name,
+    user = User(
+        full_name=name,
         department=department,
-        photo_url=f"/media/users/{unique_filename}",
+        photo_url=f"/media/users/{filename}",
         points=0
     )
 
-    db.add(new_user)
+    db.add(user)
     db.commit()
-    db.refresh(new_user)
+    db.refresh(user)
 
-    return new_user
+    return {
+        "id": user.id,
+        "name": user.full_name,
+        "department": user.department,
+        "points": user.points,
+        "photo_url": user.photo_url
+    }
 
 
 # ==============================
@@ -67,7 +70,19 @@ def create_user(
 # ==============================
 @router.get("/", response_model=List[UserResponse])
 def get_users(db: Session = Depends(get_db)):
-    return db.query(User).all()
+
+    users = db.query(User).all()
+
+    return [
+        {
+            "id": u.id,
+            "name": u.full_name,
+            "department": u.department,
+            "points": u.points,
+            "photo_url": u.photo_url
+        }
+        for u in users
+    ]
 
 
 # ==============================
@@ -75,6 +90,7 @@ def get_users(db: Session = Depends(get_db)):
 # ==============================
 @router.delete("/{user_id}")
 def delete_user(user_id: int, db: Session = Depends(get_db)):
+
     user = db.query(User).filter(User.id == user_id).first()
 
     if not user:
@@ -90,7 +106,11 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
 # UPDATE USER
 # ==============================
 @router.put("/{user_id}", response_model=UserResponse)
-def update_user(user_id: int, user_data: UserUpdate, db: Session = Depends(get_db)):
+def update_user(
+    user_id: int,
+    user_data: UserUpdate,
+    db: Session = Depends(get_db)
+):
 
     user = db.query(User).filter(User.id == user_id).first()
 
@@ -98,7 +118,7 @@ def update_user(user_id: int, user_data: UserUpdate, db: Session = Depends(get_d
         raise HTTPException(status_code=404, detail="User not found")
 
     if user_data.name is not None:
-        user.name = user_data.name
+        user.full_name = user_data.name
 
     if user_data.department is not None:
         user.department = user_data.department
@@ -106,4 +126,10 @@ def update_user(user_id: int, user_data: UserUpdate, db: Session = Depends(get_d
     db.commit()
     db.refresh(user)
 
-    return user
+    return {
+        "id": user.id,
+        "name": user.full_name,
+        "department": user.department,
+        "points": user.points,
+        "photo_url": user.photo_url
+    }

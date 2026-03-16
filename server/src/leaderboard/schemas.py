@@ -5,7 +5,7 @@ from typing import Optional
 class LeaderboardUser(BaseModel):
     rank: int
     id: int
-    name: str
+    full_name: str
     department: str
     photo_url: Optional[str]
     points: int

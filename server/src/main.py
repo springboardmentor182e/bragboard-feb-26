@@ -6,8 +6,7 @@ from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException
 from pathlib import Path
 
-from .database import engine
-from . import models
+from .database.core import engine, Base
 from .api import api_router
 from .core.response import error_response
 from .core.logging import logger
@@ -31,6 +30,9 @@ app = FastAPI(
 @app.on_event("startup")
 async def startup_event():
     logger.info("🚀 BragBoard API Started")
+
+    # Create database tables
+    Base.metadata.create_all(bind=engine)
 
 
 @app.on_event("shutdown")
@@ -70,12 +72,6 @@ async def global_exception_handler(request: Request, exc: Exception):
 
 
 # -------------------------------------------------
-# Create Database Tables
-# -------------------------------------------------
-models.Base.metadata.create_all(bind=engine)
-
-
-# -------------------------------------------------
 # Media Configuration
 # -------------------------------------------------
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -105,7 +101,7 @@ app.add_middleware(
 
 
 # -------------------------------------------------
-# Register API Router (NO DOUBLE PREFIX)
+# Register API Router
 # -------------------------------------------------
 app.include_router(api_router)
 

@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from ..models import User
+from src.entities.user import User
 
 
 def get_leaderboard_users(db: Session):
