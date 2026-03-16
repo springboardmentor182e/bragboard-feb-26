@@ -1,21 +1,22 @@
-fastapi==0.104.1
-uvicorn[standard]==0.24.0
+# Web Framework - SPECIFIC VERSION that works with Pydantic 1.x
+fastapi==0.92.0  # YEH VERSION GUARANTEED KAAM KAREGA
+uvicorn[standard]==0.22.0
+
+# Database
 sqlalchemy==2.0.23
+alembic==1.12.1
+psycopg2-binary==2.9.9
+
 # Pydantic 1.x - No Rust dependencies!
 pydantic==1.10.13
-# pydantic-settings 2.x doesn't work with Pydantic 1.x, so remove it
-# pydantic-settings==2.6.1  # <- REMOVE THIS LINE
 
-# Add these if not already there (for settings management)
-pydantic-settings==2.6.1
-python-dotenv==1.0.0
+# Auth & Security
 passlib[bcrypt]==1.7.4
 python-jose[cryptography]==3.3.0
 python-multipart==0.0.6
-email-validator>=2.1.0
-psycopg2-binary==2.9.9
-alembic==1.12.1
+email-validator>=2.0.0
+
+# Utilities
+python-dotenv==1.0.0
 wheel==0.45.1
 setuptools==75.8.0
-rustup
-cargo
