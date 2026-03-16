@@ -10,6 +10,7 @@ import AchievementTable from "./features/employeeDashboard/components/Achievemen
 import Leaderboard from "./features/employeeDashboard/components/Leaderboard";
 import AdminEmployees from "./pages/AdminEmployees";
 
+function Layout({ children }) {
 // Employee Dashboard Layout Component
 function EmployeeLayout({ children }) {
   return (
@@ -84,18 +85,19 @@ function App() {
         <Route
           path="/"
           element={
-            <EmployeeLayout>
+            <Layout>
               <EmployeeDashboard />
-            </EmployeeLayout>
+            </Layout>
           }
         />
-
-        {/* Admin Area — NO EmployeeLayout */}
         <Route
           path="/admin/employees"
-          element={<AdminEmployees />}
+          element={
+            <Layout>
+              <AdminEmployees />
+            </Layout>
+          }
         />
-
       </Routes>
     </BrowserRouter>
   );
