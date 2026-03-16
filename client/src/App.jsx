@@ -9,9 +9,9 @@ import SummaryCards from "./features/employeeDashboard/components/SummaryCards";
 import AchievementTable from "./features/employeeDashboard/components/AchievementTable";
 import Leaderboard from "./features/employeeDashboard/components/Leaderboard";
 import AdminEmployees from "./pages/AdminEmployees";
+import MyShoutouts from "./pages/MyShoutouts"; // your page
 
-function Layout({ children }) {
-// Employee Dashboard Layout Component
+// Employee Layout
 function EmployeeLayout({ children }) {
   return (
     <div className="flex h-screen bg-gray-100">
@@ -26,7 +26,7 @@ function EmployeeLayout({ children }) {
   );
 }
 
-// Employee Dashboard Main Component
+// Employee Dashboard
 function EmployeeDashboard() {
   return (
     <>
@@ -37,7 +37,7 @@ function EmployeeDashboard() {
   );
 }
 
-// Admin Layout Component
+// Admin Layout
 function AdminLayout({ children }) {
   return (
     <div className="relative">
@@ -56,48 +56,39 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Admin Routes */}
-        <Route path="/admin/*" element={
-          <AdminLayout>
-            <Routes>
-              <Route path="/" element={<AdminDashboard />} />
-              <Route path="dashboard" element={<AdminDashboard />} />
-              <Route path="employees" element={<AdminEmployees />} />
-            </Routes>
-          </AdminLayout>
-        } />
-        
-        {/* Employee Routes - Default route */}
-        <Route path="/*" element={
-          <EmployeeLayout>
-            <Routes>
-              <Route path="/" element={<EmployeeDashboard />} />
-              <Route path="feed" element={<EmployeeDashboard />} />
-              <Route path="leaderboard" element={<div>Leaderboard Page</div>} />
-              <Route path="team" element={<div>Team Page</div>} />
-              <Route path="badges" element={<div>Badges Page</div>} />
-              <Route path="analytics" element={<div>Analytics Page</div>} />
-            </Routes>
-          </EmployeeLayout>
-        } />
 
-        {/* Employee Area */}
+        {/* Admin Routes */}
         <Route
-          path="/"
+          path="/admin/*"
           element={
-            <Layout>
-              <EmployeeDashboard />
-            </Layout>
+            <AdminLayout>
+              <Routes>
+                <Route path="/" element={<AdminDashboard />} />
+                <Route path="dashboard" element={<AdminDashboard />} />
+                <Route path="employees" element={<AdminEmployees />} />
+              </Routes>
+            </AdminLayout>
           }
         />
+
+        {/* Employee Routes */}
         <Route
-          path="/admin/employees"
+          path="/*"
           element={
-            <Layout>
-              <AdminEmployees />
-            </Layout>
+            <EmployeeLayout>
+              <Routes>
+                <Route path="/" element={<EmployeeDashboard />} />
+                <Route path="feed" element={<EmployeeDashboard />} />
+                <Route path="leaderboard" element={<div>Leaderboard Page</div>} />
+                <Route path="team" element={<div>Team Page</div>} />
+                <Route path="badges" element={<div>Badges Page</div>} />
+                <Route path="analytics" element={<div>Analytics Page</div>} />
+                <Route path="my-shoutouts" element={<MyShoutouts />} /> 
+              </Routes>
+            </EmployeeLayout>
           }
         />
+
       </Routes>
     </BrowserRouter>
   );

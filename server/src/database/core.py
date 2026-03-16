@@ -1,31 +1,29 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
-
-DATABASE_URL = "postgresql://postgres:jeevan@localhost:5432/bragboard_db"
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, DeclarativeBase
 from dotenv import load_dotenv
 import os
 
-# .env file load karo
+# Load environment variables
 load_dotenv()
 
+# Get database URL from .env
 DATABASE_URL = os.getenv("DATABASE_URL")
+
+# Create engine
 engine = create_engine(DATABASE_URL)
-# Pehle .env se URL lene ki koshish karo, nahi to default use karo
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:postbyme@localhost:5432/bb_admindash_db")
-# SQLite ke liye special argument
-connect_args = {}
-# if DATABASE_URL.startswith("sqlite"):
-#     connect_args = {"check_same_thread": False}
 
-engine = create_engine(DATABASE_URL, connect_args=connect_args)
+# Session factory
+SessionLocal = sessionmaker(
+    autocommit=False,
+    autoflush=False,
+    bind=engine
+)
 
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+# Base model class
+class Base(DeclarativeBase):
+    pass
 
-Base = declarative_base()
-
-# Dependency to get DB session
+# Dependency for DB session
 def get_db():
     db = SessionLocal()
     try:
