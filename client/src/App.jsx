@@ -1,54 +1,48 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Sidebar from "./features/employeeDashboard/components/Sidebar";
-import TopNavbar from "./features/employeeDashboard/components/TopNavbar";
+import { lazy, Suspense } from "react";
 
-import SummaryCards from "./features/employeeDashboard/components/SummaryCards";
+// ✅ ./ not ../
+const EmployeeDashboard = lazy(() =>
+  import("./features/employeeDashboard/pages/EmployeeDashboard")
+);
+const AchievementsPage = lazy(() =>
+  import("./features/employeeDashboard/pages/AchievementsPage")
+);
+const ProfilePage = lazy(() =>
+  import("./features/employeeDashboard/pages/ProfilePage")
+);
+const SettingsPage = lazy(() =>
+  import("./features/employeeDashboard/pages/SettingsPage")
+);
 
-import AchievementTable from "./features/employeeDashboard/components/AchievementTable";
+const PageLoader = () => (
+  <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="text-indigo-500 text-sm animate-pulse">Loading...</div>
+  </div>
+);
 
-import Leaderboard from "./features/employeeDashboard/components/Leaderboard";
-
-import { AnimatePresence, motion } from "framer-motion";
-
-const EmployeeDashboard = () => {
-  return (
-   <div className="flex h-screen bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
-      
-      <Sidebar />
-
-      <div className="flex-1 flex flex-col">
-        <TopNavbar />
-
-        <main className="flex-1 p-6 space-y-6">
-            <h2 className="text-2xl font-bold text-gray-700">
-              Welcome to BragBoard 🚀
-            </h2>
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key="dashboard"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <SummaryCards />
-                  <AchievementTable />
-                  <Leaderboard />
-                </motion.div>
-              </AnimatePresence>
-        </main>
-      </div>
-
-    </div>
-  );
-};
+const NotFound = () => (
+  <div className="flex flex-col items-center justify-center min-h-screen">
+    <p className="text-6xl font-bold text-indigo-500 mb-4">404</p>
+    <p>Page not found.</p>
+    <a href="/" className="mt-4 text-sm text-indigo-500 hover:underline">
+      Go back to Dashboard
+    </a>
+  </div>
+);
 
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<EmployeeDashboard />} />
-      </Routes>
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
+          <Route path="/"             element={<EmployeeDashboard />} />
+          <Route path="/achievements" element={<AchievementsPage />} />
+          <Route path="/profile"      element={<ProfilePage />} />
+          <Route path="/settings"     element={<SettingsPage />} />
+          <Route path="*"             element={<NotFound />} />
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }

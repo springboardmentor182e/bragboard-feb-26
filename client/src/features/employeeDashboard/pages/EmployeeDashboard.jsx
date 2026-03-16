@@ -1,211 +1,82 @@
-import { useEffect, useState } from "react";
-import {
-  getAchievements,
-  addAchievement,
-  deleteAchievement,
-} from "../../services/achievementService";
+import DashboardLayout from "../components/layout/DashboardLayout";
+import SummaryCards from "../components/SummaryCards";
+import AchievementTable from "../components/AchievementTable";
+import Leaderboard from "../components/Leaderboard";
+import ShoutoutForm from "../components/ShoutoutForm";
+import ShoutoutFeed from "../components/ShoutoutFeed";
 
-const EmployeeDashboardPage = () => {
-  const [achievements, setAchievements] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+import useEmployees from "../hooks/useEmployees";
+import useShoutouts from "../hooks/useShoutouts";
+import useNotification from "../hooks/useNotification";
+import useDarkMode from "../hooks/useDarkMode";
 
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    points: "",
-  });
+const EmployeeDashboard = () => {
+  const { employees, selectedEmployee, setSelectedEmployee } = useEmployees();
+  const { shoutouts, addShoutout, handleReaction, handleComment } = useShoutouts(selectedEmployee);
+  const { notification, showNotification } = useNotification();
+  const { dark, toggleDark } = useDarkMode();
 
-  // Fetch achievements on page load
-  useEffect(() => {
-    fetchAchievements();
-  }, []);
-
-  const fetchAchievements = async () => {
-    try {
-      setLoading(true);
-      const res = await getAchievements();
-      setAchievements(res.data);
-    } catch (err) {
-      console.error("Fetch error:", err);
-      setError("Failed to load achievements.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await addAchievement({
-        ...formData,
-        points: Number(formData.points),
-      });
-
-      setFormData({ title: "", description: "", points: "" });
-      setIsModalOpen(false);
-      fetchAchievements();
-    } catch (err) {
-      console.error("Add error:", err);
-    }
-  };
-
-  const handleDelete = async (id) => {
-    try {
-      await deleteAchievement(id);
-      fetchAchievements();
-    } catch (err) {
-      console.error("Delete error:", err);
-    }
+  const handleShoutoutCreated = (newShoutout) => {
+    addShoutout(newShoutout);
+    const recipient = employees.find((e) => e.id === newShoutout.recipient_id);
+    showNotification(`🎉 ${recipient?.name ?? "Someone"} received a shoutout!`);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 p-8 text-white">
-      {/* Header */}
-      <div className="mb-8 flex justify-between items-center">
-        <div>
-          <h1 className="text-4xl font-bold tracking-tight">
-            Employee Dashboard
-          </h1>
-          <p className="text-slate-400 mt-2">
-            Manage employee achievements in real-time
-          </p>
-        </div>
-
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 transition rounded-xl shadow-lg"
+    <DashboardLayout
+      selectedEmployee={selectedEmployee}
+      dark={dark}
+      onToggleDark={toggleDark}
+    >
+      {/* Employee Selector */}
+      <div className="mb-6 flex items-center gap-4">
+        <label className="text-sm font-medium text-gray-600 dark:text-gray-300">
+          Viewing as:
+        </label>
+        <select
+          value={selectedEmployee?.id ?? ""}
+          onChange={(e) => {
+            const emp = employees.find((em) => em.id === Number(e.target.value));
+            setSelectedEmployee(emp ?? null);
+          }}
+          className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
         >
-          + Add Achievement
-        </button>
+          {employees.map((emp) => (
+            <option key={emp.id} value={emp.id}>
+              {emp.name} — {emp.department}
+            </option>
+          ))}
+        </select>
       </div>
 
-      {/* Loading */}
-      {loading && (
-        <div className="text-indigo-400 text-lg">Loading achievements...</div>
-      )}
+      <SummaryCards selectedEmployee={selectedEmployee} />
 
-      {/* Error */}
-      {error && (
-        <div className="text-red-400 text-lg">{error}</div>
-      )}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+        <div className="lg:col-span-2 space-y-6">
+          <AchievementTable selectedEmployee={selectedEmployee} />
+          <ShoutoutForm
+            selectedEmployee={selectedEmployee}
+            onShoutoutCreated={handleShoutoutCreated}
+          />
+          <ShoutoutFeed
+            shoutouts={shoutouts}
+            employees={employees}
+            onReact={handleReaction}
+            onComment={handleComment}
+          />
+        </div>
+        <div>
+          <Leaderboard selectedEmployee={selectedEmployee} />
+        </div>
+      </div>
 
-      {/* Empty State */}
-      {!loading && achievements.length === 0 && (
-        <div className="text-slate-400">
-          No achievements added yet.
+      {notification && (
+        <div className="fixed top-5 right-5 bg-indigo-600 text-white px-5 py-3 rounded-xl shadow-lg text-sm z-50">
+          {notification}
         </div>
       )}
-
-      {/* Table */}
-      {!loading && achievements.length > 0 && (
-        <div className="bg-white/10 backdrop-blur-md rounded-2xl shadow-xl overflow-hidden">
-          <table className="w-full text-left">
-            <thead className="bg-white/5 text-slate-300 uppercase text-sm">
-              <tr>
-                <th className="p-4">Title</th>
-                <th className="p-4">Description</th>
-                <th className="p-4">Points</th>
-                <th className="p-4">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {achievements.map((item) => (
-                <tr
-                  key={item.id}
-                  className="border-t border-white/10 hover:bg-white/5 transition"
-                >
-                  <td className="p-4 font-medium">{item.title}</td>
-                  <td className="p-4 text-slate-300">
-                    {item.description}
-                  </td>
-                  <td className="p-4 text-indigo-400 font-semibold">
-                    {item.points}
-                  </td>
-                  <td className="p-4">
-                    <button
-                      onClick={() => handleDelete(item.id)}
-                      className="px-4 py-2 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 transition"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {/* Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-slate-900 p-8 rounded-2xl w-full max-w-md shadow-2xl border border-white/10">
-            <h2 className="text-2xl font-bold mb-6">
-              Add Achievement
-            </h2>
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <input
-                type="text"
-                name="title"
-                placeholder="Title"
-                value={formData.title}
-                onChange={handleChange}
-                required
-                className="w-full p-3 rounded-lg bg-slate-800 border border-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-
-              <input
-                type="text"
-                name="description"
-                placeholder="Description"
-                value={formData.description}
-                onChange={handleChange}
-                required
-                className="w-full p-3 rounded-lg bg-slate-800 border border-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-
-              <input
-                type="number"
-                name="points"
-                placeholder="Points"
-                value={formData.points}
-                onChange={handleChange}
-                required
-                className="w-full p-3 rounded-lg bg-slate-800 border border-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-
-              <div className="flex justify-end gap-3 pt-4">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 bg-slate-700 rounded-lg hover:bg-slate-600"
-                >
-                  Cancel
-                </button>
-
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-indigo-600 rounded-lg hover:bg-indigo-700"
-                >
-                  Add
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-    </div>
+    </DashboardLayout>
   );
 };
 
-export default EmployeeDashboardPage;
+export default EmployeeDashboard;

@@ -1,14 +1,14 @@
-import axios from "axios";
+import api from "./api";
 
-const API = axios.create({
-  baseURL: "http://localhost:8000",
-});
+/** Fetch all achievements for an employee */
+export const getAchievementsByEmployee = (employeeId) =>
+  api.get(`/achievements/employee/${employeeId}`);
 
-export const getAchievements = () =>
-  API.get("/achievements/");
+/** Create a new achievement */
+export const createAchievement = (data) => api.post("/achievements/", data);
 
-export const addAchievement = (data) =>
-  API.post("/achievements/", data);
+/** Update an existing achievement */
+export const updateAchievement = (id, data) => api.put(`/achievements/${id}`, data);
 
-export const deleteAchievement = (id) =>
-  API.delete(`/achievements/${id}`);
+/** Delete an achievement */
+export const deleteAchievement = (id) => api.delete(`/achievements/${id}`);

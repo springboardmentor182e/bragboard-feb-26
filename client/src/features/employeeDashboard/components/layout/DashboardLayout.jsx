@@ -1,34 +1,21 @@
-const DashboardLayout = ({ children }) => {
+import Sidebar from "../Sidebar";
+import TopNavbar from "./TopNavbar";
+
+const DashboardLayout = ({ children, selectedEmployee }) => {
   return (
     <div className="flex min-h-screen bg-gray-100">
+      
+      {/* Sidebar — uses dedicated Sidebar component */}
+      <Sidebar />
 
-      {/* Sidebar */}
-      <aside className="w-64 bg-white shadow-lg hidden md:flex flex-col">
-        <div className="p-6 text-2xl font-bold border-b">
-          BragBoard
-        </div>
+      {/* Main Section */}
+      <div className="flex-1 flex flex-col min-w-0">
 
-        <nav className="flex-1 p-4 space-y-2">
-          <button className="w-full text-left px-4 py-2 rounded hover:bg-gray-100">
-            Dashboard
-          </button>
-          <button className="w-full text-left px-4 py-2 rounded hover:bg-gray-100">
-            My Achievements
-          </button>
-        </nav>
-      </aside>
+        {/* Topbar — uses dedicated TopNavbar component */}
+        <TopNavbar selectedEmployee={selectedEmployee} />
 
-      {/* Main */}
-      <div className="flex-1 flex flex-col">
-
-        {/* Topbar */}
-        <header className="bg-white shadow px-6 py-4 flex justify-between items-center">
-          <h1 className="text-xl font-semibold">Employee Dashboard</h1>
-          <span className="text-gray-600 text-sm">Welcome, Satyam</span>
-        </header>
-
-        {/* Content */}
-        <main className="flex-1 p-6">
+        {/* Page Content */}
+        <main className="flex-1 p-6 overflow-auto">
           {children}
         </main>
 
