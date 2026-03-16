@@ -1,4 +1,24 @@
 node_modules/
+client/node_modules/
+dist/
+build/
+.vite/
+
+.env
+.env.local
+
+__pycache__/
+*.pyc
+*.pyo
+
+venv/
+env/
+.venv/
+
+*.log
+
+.vscode/
+.idea/
 dist/
 # Node
 client/node_modules
