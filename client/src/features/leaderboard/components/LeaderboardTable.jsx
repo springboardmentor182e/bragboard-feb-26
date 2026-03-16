@@ -1,4 +1,5 @@
-export default function LeaderboardTable({ users }) {
+export default function LeaderboardTable({ users, startRank = 4 }) {
+
   const departmentStyles = {
     Design: "bg-blue-100 text-blue-600",
     Engineering: "bg-purple-100 text-purple-600",
@@ -8,6 +9,8 @@ export default function LeaderboardTable({ users }) {
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-left">
+
+        {/* ===== Table Header ===== */}
         <thead>
           <tr className="text-gray-500 text-sm border-b">
             <th className="py-3">Rank</th>
@@ -17,8 +20,10 @@ export default function LeaderboardTable({ users }) {
           </tr>
         </thead>
 
+        {/* ===== Table Body ===== */}
         <tbody>
           {users.map((user, index) => {
+
             const deptStyle =
               departmentStyles[user.department] ||
               "bg-gray-100 text-gray-600";
@@ -28,26 +33,32 @@ export default function LeaderboardTable({ users }) {
                 key={user.id}
                 className="border-b transition duration-200 hover:bg-gray-50 hover:shadow-sm"
               >
+
+                {/* Rank */}
                 <td className="py-4 font-medium text-gray-700">
-                  #{index + 4}
+                  #{startRank + index}
                 </td>
 
+                {/* Employee */}
                 <td className="flex items-center gap-3 py-4">
-                  <img
-                    src={`http://127.0.0.1:8000${user.photo_url}`}
-                    alt={user.name}
-                    className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover transition-transform duration-300 hover:scale-110"
-                  />
-                  <span className="font-medium text-gray-800 text-sm sm:text-base">
-                    {user.name}
-                  </span>
-                </td>
-                <td className="flex gap-2">
-  <span>🏆 {user.badges?.gold || 0}</span>
-  <span>⭐ {user.badges?.silver || 0}</span>
-  <span>🔥 {user.badges?.bronze || 0}</span>
-</td>
 
+                  <img
+                    src={
+                      user.photo_url
+                        ? `http://127.0.0.1:8000${user.photo_url}`
+                        : "/default-avatar.png"
+                    }
+                    alt={user.full_name}
+                    className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover"
+                  />
+
+                  <span className="font-medium text-gray-800 text-sm sm:text-base">
+                    {user.full_name}
+                  </span>
+
+                </td>
+
+                {/* Department */}
                 <td>
                   <span
                     className={`
@@ -63,13 +74,16 @@ export default function LeaderboardTable({ users }) {
                   </span>
                 </td>
 
+                {/* Points */}
                 <td className="text-right font-semibold text-blue-600 text-sm sm:text-base">
                   {user.points}
                 </td>
+
               </tr>
             );
           })}
         </tbody>
+
       </table>
     </div>
   );

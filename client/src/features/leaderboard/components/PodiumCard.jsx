@@ -1,4 +1,8 @@
 export default function PodiumCard({ user, place }) {
+
+  // Prevent crash if user is undefined
+  if (!user) return null;
+
   const rankConfig = {
     1: {
       gradient: "from-yellow-400 to-yellow-500",
@@ -27,6 +31,7 @@ export default function PodiumCard({ user, place }) {
   };
 
   const current = rankConfig[place];
+
   const deptStyle =
     departmentStyles[user.department] ||
     "bg-white/30 text-gray-800";
@@ -44,6 +49,7 @@ export default function PodiumCard({ user, place }) {
         flex flex-col items-center justify-center
       `}
     >
+
       {/* Rank Badge */}
       <div
         className={`
@@ -60,14 +66,16 @@ export default function PodiumCard({ user, place }) {
       {/* Profile Image */}
       <img
         src={`http://127.0.0.1:8000${user.photo_url}`}
-        alt={user.name}
-        className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover mb-4 shadow-lg border-4 border-white transition duration-300"
+        alt={user.full_name}
+        className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover mb-4 shadow-lg"
       />
 
+      {/* Employee Name */}
       <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
-        {user.name}
+        {user.full_name}
       </h2>
 
+      {/* Department */}
       <span
         className={`
           mt-3 px-4 py-1
@@ -80,10 +88,12 @@ export default function PodiumCard({ user, place }) {
         {user.department}
       </span>
 
+      {/* Points */}
       <p className="mt-5 text-3xl font-bold text-gray-900">
         {user.points}
       </p>
       <p className="text-sm text-gray-700">points</p>
+
     </div>
   );
 }

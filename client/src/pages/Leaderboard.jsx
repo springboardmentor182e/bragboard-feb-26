@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { useLeaderboard } from "../features/leaderboard/hooks/useLeaderboard";
+
 import PodiumCard from "../features/leaderboard/components/PodiumCard";
 import LeaderboardTable from "../features/leaderboard/components/LeaderboardTable";
 
@@ -12,15 +13,17 @@ export default function Leaderboard() {
 
   const usersPerPage = 5;
 
-  // Sort users by points
+  // ===== SORT USERS =====
   const sorted = useMemo(() => {
     return [...leaderboard].sort((a, b) => b.points - a.points);
   }, [leaderboard]);
 
-  // Filter users
+  // ===== FILTER USERS =====
   const filteredUsers = useMemo(() => {
     return sorted.filter((user) => {
-      const matchesSearch = user.name
+      const name = user.full_name || "";
+
+      const matchesSearch = name
         .toLowerCase()
         .includes(search.toLowerCase());
 
@@ -32,16 +35,31 @@ export default function Leaderboard() {
     });
   }, [sorted, search, departmentFilter]);
 
-  // Reset page when search/filter changes
+  // Reset page when filter changes
   useEffect(() => {
     setCurrentPage(1);
   }, [search, departmentFilter]);
 
-  // Pagination
+  // ===== PODIUM USERS =====
+  const first = filteredUsers[0] || null;
+  const second = filteredUsers[1] || null;
+  const third = filteredUsers[2] || null;
+
+  // ===== USERS AFTER PODIUM =====
+  const remainingUsers = filteredUsers.slice(3);
+
+  // ===== PAGINATION =====
   const indexOfLast = currentPage * usersPerPage;
   const indexOfFirst = indexOfLast - usersPerPage;
-  const currentUsers = filteredUsers.slice(indexOfFirst, indexOfLast);
-  const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+
+  const currentUsers = remainingUsers.slice(indexOfFirst, indexOfLast);
+  const totalPages = Math.ceil(remainingUsers.length / usersPerPage);
+
+  // ===== DEPARTMENT LIST =====
+  const departments = [
+    "All",
+    ...new Set(sorted.map((u) => u.department)),
+  ];
 
   if (loading) {
     return (
@@ -59,24 +77,15 @@ export default function Leaderboard() {
     );
   }
 
-  const first = sorted[0];
-  const second = sorted[1];
-  const third = sorted[2];
-
-  const departments = [
-    "All",
-    ...new Set(sorted.map((u) => u.department)),
-  ];
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white px-4 md:px-8 py-8">
 
-      {/* Title */}
+      {/* ===== TITLE ===== */}
       <h1 className="text-3xl md:text-4xl font-bold text-center mb-10 tracking-wide">
         🏆 Leaderboard
       </h1>
 
-      {/* Search & Filter */}
+      {/* ===== SEARCH + FILTER ===== */}
       <div className="max-w-5xl mx-auto flex flex-col md:flex-row gap-4 mb-10">
         <input
           type="text"
@@ -97,43 +106,37 @@ export default function Leaderboard() {
         </select>
       </div>
 
-      {/* Podium Section */}
+      {/* ===== PODIUM SECTION ===== */}
       <div className="flex justify-center items-end gap-3 md:gap-5 mb-14 flex-wrap">
 
-        {second && (
-          <div className="transition duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-gray-400/40 rounded-3xl">
-            <PodiumCard user={second} place={2} />
-          </div>
-        )}
+        {second && <PodiumCard user={second} place={2} />}
 
-        {first && (
-          <div className="transition duration-300 hover:scale-110 hover:shadow-2xl hover:shadow-yellow-400/50 rounded-3xl">
-            <PodiumCard user={first} place={1} />
-          </div>
-        )}
+        {first && <PodiumCard user={first} place={1} />}
 
-        {third && (
-          <div className="transition duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-orange-400/40 rounded-3xl">
-            <PodiumCard user={third} place={3} />
-          </div>
-        )}
+        {third && <PodiumCard user={third} place={3} />}
 
       </div>
 
-      {/* Table Section */}
-      <div className="max-w-5xl mx-auto bg-white text-black rounded-3xl shadow-2xl p-4 md:p-6 transition-all duration-300">
+      {/* ===== TABLE SECTION ===== */}
+      <div className="max-w-5xl mx-auto bg-white text-black rounded-3xl shadow-2xl p-4 md:p-6">
+
         {currentUsers.length > 0 ? (
-          <LeaderboardTable users={currentUsers} />
+          <LeaderboardTable
+            users={currentUsers}
+            startRank={4}
+          />
         ) : (
           <p className="text-center py-10 text-gray-500">
             No employees found.
           </p>
         )}
+
       </div>
 
-      {/* Pagination */}
+      {/* ===== PAGINATION ===== */}
       {totalPages > 1 && (
         <div className="flex justify-center mt-8 gap-2 flex-wrap">
+
           {Array.from({ length: totalPages }, (_, i) => (
             <button
               key={i}
@@ -147,8 +150,10 @@ export default function Leaderboard() {
               {i + 1}
             </button>
           ))}
+
         </div>
       )}
+
     </div>
   );
 }
