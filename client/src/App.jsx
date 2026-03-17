@@ -11,6 +11,7 @@ import Leaderboard from "./features/employeeDashboard/components/Leaderboard";
 import AdminEmployees from "./pages/AdminEmployees";
 import Signup from "./pages/SignupPage";
 import Login from "./pages/LoginPage"
+import ForgotPassword from "./pages/ForgotPassword";
 
 import MyShoutouts from "./pages/MyShoutouts"; // your page
 
@@ -75,40 +76,15 @@ function App() {
 
 <Route path="/login" element={<Login />} />
 
+<Route path="/forgot_password" element={<ForgotPassword/>} />
+
         {/* Admin Area — NO EmployeeLayout */}
         <Route
           path="/admin/employees"
           element={<AdminEmployees />}
-    
-
-
-            <AdminLayout>
-              <Routes>
-                <Route path="/" element={<AdminDashboard />} />
-                <Route path="dashboard" element={<AdminDashboard />} />
-                <Route path="employees" element={<AdminEmployees />} />
-              </Routes>
-            </AdminLayout>
-          }
         />
 
-        {/* Employee Routes */}
-        <Route
-          path="/*"
-          element={
-            <EmployeeLayout>
-              <Routes>
-                <Route path="/" element={<EmployeeDashboard />} />
-                <Route path="feed" element={<EmployeeDashboard />} />
-                <Route path="leaderboard" element={<div>Leaderboard Page</div>} />
-                <Route path="team" element={<div>Team Page</div>} />
-                <Route path="badges" element={<div>Badges Page</div>} />
-                <Route path="analytics" element={<div>Analytics Page</div>} />
-                <Route path="my-shoutouts" element={<MyShoutouts />} /> 
-              </Routes>
-            </EmployeeLayout>
-          }
-        />
+       
 
       </Routes>
     </BrowserRouter>
