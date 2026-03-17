@@ -7,6 +7,7 @@ import Leaderboard from "./features/employeeDashboard/components/Leaderboard";
 import AdminEmployees from "./pages/AdminEmployees";
 import Signup from "./pages/SignupPage";
 import Login from "./pages/LoginPage"
+import ForgotPassword from "./pages/ForgotPassword";
 
 function EmployeeLayout({ children }) {
   return (
@@ -59,7 +60,7 @@ function App() {
        <Route path="/signup" element={<Signup />} />
 
 <Route path="/login" element={<Login />} />
-
+<Route path="/forgot_password" element={<ForgotPassword/>} />
 
 
       </Routes>
