@@ -1,8 +1,9 @@
 function Card({ children, className = "" }) {
   return (
     <div
-      className={`bg-white rounded-3xl border border-slate-200 
-      shadow-lg hover:shadow-xl transition-all duration-300 ${className}`}
+      className={`bg-white rounded-2xl border border-slate-200 
+      shadow-sm hover:shadow-md transition-all duration-300 
+      p-6 ${className}`}
     >
       {children}
     </div>
