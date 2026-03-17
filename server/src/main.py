@@ -1,24 +1,36 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from src.api import router
+
 from src.database.core import Base, engine
-from src.entities import user
+from src.shoutouts.controller import router as shoutout_router
+from src.admin.controller import router as admin_router
 
 app = FastAPI(title="BragBoard API")
 
-# Create tables
+# Create database tables
 Base.metadata.create_all(bind=engine)
 
+# Configure CORS (allow frontend)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-app.include_router(router)
+# Include routers
+app.include_router(shoutout_router)
+app.include_router(admin_router)
 
 @app.get("/")
 def root():
-    return {"message": "BragBoard API running 🚀"}
+    return {
+        "message": "BragBoard API is running",
+        "docs": "/docs"
+    }
+
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}
