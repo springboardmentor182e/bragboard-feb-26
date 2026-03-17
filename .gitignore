@@ -13,3 +13,9 @@ server/.env
 # OS
 .DS_Store
 Thumbs.db
+
+node_modules/
+client/node_modules/
+.env
+dist/
+build/
