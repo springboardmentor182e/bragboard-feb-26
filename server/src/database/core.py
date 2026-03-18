@@ -2,12 +2,17 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
 from dotenv import load_dotenv
 import os
-
+import socket
 # Load environment variables
 load_dotenv()
 
 # Get database URL from .env
-DATABASE_URL = os.getenv("DATABASE_URL")
+# Agar Render pe deploy hai to RENDER_DATABASE_URL use karo
+if os.getenv("RENDER"):  # Render apne aap "RENDER" environment variable set karta hai
+    DATABASE_URL = os.getenv("RENDER_DATABASE_URL")
+else:
+    # Local development mein LOCAL_DATABASE_URL use karo
+    DATABASE_URL = os.getenv("LOCAL_DATABASE_URL", "postgresql://postgres:postbyme@localhost:5432/bb_admindash_db")
 
 # Create engine
 engine = create_engine(DATABASE_URL)
