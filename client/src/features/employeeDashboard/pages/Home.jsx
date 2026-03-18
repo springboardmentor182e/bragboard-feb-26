@@ -5,7 +5,9 @@ const Home = () => {
   const [brags, setBrags] = useState([]);
 
   useEffect(() => {
-    axios.get("http://localhost:8000/brags")
+    const API = process.env.REACT_APP_API_URL;
+
+axios.get(`${API}/brags`)
       .then(res => setBrags(res.data))
       .catch(err => console.log(err));
   }, []);

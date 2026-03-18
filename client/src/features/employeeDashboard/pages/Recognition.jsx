@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { getBrags, createBrag, likeBrag } from "../services/bragService";
 
 const timeAgo = (date) => {
   const seconds = Math.floor((new Date() - new Date(date)) / 1000);
@@ -14,39 +14,50 @@ const timeAgo = (date) => {
 const Recognition = () => {
   const [brags, setBrags] = useState([]);
   const [newBrag, setNewBrag] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Fetch brags from backend
   useEffect(() => {
     fetchBrags();
   }, []);
 
   const fetchBrags = () => {
-  axios.get(`${process.env.REACT_APP_API_URL}/brags`)
-    .then(res => setBrags(res.data))
-    .catch(err => console.log(err));
-};
+    setLoading(true);
 
-const handlePostBrag = () => {
-  if (!newBrag.trim()) return;
+    getBrags()
+      .then((res) => {
+        setBrags(res.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError("Failed to load brags");
+        setLoading(false);
+      });
+  };
 
-  axios.post(`${process.env.REACT_APP_API_URL}/brags`, {
-    author: "Employee",
-    content: newBrag
-  })
-  .then(() => {
-    setNewBrag("");
-    fetchBrags();
-  })
-  .catch(err => console.log(err));
-};
+  const handlePostBrag = () => {
+    if (!newBrag.trim()) return;
+
+    createBrag({
+      author: "Employee",
+      content: newBrag,
+    }).then(() => {
+      setNewBrag("");
+      fetchBrags();
+    });
+  };
 
   const handleLike = (id) => {
-  axios.post(`${process.env.REACT_APP_API_URL}/brags/${id}/like`)
-    .then(() => {
-      fetchBrags();
-    })
-    .catch(err => console.log(err));
-};
+    likeBrag(id)
+      .then(() => fetchBrags())
+      .catch((err) => console.log(err));
+  };
+
+  // ✅ HANDLE LOADING HERE
+  if (loading) return <p className="text-center mt-10">Loading recognitions...</p>;
+
+  // ✅ HANDLE ERROR HERE
+  if (error) return <p className="text-center mt-10 text-red-500">{error}</p>;
 
   return (
     <div className="max-w-3xl mx-auto space-y-8">
@@ -87,27 +98,27 @@ const handlePostBrag = () => {
                 {brag.author}
               </h4>
               <span className="text-xs text-lightText">
-  {timeAgo(brag.created_at)}
-</span>
+                {timeAgo(brag.created_at)}
+              </span>
             </div>
 
             <p className="text-lightText mt-3">
               {brag.content}
             </p>
+
             <div className="flex gap-6 mt-4 text-sm font-medium">
-  <button
-    onClick={() => handleLike(brag.id)}
-    className="text-softBrown hover:text-accentBrown transition"
-  >
-    ❤️ {brag.likes}
-  </button>
-</div>
+              <button
+                onClick={() => handleLike(brag.id)}
+                className="text-softBrown hover:text-accentBrown transition"
+              >
+                ❤️ {brag.likes}
+              </button>
+            </div>
           </div>
         ))
       )}
     </div>
   );
-  
 };
 
 export default Recognition;
