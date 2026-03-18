@@ -1,4 +1,26 @@
+# Node
 node_modules/
-.env
+client/node_modules
 dist/
+client/dist
 build/
+
+# Environment files
+.env
+client/.env
+server/.env
+
+# Python
+server/venv
+server/__pycache__
+*.pyc
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Database
+*.db
+
+__pycache__/
+*.pyc
