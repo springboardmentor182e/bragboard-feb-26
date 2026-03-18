@@ -1,6 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from src.auth.controller import router as auth_router
+
+from routes.brag import router as brag_router
+from auth.controller import router as auth_router
+from database.core import get_db
 
 app = FastAPI(
     title="PrackBoard API",
@@ -8,7 +11,6 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Configure CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
@@ -17,9 +19,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include routers
 app.include_router(auth_router)
-
+app.include_router(brag_router)
 
 @app.get("/")
 def read_root():
@@ -29,13 +30,6 @@ def read_root():
         "docs": "/docs"
     }
 
-
 @app.get("/health")
 def health_check():
     return {"status": "healthy"}
-
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
-
