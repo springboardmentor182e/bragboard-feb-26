@@ -23,6 +23,7 @@ app.add_middleware(
 app.include_router(auth_router)
 app.include_router(admin_router)
 
+
 @app.get("/")
 def root():
     return {"message": "BragBoard API Running 🚀"}
