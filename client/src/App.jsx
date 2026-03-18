@@ -82,9 +82,7 @@ function App() {
         <Route
           path="/admin/employees"
           element={<AdminEmployees />}
-        />
-
-       
+        />    
 
       </Routes>
     </BrowserRouter>
