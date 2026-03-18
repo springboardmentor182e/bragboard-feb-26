@@ -32,7 +32,7 @@ function LoginForm() {
         <div className="w-full max-w-sm bg-white rounded-2xl shadow-2xl p-8 z-10">
 
           <h2 className="text-2xl font-bold text-gray-800 mb-2 text-center">
-            Create Account
+            Welcome to Login
           </h2>
 
           <p className="text-gray-500 mb-6 text-sm text-center">
@@ -54,7 +54,17 @@ function LoginForm() {
               placeholder="Password"
               className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
+          
 
+          <p className="text-xs text-gray-500 mt-5 text-left">
+            
+                 <Link
+    to="/signup"
+    className="text-indigo-600 font-semibold ml-1 cursor-pointer"
+  >
+    forgot password ?
+  </Link>
+          </p>
             
 
             <button
@@ -63,7 +73,7 @@ function LoginForm() {
             >
               Sign Up
             </button>
-
+        
           </form>
 
           <p className="text-xs text-gray-500 mt-5 text-center">
