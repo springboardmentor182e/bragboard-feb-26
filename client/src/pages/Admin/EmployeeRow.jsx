@@ -2,7 +2,7 @@ import React from 'react';
 
 export const EmployeeRow = ({ employee }) => {
     return (
-        <tr className="hover:bg-gray-50 transition-colors duration-150 group">
+        <tr className="hover:bg-gray-50/60 transition-colors duration-100 group">
             <td className="px-6 py-4 whitespace-nowrap">
                 <div className="flex items-center">
                     <div className="flex-shrink-0 h-10 w-10">
@@ -17,9 +17,10 @@ export const EmployeeRow = ({ employee }) => {
                 </div>
             </td>
             <td className="px-6 py-4 whitespace-nowrap">
-                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${employee.role === 'admin'
-                        ? 'bg-purple-100 text-purple-800'
-                        : 'bg-green-100 text-green-800'
+                <span className={`px-2 py-0.5 inline-flex text-xs font-medium rounded-full ${
+                    employee.role === 'admin'
+                        ? 'bg-purple-50 text-purple-700'
+                        : 'bg-green-50 text-green-700'
                     }`}>
                     {employee.role}
                 </span>
@@ -31,8 +32,8 @@ export const EmployeeRow = ({ employee }) => {
                 {new Date(employee.dateJoined).toLocaleDateString()}
             </td>
             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <button className="text-indigo-600 hover:text-indigo-900 mr-4 opacity-0 group-hover:opacity-100 transition-opacity">Edit</button>
-                <button className="text-red-500 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity">Remove</button>
+                <button className="text-blue-500 hover:text-blue-700 mr-3 text-sm font-medium bg-transparent border-none cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity">Edit</button>
+                <button className="text-red-400 hover:text-red-600 text-sm font-medium bg-transparent border-none cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity">Remove</button>
             </td>
         </tr>
     );
