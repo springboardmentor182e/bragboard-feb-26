@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Animations */
 @keyframes softGoldPulse {
   0% {
     box-shadow: 0 0 10px rgba(255, 215, 0, 0.25);
@@ -25,4 +26,10 @@
 
 .animate-soft-bounce {
   animation: softBounce 2.2s ease-in-out infinite;
+}
+
+/* ✅ IMPORTANT: NO GLOBAL COLOR */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
 }

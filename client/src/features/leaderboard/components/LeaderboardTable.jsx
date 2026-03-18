@@ -1,18 +1,49 @@
-export default function LeaderboardTable({ users, startRank = 4 }) {
+export default function LeaderboardTable({ users, startRank = 1, darkMode }) {
 
-  const departmentStyles = {
-    Design: "bg-blue-100 text-blue-600",
-    Engineering: "bg-purple-100 text-purple-600",
-    Marketing: "bg-green-100 text-green-600",
+  // ===== GLASS DEPARTMENT STYLE =====
+  const getDeptStyle = (dept) => {
+
+    // 🌙 DARK MODE (bright glass colors)
+    if (darkMode) {
+      switch (dept) {
+        case "Design":
+          return "bg-pink-500/20 text-pink-300 border border-pink-400/30 backdrop-blur-md";
+        case "Engineering":
+          return "bg-purple-500/20 text-purple-300 border border-purple-400/30 backdrop-blur-md";
+        case "Marketing":
+          return "bg-orange-500/20 text-orange-300 border border-orange-400/30 backdrop-blur-md";
+        default:
+          return "bg-gray-500/20 text-gray-300 border border-gray-400/30 backdrop-blur-md";
+      }
+    }
+
+    // ☀️ LIGHT MODE (soft glass colors)
+    switch (dept) {
+      case "Design":
+        return "bg-pink-200/40 text-pink-700 border border-pink-300/40 backdrop-blur-md";
+      case "Engineering":
+        return "bg-purple-200/40 text-purple-700 border border-purple-300/40 backdrop-blur-md";
+      case "Marketing":
+        return "bg-orange-200/40 text-orange-700 border border-orange-300/40 backdrop-blur-md";
+      default:
+        return "bg-gray-200/40 text-gray-700 border border-gray-300/40 backdrop-blur-md";
+    }
   };
 
   return (
     <div className="overflow-x-auto">
+
       <table className="w-full text-left">
 
-        {/* ===== Table Header ===== */}
+        {/* ===== HEADER ===== */}
         <thead>
-          <tr className="text-gray-500 text-sm border-b">
+          <tr
+            className={`text-sm border-b ${
+              darkMode
+                ? "text-white border-slate-600"
+                : "text-orange-600 border-orange-100"
+            }`}
+          >
             <th className="py-3">Rank</th>
             <th>Employee</th>
             <th>Department</th>
@@ -20,22 +51,32 @@ export default function LeaderboardTable({ users, startRank = 4 }) {
           </tr>
         </thead>
 
-        {/* ===== Table Body ===== */}
+        {/* ===== BODY ===== */}
         <tbody>
           {users.map((user, index) => {
 
-            const deptStyle =
-              departmentStyles[user.department] ||
-              "bg-gray-100 text-gray-600";
+            const displayName =
+              (user.full_name && user.full_name.trim()) ||
+              user.name ||
+              user.username ||
+              "No Name";
 
             return (
               <tr
-                key={user.id}
-                className="border-b transition duration-200 hover:bg-gray-50 hover:shadow-sm"
+                key={user.id || index}
+                className={`border-b transition ${
+                  darkMode
+                    ? "border-slate-700 hover:bg-slate-700/40"
+                    : "border-orange-100 hover:bg-orange-50"
+                }`}
               >
 
                 {/* Rank */}
-                <td className="py-4 font-medium text-gray-700">
+                <td
+                  className={`py-4 font-medium ${
+                    darkMode ? "text-gray-300" : "text-gray-700"
+                  }`}
+                >
                   #{startRank + index}
                 </td>
 
@@ -48,35 +89,38 @@ export default function LeaderboardTable({ users, startRank = 4 }) {
                         ? `http://127.0.0.1:8000${user.photo_url}`
                         : "/default-avatar.png"
                     }
-                    alt={user.full_name}
+                    alt={displayName}
                     className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover"
                   />
 
-                  <span className="font-medium text-gray-800 text-sm sm:text-base">
-                    {user.full_name}
+                  <span
+                    className={`font-semibold text-sm sm:text-base ${
+                      darkMode ? "text-white" : "text-gray-800"
+                    }`}
+                  >
+                    {displayName}
                   </span>
 
                 </td>
 
-                {/* Department */}
+                {/* Department (GLASS STYLE 🔥) */}
                 <td>
                   <span
-                    className={`
-                      px-2 sm:px-3 py-1
-                      text-xs sm:text-sm
-                      rounded-full font-medium
-                      transition-all duration-200
-                      hover:scale-105
-                      ${deptStyle}
-                    `}
+                    className={`px-3 py-1 rounded-full text-xs sm:text-sm font-semibold ${getDeptStyle(
+                      user.department
+                    )}`}
                   >
-                    {user.department}
+                    {user.department || "N/A"}
                   </span>
                 </td>
 
                 {/* Points */}
-                <td className="text-right font-semibold text-blue-600 text-sm sm:text-base">
-                  {user.points}
+                <td
+                  className={`text-right font-semibold text-sm sm:text-base ${
+                    darkMode ? "text-blue-400" : "text-blue-600"
+                  }`}
+                >
+                  {user.points ?? 0}
                 </td>
 
               </tr>
@@ -85,6 +129,7 @@ export default function LeaderboardTable({ users, startRank = 4 }) {
         </tbody>
 
       </table>
+
     </div>
   );
 }

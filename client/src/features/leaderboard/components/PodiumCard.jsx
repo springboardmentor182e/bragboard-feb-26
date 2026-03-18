@@ -1,8 +1,8 @@
 export default function PodiumCard({ user, place }) {
 
-  // Prevent crash if user is undefined
   if (!user) return null;
 
+  // ===== RANK CONFIG =====
   const rankConfig = {
     1: {
       gradient: "from-yellow-400 to-yellow-500",
@@ -24,17 +24,24 @@ export default function PodiumCard({ user, place }) {
     },
   };
 
-  const departmentStyles = {
-    Design: "bg-blue-500/20 text-blue-900",
-    Engineering: "bg-purple-500/20 text-purple-900",
-    Marketing: "bg-green-500/20 text-green-900",
+  // ===== GLASS + GRADIENT DEPARTMENT STYLE =====
+  const getDeptStyle = (dept) => {
+    switch (dept) {
+      case "Design":
+        return "bg-gradient-to-r from-pink-400/30 via-purple-400/30 to-indigo-400/30 text-purple-900 border border-white/40 backdrop-blur-md shadow-md";
+
+      case "Engineering":
+        return "bg-gradient-to-r from-purple-400/30 via-blue-400/30 to-cyan-400/30 text-blue-900 border border-white/40 backdrop-blur-md shadow-md";
+
+      case "Marketing":
+        return "bg-gradient-to-r from-orange-400/30 via-yellow-400/30 to-red-400/30 text-orange-900 border border-white/40 backdrop-blur-md shadow-md";
+
+      default:
+        return "bg-gradient-to-r from-gray-300/30 to-gray-400/30 text-gray-800 border border-white/40 backdrop-blur-md";
+    }
   };
 
   const current = rankConfig[place];
-
-  const deptStyle =
-    departmentStyles[user.department] ||
-    "bg-white/30 text-gray-800";
 
   return (
     <div
@@ -65,24 +72,26 @@ export default function PodiumCard({ user, place }) {
 
       {/* Profile Image */}
       <img
-        src={`http://127.0.0.1:8000${user.photo_url}`}
+        src={
+          user.photo_url
+            ? `http://127.0.0.1:8000${user.photo_url}`
+            : "/default-avatar.png"
+        }
         alt={user.full_name}
-        className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover mb-4 shadow-lg"
+        className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover mb-4 shadow-lg border-2 border-white/40"
       />
 
       {/* Employee Name */}
-      <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
+      <h2 className="text-lg sm:text-xl font-bold text-gray-900">
         {user.full_name}
       </h2>
 
-      {/* Department */}
+      {/* Department (GLASS + GRADIENT 🔥) */}
       <span
         className={`
-          mt-3 px-4 py-1
-          text-xs sm:text-sm
-          rounded-full font-medium
-          backdrop-blur-md
-          ${deptStyle}
+          mt-3 px-4 py-1 rounded-full text-xs sm:text-sm font-semibold
+          transition-all duration-300 hover:scale-105
+          ${getDeptStyle(user.department)}
         `}
       >
         {user.department}
