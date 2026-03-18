@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
+<<<<<<< HEAD
 import { Star, Trophy, BarChart2, Clock } from "lucide-react";
 import axios from "axios";
 
@@ -48,6 +49,37 @@ const SummaryCards = ({ selectedEmployee }) => {
 
     fetchStats();
   }, [selectedEmployee]);
+=======
+import { Award, Trophy, Star, Clock } from "lucide-react";
+
+const SummaryCards = () => {
+  const stats = [
+    {
+      title: "Total Points",
+      value: 2450,
+      icon: <Star className="w-6 h-6 text-indigo-600" />,
+      bg: "bg-indigo-100",
+    },
+    {
+      title: "Achievements",
+      value: 18,
+      icon: <Award className="w-6 h-6 text-amber-600" />,
+      bg: "bg-amber-100",
+    },
+    {
+      title: "Rank",
+      value: 4,
+      icon: <Trophy className="w-6 h-6 text-purple-600" />,
+      bg: "bg-purple-100",
+    },
+    {
+      title: "Pending Reviews",
+      value: 2,
+      icon: <Clock className="w-6 h-6 text-rose-600" />,
+      bg: "bg-rose-100",
+    },
+  ];
+>>>>>>> origin/main-group-B
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -56,13 +88,11 @@ const SummaryCards = ({ selectedEmployee }) => {
           key={card.key}
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: index * 0.15, duration: 0.4 }}
-          whileHover={{ scale: 1.02 }}
-          className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl
-                     rounded-2xl shadow-lg dark:shadow-black/30
-                     border border-gray-200 dark:border-gray-700
-                     p-6 transition-all duration-300"
+          transition={{ delay: index * 0.12, duration: 0.4 }}
+          whileHover={{ scale: 1.03 }}
+          className="bg-white/90 backdrop-blur-md rounded-3xl shadow-xl border border-slate-200 p-6 transition-all duration-300"
         >
+<<<<<<< HEAD
           {/* Icon + Title */}
           <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
             <span className="text-indigo-500">{card.icon}</span>
@@ -79,6 +109,22 @@ const SummaryCards = ({ selectedEmployee }) => {
               {card.suffix}
             </p>
           )}
+=======
+          {/* Icon */}
+          <div
+            className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 ${item.bg}`}
+          >
+            {item.icon}
+          </div>
+
+          {/* Title */}
+          <h3 className="text-sm font-medium text-slate-500">
+            {item.title}
+          </h3>
+
+          {/* Animated Number */}
+          <AnimatedNumber value={item.value} />
+>>>>>>> origin/main-group-B
         </motion.div>
       ))}
     </div>
@@ -105,7 +151,19 @@ const AnimatedNumber = ({ value }) => {
     return () => clearInterval(counter);
   }, [value]);
 
+<<<<<<< HEAD
   return <span>{count}</span>;
+=======
+  return (
+    <p className="text-3xl font-bold mt-2 text-slate-800">
+      {typeof value === "number"
+        ? value === 4
+          ? `#${count}`
+          : count
+        : value}
+    </p>
+  );
+>>>>>>> origin/main-group-B
 };
 
 export default SummaryCards;

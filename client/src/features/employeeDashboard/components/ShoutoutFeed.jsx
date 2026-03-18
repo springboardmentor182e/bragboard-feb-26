@@ -17,11 +17,9 @@ const formatDate = (dateStr) => {
 
 const ShoutoutFeed = ({ shoutouts, employees = [], onReact, onComment }) => {
   const [commentText, setCommentText] = useState({});
-  // Track user's reaction per shoutout locally
   const [userReactions, setUserReactions] = useState({});
 
   const handleReact = (shoutoutId, reaction) => {
-    // Prevent reacting twice with same reaction
     if (userReactions[shoutoutId] === reaction) return;
     setUserReactions((prev) => ({ ...prev, [shoutoutId]: reaction }));
     onReact?.(shoutoutId, reaction);
@@ -50,9 +48,9 @@ const ShoutoutFeed = ({ shoutouts, employees = [], onReact, onComment }) => {
 
       <div className="space-y-4">
         {shoutouts.map((item) => {
-          const senderName = getEmployeeName(employees, item.sender_id);
+          const senderName    = getEmployeeName(employees, item.sender_id);
           const recipientName = getEmployeeName(employees, item.recipient_id);
-          const userReaction = userReactions[item.id];
+          const userReaction  = userReactions[item.id];
 
           return (
             <div
@@ -101,11 +99,11 @@ const ShoutoutFeed = ({ shoutouts, employees = [], onReact, onComment }) => {
                 ))}
               </div>
 
-              {/* Comments */}
+              {/* Comments — each comment is a full object with id and text */}
               <div className="mt-4 space-y-1">
-                {item.comments?.map((c, index) => (
-                  <p key={index} className="text-sm text-gray-500 dark:text-slate-400">
-                    💬 {c}
+                {item.comments?.map((c) => (
+                  <p key={c.id} className="text-sm text-gray-500 dark:text-slate-400">
+                    💬 {c.text}
                   </p>
                 ))}
               </div>

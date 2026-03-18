@@ -6,6 +6,7 @@ from src.models import Employee
 from src.achievements import router as achievements_router
 from src.shoutouts import router as shoutouts_router
 from src.employees import router as employees_router
+from src.comments import router as comments_router
 
 
 def seed_employees():
@@ -29,19 +30,17 @@ def seed_employees():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup
     Base.metadata.create_all(bind=engine)
     seed_employees()
     yield
-    # Shutdown (add cleanup here if needed)
 
 
 app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # Vite dev server
-    allow_credentials=False,                  # Set True only with explicit origins + auth
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -49,3 +48,4 @@ app.add_middleware(
 app.include_router(achievements_router)
 app.include_router(shoutouts_router)
 app.include_router(employees_router)
+app.include_router(comments_router)

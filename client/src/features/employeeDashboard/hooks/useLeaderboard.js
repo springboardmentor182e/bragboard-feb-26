@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getLeaderboard } from "../services/employeeService";
 
-const useLeaderboard = () => {
+const useLeaderboard = (refreshKey = 0) => {
   const [leaders, setLeaders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -20,7 +20,7 @@ const useLeaderboard = () => {
       }
     };
     fetch();
-  }, []);
+  }, [refreshKey]);
 
   return { leaders, loading, error };
 };

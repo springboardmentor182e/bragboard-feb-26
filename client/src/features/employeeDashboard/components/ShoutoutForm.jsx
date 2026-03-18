@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { getEmployees } from "../services/employeeService";
-import axios from "axios";
-
-const BASE_URL = "http://localhost:8000";
+import { createShoutout } from "../services/shoutoutService";
 
 const ShoutoutForm = ({ selectedEmployee, onShoutoutCreated }) => {
   const [recipientId, setRecipientId] = useState("");
@@ -42,13 +40,13 @@ const ShoutoutForm = ({ selectedEmployee, onShoutoutCreated }) => {
 
     setLoading(true);
     try {
-      const res = await axios.post(`${BASE_URL}/shoutouts/`, {
-        sender_id: selectedEmployee.id,
+      const res = await createShoutout({
+        sender_id:    selectedEmployee.id,
         recipient_id: Number(recipientId),
-        message: message.trim(),
+        message:      message.trim(),
       });
 
-      onShoutoutCreated?.(res.data); // notify parent with saved shoutout
+      onShoutoutCreated?.(res.data);
       setRecipientId("");
       setMessage("");
     } catch (err) {

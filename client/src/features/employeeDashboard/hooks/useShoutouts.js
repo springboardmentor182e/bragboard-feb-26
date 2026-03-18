@@ -50,7 +50,7 @@ const useShoutouts = (selectedEmployee) => {
       setShoutouts((prev) =>
         prev.map((s) =>
           s.id === shoutoutId
-            ? { ...s, comments: [...(s.comments ?? []), res.data.text] }
+            ? { ...s, comments: [...(s.comments ?? []), res.data] }
             : s
         )
       );

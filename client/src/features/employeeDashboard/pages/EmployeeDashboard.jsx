@@ -1,3 +1,4 @@
+import { useState } from "react";
 import DashboardLayout from "../components/layout/DashboardLayout";
 import SummaryCards from "../components/SummaryCards";
 import AchievementTable from "../components/AchievementTable";
@@ -15,9 +16,11 @@ const EmployeeDashboard = () => {
   const { shoutouts, addShoutout, handleReaction, handleComment } = useShoutouts(selectedEmployee);
   const { notification, showNotification } = useNotification();
   const { dark, toggleDark } = useDarkMode();
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const handleShoutoutCreated = (newShoutout) => {
     addShoutout(newShoutout);
+    setRefreshKey((prev) => prev + 1);
     const recipient = employees.find((e) => e.id === newShoutout.recipient_id);
     showNotification(`🎉 ${recipient?.name ?? "Someone"} received a shoutout!`);
   };
@@ -66,7 +69,10 @@ const EmployeeDashboard = () => {
           />
         </div>
         <div>
-          <Leaderboard selectedEmployee={selectedEmployee} />
+          <Leaderboard
+            selectedEmployee={selectedEmployee}
+            refreshKey={refreshKey}
+          />
         </div>
       </div>
 

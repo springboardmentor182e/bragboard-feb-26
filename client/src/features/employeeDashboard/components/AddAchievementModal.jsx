@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
-import axios from "axios";
-
-const BASE_URL = "http://localhost:8000";
+import { createAchievement, updateAchievement } from "../services/achievementService";
 
 const EMPTY_FORM = { title: "", description: "", points: "" };
 
@@ -10,9 +8,9 @@ const AddAchievementModal = ({
   isOpen,
   setIsOpen,
   selectedEmployee,
-  editingAchievement,  // full object with id, or null
+  editingAchievement,
   setEditingAchievement,
-  onSave,              // callback: onSave(savedAchievement)
+  onSave,
 }) => {
   const [form, setForm] = useState(EMPTY_FORM);
   const [loading, setLoading] = useState(false);
@@ -23,9 +21,9 @@ const AddAchievementModal = ({
     if (!isOpen) return;
     if (editingAchievement) {
       setForm({
-        title: editingAchievement.title,
+        title:       editingAchievement.title,
         description: editingAchievement.description ?? "",
-        points: editingAchievement.points,
+        points:      editingAchievement.points,
       });
     } else {
       setForm(EMPTY_FORM);
@@ -53,28 +51,19 @@ const AddAchievementModal = ({
     setError(null);
 
     try {
-      let saved;
+      const payload = {
+        title:       form.title,
+        description: form.description,
+        points:      Number(form.points),
+        employee_id: selectedEmployee.id,
+      };
 
+      let saved;
       if (editingAchievement) {
-        // Update existing
-        const res = await axios.put(
-          `${BASE_URL}/achievements/${editingAchievement.id}`,
-          {
-            title: form.title,
-            description: form.description,
-            points: Number(form.points),
-            employee_id: selectedEmployee.id,
-          }
-        );
+        const res = await updateAchievement(editingAchievement.id, payload);
         saved = res.data;
       } else {
-        // Create new
-        const res = await axios.post(`${BASE_URL}/achievements/`, {
-          title: form.title,
-          description: form.description,
-          points: Number(form.points),
-          employee_id: selectedEmployee.id,
-        });
+        const res = await createAchievement(payload);
         saved = res.data;
       }
 
