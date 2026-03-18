@@ -1,4 +1,4 @@
-import Modal from "../../../../components/Modals/Modal";
+import Modal from "../../../components/Modals/Modal";
 import { Heart, MessageSquare, Star, Award, Calendar, CheckCircle, Info } from "lucide-react";
 
 const ViewShoutoutModal = ({ isOpen, onClose, item, onEdit }) => {
