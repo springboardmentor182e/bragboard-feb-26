@@ -13,7 +13,9 @@ if os.getenv("RENDER"):  # Render apne aap "RENDER" environment variable set kar
 else:
     # Local development mein LOCAL_DATABASE_URL use karo
     DATABASE_URL = os.getenv("LOCAL_DATABASE_URL", "postgresql://postgres:postbyme@localhost:5432/bb_admindash_db")
-
+# Add error handling to see what's happening
+if DATABASE_URL is None:
+    raise ValueError("DATABASE_URL environment variable is not set")
 # Create engine
 engine = create_engine(DATABASE_URL)
 
