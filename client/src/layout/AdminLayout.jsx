@@ -6,14 +6,14 @@ const AdminLayout = ({ children }) => {
     <div className="bg-[#EEF2F7] min-h-screen">
 
       {/* Fixed Sidebar */}
-      <AdminSidebar />
+      <Sidebar />
 
       {/* Main Section */}
       <div className="ml-72">
 
         {/* Fixed Topbar */}
         <div className="fixed top-0 left-72 right-0 z-30 bg-white border-b border-slate-200">
-          <AdminTopbar />
+          <Navbar />
         </div>
 
         {/* Scrollable Content Area */}
