@@ -1,9 +1,9 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import AdminDashboard from './features/admin-dash/pages/AdminDashboard';
-import Sidebar_admin from './layout/Sidebar';
+// import Sidebar_admin from './layout/Sidebar';
 import Navbar from './layout/Navbar';
-import Sidebar from "./features/employeeDashboard/components/Sidebar";
+import Sidebar from "./layout/Sidebar";
 import TopNavbar from "./features/employeeDashboard/components/TopNavbar";
 import SummaryCards from "./features/employeeDashboard/components/SummaryCards";
 import AchievementTable from "./features/employeeDashboard/components/AchievementTable";
