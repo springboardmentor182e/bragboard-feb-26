@@ -79,21 +79,28 @@ async def get_shoutout(shoutout_id: int, db: Session = Depends(get_db)):
     return _shoutout_db_to_model(shoutout)
 
 
-@router.post("/shoutouts", response_model=models.Shoutout)
+@router.post("/shoutouts", response_model=list[models.Shoutout])
 async def create_shoutout(shoutout: models.ShoutoutCreate, db: Session = Depends(get_db)):
-    """Create a new shoutout"""
+    """Create a new shoutout for each recipient"""
     try:
         # For now, using sender_id=1 as default, can be updated to use authenticated user
-        new_shoutout = dashboard_service.create_shoutout(
-            db,
-            sender_id=1,
-            recipient_id=shoutout.recipient_id,
-            badge_id=shoutout.badge_id,
-            message=shoutout.message
-        )
-        return _shoutout_db_to_model(new_shoutout)
+        created_shoutouts = []
+        for recipient_id in shoutout.recipientIds:
+            new_shoutout = dashboard_service.create_shoutout(
+                db,
+                sender_id=1,
+                recipient_id=recipient_id,
+                badge_id=shoutout.badgeId,
+                message=shoutout.message
+            )
+            created_shoutouts.append(_shoutout_db_to_model(new_shoutout))
+        return created_shoutouts
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.post("/shoutouts/{shoutout_id}/react")

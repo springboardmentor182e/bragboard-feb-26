@@ -1,12 +1,13 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
+import { shoutouts as mockShoutouts, activities as mockActivities } from '../data/mockData';
 
 const API_BASE_URL = 'http://localhost:8000';
 const ShoutoutContext = createContext();
 
 export function ShoutoutProvider({ children }) {
-  const [shoutouts, setShoutouts] = useState([]);
-  const [activities, setActivities] = useState([]);
+  const [shoutouts, setShoutouts] = useState(mockShoutouts);
+  const [activities, setActivities] = useState(mockActivities);
   const [loading, setLoading] = useState(false);
   const [reactingTo, setReactingTo] = useState(null); // Track which shoutout is reacting
 
@@ -17,6 +18,7 @@ export function ShoutoutProvider({ children }) {
       setShoutouts(response.data);
     } catch (error) {
       console.error('Error fetching shoutouts:', error);
+      setShoutouts(mockShoutouts);
     }
   }, []);
 
@@ -27,6 +29,7 @@ export function ShoutoutProvider({ children }) {
       setActivities(response.data);
     } catch (error) {
       console.error('Error fetching activities:', error);
+      setActivities(mockActivities);
     }
   }, []);
 
@@ -50,8 +53,8 @@ export function ShoutoutProvider({ children }) {
     try {
       setLoading(true);
       const response = await axios.post(`${API_BASE_URL}/api/dashboard/shoutouts`, {
-        recipient_id: newShoutout.recipientId,
-        badge_id: newShoutout.badgeId,
+        recipientIds: newShoutout.recipientIds,
+        badgeId: newShoutout.badgeId,
         message: newShoutout.message,
       });
       // Refresh shoutouts and activities after adding

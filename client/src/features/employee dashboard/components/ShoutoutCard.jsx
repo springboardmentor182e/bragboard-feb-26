@@ -4,7 +4,7 @@ import BadgePill from './BadgePill';
 import ReactionBar from './ReactionBar';
 
 export default function ShoutoutCard({ shoutout, onReaction, onComment, onDeleteShoutout, onDeleteComment, reactingTo }) {
-  const currentUserId = 6; // placeholder for logged-in user
+  const currentUserId = 1; // Current logged-in user (Jessica Park) - should be replaced with actual auth
   const [showComments, setShowComments] = useState(false);
   const { id, sender_id, sender, recipient, badge, message, time_ago, reactions, comments } = shoutout;
 

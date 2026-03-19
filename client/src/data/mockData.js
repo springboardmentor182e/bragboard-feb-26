@@ -1,6 +1,7 @@
 export const shoutouts = [
   {
     id: 1,
+    sender_id: 4,
     sender: {
       name: 'Michael Chen',
       role: 'Senior Developer',
@@ -10,11 +11,13 @@ export const shoutouts = [
     badge: { emoji: '⭐', label: 'Innovation Star' },
     message:
       "Jessica absolutely crushed it during our product launch! She worked late nights to fix critical bugs and mentored junior developers along the way. Her dedication and positive attitude made all the difference. Thank you! 🚀",
-    timeAgo: '2 hours ago',
+    time_ago: '2 hours ago',
     reactions: { heart: 38, thumbsUp: 12, star: 15, comment: 5 },
+    comments: [],
   },
   {
     id: 2,
+    sender_id: 3,
     sender: {
       name: 'Sarah Johnson',
       role: 'Product Manager',
@@ -24,21 +27,22 @@ export const shoutouts = [
     badge: { emoji: '🤝', label: 'Team Player' },
     message:
       "David's attention to detail in the redesign project was phenomenal. Every pixel was perfect, and he truly understood our users' needs. Outstanding work!",
-    timeAgo: '5 hours ago',
+    time_ago: '5 hours ago',
     reactions: { heart: 24, thumbsUp: 9, star: 11, comment: 3 },
+    comments: [],
   },
 ];
 
 export const notifications = [
-  { id: 1, text: 'You received 3 new recognitions today.' },
-  { id: 2, text: 'Sarah Johnson earned "Team Player" badge.' },
-  { id: 3, text: 'David gave a shoutout to Emma.' },
+  { id: 1, text: 'You received 3 new recognitions today.', read: false },
+  { id: 2, text: 'Sarah Johnson earned "Team Player" badge.', read: false },
+  { id: 3, text: 'David gave a shoutout to Emma.', read: true },
 ];
 
 export const activities = [
-  { id: 1, text: 'David gave a shoutout to Emma', timeAgo: '2h ago' },
-  { id: 2, text: 'Sarah earned Innovation Star badge', timeAgo: '5h ago' },
-  { id: 3, text: 'Michael completed Q1 campaign', timeAgo: '1d ago' },
+  { id: 1, text: 'David gave a shoutout to Emma', timeAgo: '2h ago', user_id: 2 },
+  { id: 2, text: 'Sarah earned Innovation Star badge', timeAgo: '5h ago', user_id: 3 },
+  { id: 3, text: 'Michael completed Q1 campaign', timeAgo: '1d ago', user_id: 4 },
 ];
 
 export const teamMembers = [

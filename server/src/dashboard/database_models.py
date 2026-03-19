@@ -24,7 +24,6 @@ class UserDB(Base):
     
     # Relationships
     sent_shoutouts = relationship("ShoutoutDB", foreign_keys="ShoutoutDB.sender_id", back_populates="sender")
-    received_shoutouts = relationship("ShoutoutDB", foreign_keys="ShoutoutDB.recipient_id", back_populates="recipient")
 
 
 class BadgeDB(Base):
@@ -62,7 +61,7 @@ class ShoutoutDB(Base):
     
     # Relationships
     sender = relationship("UserDB", foreign_keys=[sender_id], back_populates="sent_shoutouts")
-    recipient = relationship("UserDB", foreign_keys=[recipient_id], back_populates="received_shoutouts")
+    recipient = relationship("UserDB", foreign_keys=[recipient_id])
     badge = relationship("BadgeDB", back_populates="shoutouts")
     comments = relationship("CommentDB", back_populates="shoutout", cascade="all, delete-orphan")
 

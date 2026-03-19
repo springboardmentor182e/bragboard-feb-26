@@ -2,7 +2,7 @@ import ShoutoutCard from './ShoutoutCard';
 import { useShoutouts } from '../../../context/ShoutoutContext';
 
 export default function ShoutoutFeed() {
-  const currentUserId = 6; // placeholder for logged-in user
+  const currentUserId = 1; // Current logged-in user (Jessica Park) - should be replaced with actual auth
   const { shoutouts, addReaction, addComment, deleteShoutout, deleteComment, reactingTo } = useShoutouts();
 
   const handleReaction = (shoutoutId, reactionType) => {

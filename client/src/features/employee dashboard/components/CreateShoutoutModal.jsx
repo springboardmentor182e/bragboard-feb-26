@@ -5,7 +5,7 @@ import { useShoutouts } from '../../../context/ShoutoutContext';
 
 export default function CreateShoutoutModal({ isOpen, onClose }) {
   const { users: teamMembers, badges: badgesList } = useAnalytics();
-  const [selectedEmployee, setSelectedEmployee] = useState('');
+  const [selectedEmployees, setSelectedEmployees] = useState([]);
   const [selectedBadge, setSelectedBadge] = useState(null);
   const [message, setMessage] = useState('');
   const { addShoutout } = useShoutouts();
@@ -13,22 +13,28 @@ export default function CreateShoutoutModal({ isOpen, onClose }) {
   if (!isOpen) return null;
 
   const BADGE_OPTIONS = badgesList?.slice(0, 6) || [];
-  const isFormValid = selectedEmployee && selectedBadge && message.trim();
+  const isFormValid = selectedEmployees.length > 0 && selectedBadge && message.trim();
+
+  const handleEmployeeToggle = (employeeId) => {
+    setSelectedEmployees(prev =>
+      prev.includes(employeeId)
+        ? prev.filter(id => id !== employeeId)
+        : [...prev, employeeId]
+    );
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!isFormValid) return;
 
-    const employee = teamMembers?.find(m => m.id === parseInt(selectedEmployee));
-    
     addShoutout({
-      recipientId: parseInt(selectedEmployee),
+      recipientIds: selectedEmployees,
       badgeId: selectedBadge.id,
       message: message,
     });
     
     // Reset form
-    setSelectedEmployee('');
+    setSelectedEmployees([]);
     setSelectedBadge(null);
     setMessage('');
     onClose();
@@ -40,7 +46,7 @@ export default function CreateShoutoutModal({ isOpen, onClose }) {
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
 
       {/* Modal */}
-      <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         {/* Header - Purple Gradient */}
         <div className="bg-gradient-to-r from-purple-600 to-violet-600 px-6 py-5 flex items-center justify-between">
           <h2 className="text-xl font-bold text-white">Create Shout-Out</h2>
@@ -51,24 +57,42 @@ export default function CreateShoutoutModal({ isOpen, onClose }) {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6">
-          {/* Select Employee */}
-          <div className="mb-5">
-            <label className="block text-sm font-medium text-gray-500 mb-2">Select Employee</label>
-            <select
-              value={selectedEmployee}
-              onChange={(e) => setSelectedEmployee(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 text-gray-700 bg-white focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-100 cursor-pointer"
-            >
-              <option value="">Choose an employee...</option>
+          {/* Select Employees - Multi-select */}
+          <div className="mb-6">
+            <label className="block text-sm font-semibold text-gray-700 mb-3">Select Employees (Multiple)</label>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-48 overflow-y-auto border border-gray-200 rounded-xl p-4 bg-gray-50">
               {teamMembers.map((member) => (
-                <option key={member.id} value={member.id}>{member.name} - {member.role}</option>
+                <label
+                  key={member.id}
+                  className="flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all hover:bg-white"
+                  style={{
+                    borderColor: selectedEmployees.includes(member.id) ? '#9333ea' : '#e5e7eb',
+                    backgroundColor: selectedEmployees.includes(member.id) ? '#f3e8ff' : 'transparent'
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={selectedEmployees.includes(member.id)}
+                    onChange={() => handleEmployeeToggle(member.id)}
+                    className="w-4 h-4 text-purple-600 rounded cursor-pointer"
+                  />
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-gray-900 truncate">{member.name}</p>
+                    <p className="text-xs text-gray-500 truncate">{member.role}</p>
+                  </div>
+                </label>
               ))}
-            </select>
+            </div>
+            {selectedEmployees.length > 0 && (
+              <p className="text-sm text-purple-600 font-medium mt-2">
+                {selectedEmployees.length} employee{selectedEmployees.length !== 1 ? 's' : ''} selected
+              </p>
+            )}
           </div>
 
           {/* Select Badge - 2x3 Grid */}
-          <div className="mb-5">
-            <label className="block text-sm font-medium text-gray-500 mb-2">Select Badge</label>
+          <div className="mb-6">
+            <label className="block text-sm font-semibold text-gray-700 mb-3">Select Badge</label>
             <div className="grid grid-cols-3 gap-3">
               {BADGE_OPTIONS.map((badge) => (
                 <button
@@ -76,7 +100,7 @@ export default function CreateShoutoutModal({ isOpen, onClose }) {
                   type="button"
                   onClick={() => setSelectedBadge(badge)}
                   className={`flex flex-col items-center gap-1 p-3 rounded-xl border-2 transition-all cursor-pointer ${
-                    selectedBadge?.id === badge.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                    selectedBadge?.id === badge.id ? 'border-purple-500 bg-purple-50' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                   }`}
                 >
                   <span className="text-2xl">{badge.emoji}</span>
@@ -84,15 +108,15 @@ export default function CreateShoutoutModal({ isOpen, onClose }) {
                 </button>
               ))}
             </div>
-          </div> {/* <--- Added missing div for Badge Container */}
+          </div>
 
           {/* Write Message */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-500 mb-2">Write your message</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Write your message</label>
             <textarea
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              placeholder="Share why this person deserves recognition..."
+              placeholder="Share why this person/people deserve recognition..."
               rows={4}
               className="w-full px-4 py-3 rounded-xl border border-gray-200 text-gray-700 placeholder:text-gray-400 bg-white focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-100 resize-none"
             />
@@ -121,6 +145,6 @@ export default function CreateShoutoutModal({ isOpen, onClose }) {
           </div>
         </form>
       </div>
-    </div> 
+    </div>
   );
 }

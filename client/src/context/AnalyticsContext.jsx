@@ -1,19 +1,26 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import { 
+  badgesList as mockBadges,
+  teamMembers as mockTeamMembers, 
+  notifications as mockNotifications,
+  activities as mockActivities,
+  fullRankings as mockLeaderboard 
+} from '../data/mockData';
 
 const API_BASE_URL = 'http://localhost:8000';
 
 const AnalyticsContext = createContext();
 
 export function AnalyticsProvider({ children }) {
-  const [badges, setBadges] = useState([]);
-  const [users, setUsers] = useState([]);
+  const [badges, setBadges] = useState(mockBadges);
+  const [users, setUsers] = useState(mockTeamMembers);
   const [shoutouts, setShoutouts] = useState([]);
-  const [notifications, setNotifications] = useState([]);
-  const [activities, setActivities] = useState([]);
+  const [notifications, setNotifications] = useState(mockNotifications);
+  const [activities, setActivities] = useState(mockActivities);
   const [departments, setDepartments] = useState([]);
-  const [leaderboard, setLeaderboard] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [leaderboard, setLeaderboard] = useState(mockLeaderboard);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const fetchBadges = async () => {
@@ -22,6 +29,7 @@ export function AnalyticsProvider({ children }) {
       setBadges(response.data);
     } catch (err) {
       console.error('Error fetching badges:', err);
+      setBadges(mockBadges);
       setError(err.message);
     }
   };
@@ -32,6 +40,7 @@ export function AnalyticsProvider({ children }) {
       setUsers(response.data);
     } catch (err) {
       console.error('Error fetching users:', err);
+      setUsers(mockTeamMembers);
     }
   };
 
@@ -50,6 +59,7 @@ export function AnalyticsProvider({ children }) {
       setNotifications(response.data);
     } catch (err) {
       console.error('Error fetching notifications:', err);
+      setNotifications(mockNotifications);
     }
   };
 
@@ -59,6 +69,7 @@ export function AnalyticsProvider({ children }) {
       setActivities(response.data);
     } catch (err) {
       console.error('Error fetching activities:', err);
+      setActivities(mockActivities);
     }
   };
 

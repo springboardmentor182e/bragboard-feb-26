@@ -1,6 +1,5 @@
 import { useState, useMemo } from 'react';
 import { Search, ChevronDown, X } from 'lucide-react';
-import Navbar from '../layout/Navbar';
 import TeamCard from '../features/employee dashboard/components/TeamCard';
 import { useAnalytics } from '../context/AnalyticsContext';
 
@@ -21,9 +20,8 @@ export default function Team() {
   }, [query, dept]);
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <Navbar />
-      <main className="max-w-screen-xl mx-auto px-6 py-8">
+    <div className="min-h-screen bg-gray-50">
+      <main className="px-6 py-8 w-full">
         <div className="mb-7">
           <h1 className="text-4xl font-bold text-gray-900 tracking-tight">Team</h1>
           <p className="text-gray-500 mt-1.5 font-medium">Meet your amazing team members</p>
@@ -93,7 +91,7 @@ export default function Team() {
                 </p>
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-4 mb-3">Performance Stats</p>
                 <div className="flex justify-between items-center bg-white p-3 rounded-xl border border-slate-100">
-                  <span className="text-sm">🎉 {selectedMember.shout_outs} Shout-Outs</span>
+                  <span className="text-sm">🎉 {selectedMember.shoutOuts} Shout-Outs</span>
                   <div className="w-px h-4 bg-slate-200" />
                   <span className="text-sm">👏 {selectedMember.claps} Claps</span>
                   <div className="w-px h-4 bg-slate-200" />

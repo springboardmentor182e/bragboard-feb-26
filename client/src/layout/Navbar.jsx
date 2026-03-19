@@ -1,31 +1,22 @@
-import { Search, Bell, Plus, Menu, X, Users, Home, Trophy, Award, LogOut, Settings } from 'lucide-react';
+import { Search, Bell, Plus } from 'lucide-react';
 import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import CreateShoutoutModal from '../features/employee dashboard/components/CreateShoutoutModal';
 import { useAnalytics } from '../context/AnalyticsContext';
 
 const currentUser = {
   name: 'Alex Thompson',
-  role: 'Admin',
+  role: '',
   avatar: 'https://i.pravatar.cc/40?u=alex-thompson-admin',
 };
 
-const menuItems = [
-  { path: '/', label: 'Feed', icon: Home },
-  { path: '/team', label: 'Teams', icon: Users },
-  { path: '/leaderboard', label: 'Leaderboard', icon: Trophy },
-  { path: '/badges', label: 'Badges', icon: Award },
-];
-
 export default function Navbar() {
   const { users: teamMembers, badges: badgesList, shoutouts, notifications, markNotificationRead, markAllNotificationsRead } = useAnalytics();
-  const [menuOpen, setMenuOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [shoutoutModalOpen, setShoutoutModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState({ people: [], badges: [], shoutouts: [] });
-  const location = useLocation();
 
   // Count unread notifications
   const unreadCount = notifications?.filter(n => !n.read).length || 0;
@@ -58,39 +49,10 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
-        <div className="max-w-screen-xl mx-auto px-6 h-16 flex items-center gap-4">
-          <div className="relative">
-            <button
-              onClick={() => setMenuOpen(!menuOpen)}
-              className="p-2 hover:bg-gray-100 rounded-lg cursor-pointer transition-colors"
-              aria-label="Menu"
-            >
-              {menuOpen ? <X size={24} className="text-gray-700" /> : <Menu size={24} className="text-gray-700" />}
-            </button>
-
-            {menuOpen && (
-              <div className="absolute top-full left-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-[60]">
-                {menuItems.map((item) => {
-                  const Icon = item.icon;
-                  const isActive = location.pathname === item.path;
-                  return (
-                    <Link
-                      key={item.path}
-                      to={item.path}
-                      onClick={() => setMenuOpen(false)}
-                      className={`flex items-center gap-3 px-4 py-2.5 text-sm transition-colors cursor-pointer ${
-                        isActive ? 'bg-primary/10 text-primary font-medium' : 'text-gray-700 hover:bg-gray-100'
-                      }`}
-                    >
-                      <Icon size={18} />
-                      {item.label}
-                    </Link>
-                  );
-                })}
-              </div>
-            )}
-          </div>
+      <nav className="w-full bg-white border-b border-gray-200 fixed top-0 left-0 right-0 z-50 h-16">
+        <div className="px-6 h-16 flex items-center gap-4">
+          <div className="text-xl font-bold text-purple-600">BragBoard</div>
+          
           <div className="flex-1 relative max-w-[520px]">
             <Search size={17} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
@@ -98,7 +60,7 @@ export default function Navbar() {
               value={searchQuery}
               onChange={(e) => handleSearch(e.target.value)}
               placeholder="Search shoutouts, people, badges..."
-              className="w-full pl-11 pr-4 py-2.5 rounded-full border border-gray-200 text-sm text-gray-700 placeholder:text-gray-400 bg-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30"
+              className="w-full pl-11 pr-4 py-2.5 rounded-full border border-gray-200 text-sm text-gray-700 placeholder:text-gray-400 bg-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-100"
             />
             
             {searchQuery && (
@@ -146,10 +108,11 @@ export default function Navbar() {
               </div>
             )}
           </div>
+
           <div className="flex items-center gap-3 ml-auto">
             <button 
               onClick={() => setShoutoutModalOpen(true)}
-              className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-5 py-2.5 rounded-full font-semibold text-sm transition-colors cursor-pointer"
+              className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-5 py-2.5 rounded-full font-semibold text-sm transition-colors cursor-pointer"
             >
               <Plus size={17} strokeWidth={2.5} />
               <span className="hidden sm:inline">Create Shout-Out</span>
@@ -178,7 +141,7 @@ export default function Navbar() {
                     {unreadCount > 0 && (
                       <button
                         onClick={() => markAllNotificationsRead()}
-                        className="text-xs font-medium text-primary hover:text-primary-dark cursor-pointer transition-colors"
+                        className="text-xs font-medium text-purple-600 hover:text-purple-700 cursor-pointer transition-colors"
                       >
                         Mark all as read
                       </button>
@@ -200,7 +163,7 @@ export default function Navbar() {
                         >
                           <div className="flex items-start gap-3">
                             {!notif.read && (
-                              <div className="w-2 h-2 rounded-full bg-primary mt-1.5 shrink-0" />
+                              <div className="w-2 h-2 rounded-full bg-purple-600 mt-1.5 shrink-0" />
                             )}
                             <p className="text-sm text-gray-700">{notif.text}</p>
                           </div>
@@ -229,15 +192,11 @@ export default function Navbar() {
                   <img
                     src={currentUser.avatar}
                     alt={currentUser.name}
-                    className="w-10 h-10 rounded-full object-cover border-2 border-primary-light"
+                    className="w-10 h-10 rounded-full object-cover border-2 border-purple-200"
                   />
-                  <span className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-primary rounded-full flex items-center justify-center text-white text-[8px] font-bold border-2 border-white">
-                    A
-                  </span>
                 </div>
                 <div className="leading-tight hidden md:block">
                   <p className="text-sm font-semibold text-gray-900">{currentUser.name}</p>
-                  <p className="text-xs font-medium text-primary">{currentUser.role}</p>
                 </div>
               </div>
 
@@ -246,24 +205,12 @@ export default function Navbar() {
                 <div className="absolute top-full right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-[60]">
                   <div className="px-4 py-3 border-b border-gray-100">
                     <p className="text-sm font-bold text-gray-900">{currentUser.name}</p>
-                    <p className="text-xs text-gray-500 mt-0.5">{currentUser.role}</p>
                   </div>
-                  <button className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer">
-                    <Settings size={16} />
-                    Settings & Privacy
-                  </button>
-                  <button 
-                    onClick={() => alert('Logout functionality coming soon!')}
-                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
-                  >
-                    <LogOut size={16} />
-                    Logout
-                  </button>
                 </div>
               )}
             </div>
           </div>
-        </div> {/* Closes main centered container */}
+        </div>
       </nav>
 
       <CreateShoutoutModal 

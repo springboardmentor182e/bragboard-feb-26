@@ -109,8 +109,8 @@ class Shoutout(ShoutoutBase):
 
 
 class ShoutoutCreate(BaseModel):
-    recipient_id: int
-    badge_id: int
+    recipientIds: list[int]
+    badgeId: int
     message: str
 
 

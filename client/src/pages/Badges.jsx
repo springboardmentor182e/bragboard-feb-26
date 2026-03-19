@@ -1,4 +1,3 @@
-import Navbar from '../layout/Navbar';
 import BadgeCard from '../features/employee dashboard/components/BadgeCard';
 import { useAnalytics } from '../context/AnalyticsContext';
 
@@ -6,9 +5,8 @@ export default function Badges() {
   const { badges, loading, error } = useAnalytics();
 
   return (
-    <div className="min-h-screen bg-page-bg">
-      <Navbar />
-      <main className="max-w-screen-xl mx-auto px-6 py-8">
+    <div className="min-h-screen bg-gray-50">
+      <main className="px-6 py-8 w-full">
         <div className="mb-7">
           <h1 className="text-4xl font-bold text-gray-900">Badges</h1>
           <p className="text-gray-500 mt-1.5">Recognition badges celebrating excellence</p>

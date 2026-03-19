@@ -27,7 +27,7 @@ export default function RecentActivityPanel() {
                 <span className="w-2 h-2 rounded-full bg-primary mt-1.5 shrink-0" />
                 <div>
                   <p className="text-sm text-gray-800 leading-snug">{activity.text}</p>
-                  <p className="text-xs text-gray-400 mt-0.5">{activity.time_ago}</p>
+                  <p className="text-xs text-gray-400 mt-0.5">{activity.timeAgo}</p>
                 </div>
               </div>
               {activity.user_id === currentUserId && (
