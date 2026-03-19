@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
-import { createAchievement, updateAchievement } from "../services/achievementService";
+import { createAchievement, updateAchievement } from "../services/achievementServices";
 
 const EMPTY_FORM = { title: "", description: "", points: "" };
 
