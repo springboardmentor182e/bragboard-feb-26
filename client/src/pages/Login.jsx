@@ -3,7 +3,6 @@ import { loginUser } from "../services/api";
 import { useNavigate } from "react-router-dom";
 
 export default function Login() {
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
@@ -11,19 +10,27 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // ✅ Basic validation
+    if (!email || !password) {
+      alert("Please fill all fields");
+      return;
+    }
+
     try {
       const res = await loginUser({ email, password });
 
-      // Save token
-      localStorage.setItem("token", res.data.access_token);
-
-      alert("Login Success");
-
-      navigate("/dashboard");
+      // ✅ Safe token handling
+      if (res?.data?.access_token) {
+        localStorage.setItem("token", res.data.access_token);
+        alert("Login Success");
+        navigate("/dashboard");
+      } else {
+        alert("Invalid response from server");
+      }
 
     } catch (err) {
-      console.log(err);
-      alert("Login Failed");
+      console.error("Login Error:", err.response?.data || err.message);
+      alert(err.response?.data?.message || "Login Failed");
     }
   };
 
@@ -75,7 +82,10 @@ export default function Login() {
           </div>
 
           {/* Login Button */}
-          <button className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 p-3 rounded-lg font-semibold hover:opacity-90">
+          <button
+            type="submit"
+            className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 p-3 rounded-lg font-semibold hover:opacity-90"
+          >
             Sign In
           </button>
 
