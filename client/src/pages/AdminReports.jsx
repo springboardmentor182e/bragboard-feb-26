@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 
 import AdminLayout from "../layout/AdminLayout";
@@ -11,49 +11,58 @@ import { fetchReports } from "../services/reportService";
 function AdminReports() {
 
   const [reports, setReports] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [priorityFilter, setPriorityFilter] = useState("ALL");
 
   /*
-  LOAD REPORTS FROM BACKEND
+  LOAD REPORTS
   */
-  useEffect(() => {
-    loadReports();
-  }, []);
-
-  const loadReports = async () => {
+  const loadReports = useCallback(async () => {
     try {
+      setLoading(true);
       const data = await fetchReports();
       setReports(data);
     } catch (error) {
       console.error("Failed to load reports:", error);
+    } finally {
+      setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadReports();
+  }, [loadReports]);
 
   /*
-  FILTERING LOGIC
+  FILTER LOGIC (CLEAN + SAFE)
   */
   const filteredReports = reports.filter((report) => {
 
+    const query = searchQuery.toLowerCase();
+
     const matchesSearch =
-      report.id?.toString().toLowerCase().includes(searchQuery.toLowerCase()) ||
-      report.reported_user?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      report.reported_by?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      report.reason?.toLowerCase().includes(searchQuery.toLowerCase());
+      report.report_code?.toLowerCase().includes(query) ||
+      report.id?.toString().includes(query) ||
+      report.reported_user?.toLowerCase().includes(query) ||
+      report.reported_by?.toLowerCase().includes(query) ||
+      report.reason?.toLowerCase().includes(query);
 
     const matchesStatus =
-      statusFilter === "ALL" || report.status === statusFilter;
+      statusFilter === "ALL" ||
+      report.status?.toUpperCase() === statusFilter;
 
     const matchesPriority =
-      priorityFilter === "ALL" || report.priority === priorityFilter;
+      priorityFilter === "ALL" ||
+      report.priority?.toUpperCase() === priorityFilter;
 
     return matchesSearch && matchesStatus && matchesPriority;
   });
 
   /*
-  LIVE STATS
+  LIVE STATS (REAL DATA)
   */
   const stats = {
     pending: reports.filter((r) => r.status === "PENDING").length,
@@ -98,8 +107,21 @@ function AdminReports() {
           Showing {filteredReports.length} of {reports.length} reports
         </p>
 
-        {/* LIST */}
-        <ReportsList reports={filteredReports} refreshReports={loadReports} />
+        {/* LOADING STATE */}
+        {loading ? (
+          <div className="text-center py-10 text-slate-500">
+            Loading reports...
+          </div>
+        ) : filteredReports.length === 0 ? (
+          <div className="text-center py-10 text-slate-500">
+            No reports found
+          </div>
+        ) : (
+          <ReportsList
+            reports={filteredReports}
+            refreshReports={loadReports}
+          />
+        )}
 
       </motion.div>
 

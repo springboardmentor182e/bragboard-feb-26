@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://127.0.0.1:8000",
+  baseURL: import.meta.env.VITE_API_URL || "http://127.0.0.1:8000",
   headers: {
     "Content-Type": "application/json",
   },
@@ -30,6 +30,5 @@ export const updateReportStatus = async (reportId, status) => {
   const res = await API.put(`/reports/${reportId}/status`, null, {
     params: { status },
   });
-
   return res.data;
 };

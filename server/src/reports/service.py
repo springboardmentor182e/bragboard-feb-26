@@ -1,51 +1,51 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import or_
 from src.entities.report import Report
-from src.reports.models import ReportCreate
 
 
-def get_reports(db: Session):
-    return db.query(Report).all()
+def get_reports(db: Session, status=None, priority=None, search=None):
+    query = db.query(Report)
+
+    if status and status != "ALL":
+        query = query.filter(Report.status == status)
+
+    if priority and priority != "ALL":
+        query = query.filter(Report.priority == priority)
+
+    if search:
+        query = query.filter(
+            or_(
+                Report.reason.ilike(f"%{search}%"),
+                Report.description.ilike(f"%{search}%")
+            )
+        )
+
+    return query.order_by(Report.created_at.desc()).all()
 
 
-def create_report(db: Session, report: ReportCreate):
+def create_report(db: Session, report):
+    try:
+        new_report = Report(**report.dict())
 
-    # get last report to generate next code
-    last_report = db.query(Report).order_by(Report.id.desc()).first()
+        db.add(new_report)
+        db.commit()
+        db.refresh(new_report)
 
-    if last_report:
-        next_number = last_report.id + 1
-    else:
-        next_number = 1
+        return new_report
 
-    report_code = f"RPT-{next_number:03}"
-
-    new_report = Report(
-        report_code=report_code,
-        shoutout_id=report.shoutout_id,
-        reported_user=report.reported_user,
-        reported_by=report.reported_by,
-        reason=report.reason,
-        description=report.description,
-        priority=report.priority,
-        status="PENDING"
-    )
-
-    db.add(new_report)
-    db.commit()
-    db.refresh(new_report)
-
-    return new_report
+    except Exception as e:
+        db.rollback()
+        print("ERROR:", e)  # 🔥 This will show real issue in terminal
+        raise
 
 
 def update_report_status(db: Session, report_id: int, status: str):
-
     report = db.query(Report).filter(Report.id == report_id).first()
 
     if not report:
         return None
 
     report.status = status
-
     db.commit()
     db.refresh(report)
 
@@ -53,7 +53,6 @@ def update_report_status(db: Session, report_id: int, status: str):
 
 
 def delete_report(db: Session, report_id: int):
-
     report = db.query(Report).filter(Report.id == report_id).first()
 
     if not report:

@@ -14,10 +14,13 @@ import {
 const ReviewReportModal = ({ report, onClose, refreshReports }) => {
   if (!report) return null;
 
+  /*
+  ACTIONS
+  */
   const handleDelete = async () => {
     try {
       await deleteReport(report.id);
-      refreshReports();
+      await refreshReports();
       onClose();
     } catch (err) {
       console.error("Delete failed", err);
@@ -27,7 +30,7 @@ const ReviewReportModal = ({ report, onClose, refreshReports }) => {
   const handleDismiss = async () => {
     try {
       await updateReportStatus(report.id, "RESOLVED");
-      refreshReports();
+      await refreshReports();
       onClose();
     } catch (err) {
       console.error("Dismiss failed", err);
@@ -37,17 +40,17 @@ const ReviewReportModal = ({ report, onClose, refreshReports }) => {
   const handleWarn = async () => {
     try {
       await updateReportStatus(report.id, "REVIEWING");
-      refreshReports();
+      await refreshReports();
       onClose();
     } catch (err) {
-      console.error("Warn user failed", err);
+      console.error("Warn failed", err);
     }
   };
 
   const handleEscalate = async () => {
     try {
-      await updateReportStatus(report.id, "ESCALATED");
-      refreshReports();
+      await updateReportStatus(report.id, "REVIEWING");
+      await refreshReports();
       onClose();
     } catch (err) {
       console.error("Escalate failed", err);
@@ -61,12 +64,13 @@ const ReviewReportModal = ({ report, onClose, refreshReports }) => {
 
         {/* HEADER */}
         <div className="flex items-center justify-between px-6 py-4 border-b">
-
           <div>
             <h2 className="text-xl font-semibold text-slate-900">
               Report Details
             </h2>
-            <p className="text-sm text-slate-500">{report.id}</p>
+            <p className="text-sm text-slate-500">
+              {report.report_code || `RPT-${report.id}`}
+            </p>
           </div>
 
           <button
@@ -75,7 +79,6 @@ const ReviewReportModal = ({ report, onClose, refreshReports }) => {
           >
             <X size={20} />
           </button>
-
         </div>
 
         {/* CONTENT */}
@@ -83,7 +86,6 @@ const ReviewReportModal = ({ report, onClose, refreshReports }) => {
 
           {/* TAGS */}
           <div className="flex gap-3 flex-wrap">
-
             <span className="px-3 py-1 rounded-lg bg-yellow-100 text-yellow-700 text-sm font-medium">
               {report.status}
             </span>
@@ -91,58 +93,42 @@ const ReviewReportModal = ({ report, onClose, refreshReports }) => {
             <span className="px-3 py-1 rounded-lg bg-orange-100 text-orange-700 text-sm font-medium">
               {report.priority} PRIORITY
             </span>
-
-            <span className="px-3 py-1 rounded-lg bg-red-100 text-red-700 text-sm font-medium">
-              {report.type}
-            </span>
-
           </div>
 
-          {/* REPORTED USER */}
+          {/* REPORT INFO (FIXED) */}
           <div>
             <p className="text-xs text-slate-500 uppercase mb-2">
-              Reported User
+              Report Info
             </p>
 
             <div className="flex items-center gap-4 bg-slate-50 p-4 rounded-xl">
 
               <div className="w-10 h-10 rounded-full bg-indigo-500 text-white flex items-center justify-center font-semibold">
-                {report.user?.charAt(0)}
+                {String(report.reported_by).charAt(0)}
               </div>
 
               <div>
                 <p className="font-medium text-slate-900">
-                  {report.user}
+                  User #{report.reported_by}
                 </p>
                 <p className="text-sm text-slate-500">
-                  Post Author
+                  {new Date(report.created_at).toLocaleString()}
                 </p>
               </div>
 
             </div>
           </div>
 
-          {/* REPORTED BY */}
+          {/* SHOUTOUT INFO */}
           <div>
             <p className="text-xs text-slate-500 uppercase mb-2">
-              Reported By
+              Related Shoutout
             </p>
 
-            <div className="flex items-center gap-4 bg-slate-50 p-4 rounded-xl">
-
-              <div className="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center font-semibold">
-                {report.reportedBy?.charAt(0)}
-              </div>
-
-              <div>
-                <p className="font-medium text-slate-900">
-                  {report.reportedBy}
-                </p>
-                <p className="text-sm text-slate-500">
-                  {report.time}
-                </p>
-              </div>
-
+            <div className="bg-slate-50 p-4 rounded-xl">
+              <p className="text-sm text-slate-700">
+                Shoutout ID: {report.shoutout_id}
+              </p>
             </div>
           </div>
 
@@ -153,22 +139,20 @@ const ReviewReportModal = ({ report, onClose, refreshReports }) => {
             </p>
 
             <div className="bg-slate-50 p-4 rounded-xl">
-
               <p className="font-medium text-slate-900">
-                {report.title}
+                {report.reason}
               </p>
 
               <p className="text-sm text-slate-600 mt-1">
                 {report.description}
               </p>
-
             </div>
           </div>
 
-          {/* REPORTED CONTENT */}
+          {/* FLAGGED CONTENT */}
           <div>
             <p className="text-xs text-slate-500 uppercase mb-2">
-              Reported Post Content
+              Reported Content
             </p>
 
             <div className="border border-red-200 bg-red-50 rounded-xl p-4">
@@ -179,15 +163,10 @@ const ReviewReportModal = ({ report, onClose, refreshReports }) => {
               </div>
 
               <p className="italic text-sm text-slate-700">
-                "{report.content}"
+                "{report.description}"
               </p>
 
-              <div className="mt-3 text-xs text-slate-500">
-                Badge: {report.badge}
-              </div>
-
             </div>
-
           </div>
 
           <hr />

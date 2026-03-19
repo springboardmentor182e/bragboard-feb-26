@@ -1,28 +1,24 @@
 from pydantic import BaseModel
+from datetime import datetime
 
 
 class ReportCreate(BaseModel):
     shoutout_id: int
-    reported_user: str
-    reported_by: str
+    reported_by: int
     reason: str
     description: str
-    priority: str = "LOW"
+    priority: str
 
 
 class ReportResponse(BaseModel):
     id: int
-    report_code: str
-
     shoutout_id: int
-    reported_user: str
-    reported_by: str
-
+    reported_by: int
     reason: str
     description: str
-
     priority: str
     status: str
+    created_at: datetime
 
     class Config:
         from_attributes = True
