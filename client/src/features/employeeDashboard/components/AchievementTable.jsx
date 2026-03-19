@@ -128,14 +128,14 @@ const AchievementTable = () => {
       </div>
 
       {/* Modal */}
-      <AddAchievementModal
+      {/* <AddAchievementModal
         isOpen={isOpen}
         setIsOpen={setIsOpen}
         setAchievements={setAchievements}
         editingIndex={editingIndex}
         setEditingIndex={setEditingIndex}
         achievements={achievements}
-      />
+      /> */}
     </Card>
   );
 };

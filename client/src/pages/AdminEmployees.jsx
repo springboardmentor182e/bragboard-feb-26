@@ -100,7 +100,7 @@ function AdminEmployees() {
         {/* Stats */}
         <StatsCards employees={employees} />
 
-        {/* Filters */}
+        Filters
         <SearchFilterBar
           search={search}
           setSearch={setSearch}

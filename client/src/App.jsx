@@ -83,7 +83,7 @@ function App() {
                 <Route path="team" element={<div>Team Page</div>} />
                 <Route path="badges" element={<div>Badges Page</div>} />
                 <Route path="analytics" element={<div>Analytics Page</div>} />
-                <Route path="my-shoutouts" element={<MyShoutouts />} /> 
+                <Route path="my-shoutouts" element={<MyShoutouts />} />
               </Routes>
             </EmployeeLayout>
           }
