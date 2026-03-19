@@ -36,9 +36,8 @@ def register(user: User):
 
 @app.post("/login")
 def login(user: User):
-    token = create_access_token({"sub": user.email})  # ✅ FIXED LINE
-
+    
     return {
-        "access_token": token,
+        "access_token": "fake-token",
         "token_type": "bearer"
     }
