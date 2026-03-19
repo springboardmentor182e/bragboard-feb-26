@@ -84,16 +84,13 @@ const AdminShoutoutTable = () => {
     const item = data.find((i) => i.id === id);
     if (!item) return;
 
-    const updatedItem = {
-      ...item,
-      status: item.status === "Pinned" ? "Active" : "Pinned",
-    };
+    const updatedStatus = { status: item.status === "Pinned" ? "Active" : "Pinned" };
 
     try {
       const response = await fetch(`http://localhost:8000/api/shoutouts/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedItem),
+        body: JSON.stringify(updatedStatus),
       });
       if (!response.ok) throw new Error("Failed to toggle pin");
       const json = await response.json();
@@ -123,11 +120,18 @@ const AdminShoutoutTable = () => {
 
   // 🔹 Update Shoutout
   const handleUpdate = async (updatedItem) => {
+    const updatePayload = {
+      message: updatedItem.message,
+      department: updatedItem.department,
+      badge: { label: updatedItem.badge.label },
+      status: updatedItem.status,
+    };
+
     try {
       const response = await fetch(`http://localhost:8000/api/shoutouts/${updatedItem.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedItem),
+        body: JSON.stringify(updatePayload),
       });
       if (!response.ok) throw new Error("Failed to update shoutout");
       const json = await response.json();
@@ -144,6 +148,7 @@ const AdminShoutoutTable = () => {
     try {
       const response = await fetch(`http://localhost:8000/api/shoutouts/${id}`, {
         method: "DELETE",
+        headers: { "Content-Type": "application/json" },
       });
       if (!response.ok) throw new Error("Failed to delete shoutout");
       setData((prev) => prev.filter((item) => item.id !== id));
@@ -300,7 +305,7 @@ const AdminShoutoutTable = () => {
                 <th className="p-4">Message</th>
                 <th className="p-4">Department</th>
                 <th className="p-4">Reactions</th>
-                <th className="p-4">Date</th>
+                <th className="p-4 w-40">Date</th>
                 <th className="p-4">Status</th>
                 <th className="p-4 text-center">Actions</th>
               </tr>

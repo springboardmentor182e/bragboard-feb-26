@@ -23,6 +23,18 @@ class ShoutoutBase(BaseModel):
 class ShoutoutCreate(ShoutoutBase):
     pass
 
+
+class ShoutoutUpdate(BaseModel):
+    author: Optional[str] = None
+    recipient: Optional[str] = None
+    department: Optional[str] = None
+    message: Optional[str] = None
+    badge: Optional[BadgeSchema] = None
+    reactions: Optional[ReactionsSchema] = None
+    status: Optional[str] = None
+    date: Optional[str] = None
+
+
 class Shoutout(ShoutoutBase):
     id: int
 

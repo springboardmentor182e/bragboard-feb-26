@@ -6,20 +6,14 @@ const ShoutoutFeed = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Mock Data
-  const mockShoutouts = [
-    { id: 's1', author: 'Alice', recipient: 'Bob', message: 'Great job on the presentation!', date: '2024-07-29', reactions: { hearts: 12, claps: 5, stars: 3 }, comments: [{id: 'c1', author: 'Zoe', message: 'So proud of you!'}] },
-    { id: 's2', author: 'Charlie', recipient: 'David', message: 'Thanks for the warm welcome!', date: '2024-07-28', reactions: { hearts: 8, claps: 15, stars: 1 }, comments: [] },
-    { id: 's3', author: 'Eve', recipient: 'Frank', message: 'Your help was much appreciated.', date: '2024-07-27', reactions: { hearts: 20, claps: 3, stars: 7 }, comments: [] },
-  ];
-
   useEffect(() => {
     const fetchShoutouts = async () => {
       try {
         setLoading(true);
-        // Mocking the API call
-        await new Promise(resolve => setTimeout(resolve, 500)); // Simulate network delay
-        setShoutouts(mockShoutouts);
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/shoutouts`);
+        if (!response.ok) throw new Error("Failed to fetch shoutouts");
+        const json = await response.json();
+        setShoutouts(json);
       } catch (err) {
         setError(err.message);
       } finally {

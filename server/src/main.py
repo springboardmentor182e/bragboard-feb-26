@@ -1,10 +1,11 @@
-import json
 import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .database.core import engine, Base
 from .entities.shoutout import ShoutoutEntity
 from .shoutouts.controller import router as shoutouts_router
+from .my_shoutouts.router import router as my_shoutouts_router
+from .interactions.router import router as interactions_router
 
 app = FastAPI()
 
@@ -22,12 +23,8 @@ app.add_middleware(
 
 # Register the new shoutouts module
 app.include_router(shoutouts_router)
-
-# Helper function to read our "JSON database" (kept for reference)
-def get_data():
-    file_path = os.path.join(os.path.dirname(__file__), "shoutouts.json")
-    with open(file_path, "r") as f:
-        return json.load(f)
+app.include_router(my_shoutouts_router)
+app.include_router(interactions_router)
 
 @app.get("/")
 def root():

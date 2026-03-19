@@ -14,25 +14,15 @@ const MyShoutouts = () => {
   const [editItem, setEditItem] = useState(null);
   const [deleteItem, setDeleteItem] = useState(null);
 
-  // Mock Data
-  const mockGivenShoutouts = [
-    { id: 'g1', recipient: 'Alice', message: 'Thanks for the help on the project!', date: '2024-07-28', reactions: { hearts: 5, claps: 10 } },
-    { id: 'g2', recipient: 'Bob', message: 'Great presentation today!', date: '2024-07-27', reactions: { hearts: 12, claps: 20 } },
-  ];
-
-  const mockReceivedShoutouts = [
-    { id: 'r1', author: 'Charlie', message: 'Welcome to the team!', date: '2024-07-26', reactions: { hearts: 8, claps: 15 } },
-    { id: 'r2', author: 'David', message: 'Your input was invaluable.', date: '2024-07-25', reactions: { hearts: 3, claps: 7 } },
-  ];
-
   useEffect(() => {
     const fetchShoutouts = async () => {
       try {
         setLoading(true);
-        // Mocking the API call
-        await new Promise(resolve => setTimeout(resolve, 500)); // Simulate network delay
-        setGivenShoutouts(mockGivenShoutouts);
-        setReceivedShoutouts(mockReceivedShoutouts);
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/my-shoutouts`);
+        if (!response.ok) throw new Error("Failed to fetch your shoutouts");
+        const { given, received } = await response.json();
+        setGivenShoutouts(given);
+        setReceivedShoutouts(received);
       } catch (err) {
         setError(err.message);
       } finally {
