@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { ShoutoutProvider } from './context/ShoutoutContext';
 import { AnalyticsProvider } from './context/AnalyticsContext';
 import Navbar from './layout/Navbar';
@@ -12,20 +12,18 @@ function App() {
   return (
     <AnalyticsProvider>
       <ShoutoutProvider>
-        <BrowserRouter>
-          <Navbar />
-          <div className="flex pt-16">
-            <Sidebar />
-            <main className="flex-1 ml-64">
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/leaderboard" element={<Leaderboard />} />
-                <Route path="/team"        element={<Team />} />
-                <Route path="/badges"      element={<Badges />} />
-              </Routes>
-            </main>
-          </div>
-        </BrowserRouter>
+        <Navbar />
+        <div className="flex pt-16">
+          <Sidebar />
+          <main className="flex-1 ml-64">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/leaderboard" element={<Leaderboard />} />
+              <Route path="/team"        element={<Team />} />
+              <Route path="/badges"      element={<Badges />} />
+            </Routes>
+          </main>
+        </div>
       </ShoutoutProvider>
     </AnalyticsProvider>
   );
