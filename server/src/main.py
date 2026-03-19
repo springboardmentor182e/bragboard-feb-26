@@ -24,6 +24,11 @@ class User(BaseModel):
     password: str
 
 
+@app.get("/")
+def home():
+    return {"message": "Backend running"}
+
+
 @app.post("/register")
 def register(user: User):
     return {"message": "User Registered"}
@@ -31,7 +36,7 @@ def register(user: User):
 
 @app.post("/login")
 def login(user: User):
- .  token = create_access_token({"sub": user.email})
+    token = create_access_token({"sub": user.email})  # ✅ FIXED LINE
 
     return {
         "access_token": token,
