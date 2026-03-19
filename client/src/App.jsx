@@ -1,15 +1,13 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import AdminDashboard from './features/admin-dash/pages/AdminDashboard';
-// import Sidebar_admin from './layout/Sidebar';
-// import TopNavbar from "./features/employeeDashboard/components/TopNavbar";
 import Navbar from './layout/Navbar';
 import Sidebar from "./layout/Sidebar";
 import SummaryCards from "./features/employeeDashboard/components/SummaryCards";
 import AchievementTable from "./features/employeeDashboard/components/AchievementTable";
 import Leaderboard from "./features/employeeDashboard/components/Leaderboard";
 import AdminEmployees from "./pages/AdminEmployees";
-import MyShoutouts from "./pages/MyShoutouts"; // your page
+import MyShoutouts from "./pages/MyShoutouts";
 
 // Employee Layout
 function EmployeeLayout({ children }) {
@@ -57,13 +55,13 @@ function App() {
     <BrowserRouter>
       <Routes>
 
-        {/* Admin Routes */}
+        {/* Admin Routes - FIXED */}
         <Route
           path="/admin/*"
           element={
             <AdminLayout>
               <Routes>
-                <Route path="/" element={<AdminDashboard />} />
+                <Route path="" element={<AdminDashboard />} />        {/* 👈 FIXED: path="" not "/" */}
                 <Route path="dashboard" element={<AdminDashboard />} />
                 <Route path="employees" element={<AdminEmployees />} />
               </Routes>
