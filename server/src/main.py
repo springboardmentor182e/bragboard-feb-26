@@ -13,19 +13,7 @@ app = FastAPI(
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:5174", "http://localhost:5175", "http://localhost:3000", "http://127.0.0.1:5173"],
-
-from src.database.core import engine, Base
-from src.leaderboard.controller import router as leaderboard_router
-from src.shoutouts.controller import router as shoutouts_router
-
-app = FastAPI(title="Leaderboard")
-
-Base.metadata.create_all(bind=engine)
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:5173", "http://localhost:5174", "http://localhost:5175", "http://localhost:5176", "http://localhost:5177", "http://localhost:3000", "http://127.0.0.1:5173"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -35,32 +23,37 @@ app.add_middleware(
 @app.on_event("startup")
 async def startup_event():
     """Initialize database and seed data on application startup"""
+    from .database.core import engine
+    from .dashboard.database_models import Base
+    
+    # Drop and recreate all tables for fresh start
+    Base.metadata.drop_all(bind=engine)
     init_db()
     
-    # Check if data exists, if not seed it
+    # Seed the database
     db = SessionLocal()
     try:
-        if not db.query(UserDB).first():
-            # Database is empty, seed it
-            from .dashboard.seeds import (
-                seed_users, seed_badges, seed_shoutouts, 
-                seed_notifications, seed_activities, seed_campaigns
-            )
-            print("\n🌱 Seeding database with initial data...")
-            seed_users(db)
-            seed_badges(db)
-            seed_shoutouts(db)
-            seed_notifications(db)
-            seed_activities(db)
-            seed_campaigns(db)
-            print("✅ Database seeding completed!")
+        from .dashboard.seeds import (
+            seed_users, seed_badges, seed_shoutouts, 
+            seed_notifications, seed_activities, seed_campaigns
+        )
+        print("\n🌱 Seeding database with initial data...")
+        seed_users(db)
+        seed_badges(db)
+        seed_shoutouts(db)
+        seed_notifications(db)
+        seed_activities(db)
+        seed_campaigns(db)
+        print("✅ Database seeding completed!")
+    except Exception as e:
+        print(f"❌ Error seeding database: {e}")
+        db.rollback()
+        raise
     finally:
         db.close()
 
 # Include dashboard routes
 app.include_router(dashboard_router)
-app.include_router(leaderboard_router)
-app.include_router(shoutouts_router)
 
 
 @app.get("/")
