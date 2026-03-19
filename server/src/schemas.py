@@ -10,6 +10,7 @@ from typing import Optional
 class UserBase(BaseModel):
     name: str
     department: str
+    photo_url:Optional[str]=None
 
 
 class UserResponse(UserBase):
@@ -52,3 +53,5 @@ class LeaderboardUser(BaseModel):
     department: str
     photo_url: Optional[str] = None
     points: int
+
+   

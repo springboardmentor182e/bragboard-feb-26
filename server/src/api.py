@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
 # Import routers
-from src.users.controller import router as users_router
+from src.users.controller import router as users_router   # ✅ CHANGE THIS LINE
 from src.auth.controller import router as auth_router
 from src.shoutouts.controller import router as shoutout_router
 from src.leaderboard.router import router as leaderboard_router

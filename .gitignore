@@ -1,31 +1,40 @@
-# Node
-node_modules/
-client/node_modules/
-dist/
-build/
-.vite/
-
-# Env
-.env
-.env.local
-client/.env
-server/.env
-
 # Python
 __pycache__/
 *.pyc
 *.pyo
+*.pyd
+
+# Virtual env
 venv/
 env/
 .venv/
 
+# Environment variables
+.env
+
+# Database files
+*.db
+*.sqlite3
+
 # Logs
 *.log
+
+# OS files
+.DS_Store
+Thumbs.db
 
 # IDE
 .vscode/
 .idea/
 
-# OS
-.DS_Store
-Thumbs.db
+# Node (if root project)
+node_modules/
+dist/
+
+# Build
+build/
+
+media/
+src/media/
+__pycache__/
+.env

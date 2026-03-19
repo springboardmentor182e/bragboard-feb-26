@@ -5,11 +5,14 @@ export function useLeaderboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // ✅ Base URL from .env
+  const BASE_URL = import.meta.env.VITE_BASE_URL;
+
   useEffect(() => {
     const fetchLeaderboard = async () => {
       try {
         const response = await fetch(
-          "http://127.0.0.1:8000/api/v1/leaderboard/"
+          `${BASE_URL}/api/v1/leaderboard/`
         );
 
         if (!response.ok) {
@@ -18,9 +21,8 @@ export function useLeaderboard() {
 
         const data = await response.json();
 
-        // SAFE FIX
+        // ✅ Handle different API response formats safely
         setLeaderboard(Array.isArray(data) ? data : data.data || []);
-
       } catch (err) {
         setError(err.message);
       } finally {
@@ -29,7 +31,7 @@ export function useLeaderboard() {
     };
 
     fetchLeaderboard();
-  }, []);
+  }, [BASE_URL]);
 
   return { leaderboard, loading, error };
 }

@@ -7,14 +7,14 @@ from starlette.exceptions import HTTPException
 from pathlib import Path
 
 from src.database.core import Base, engine
-from src.shoutouts.controller import router as shoutout_router
-from src.admin.controller import router as admin_router
 from src.api import api_router
 from src.core.response import error_response
 from src.core.logging import logger
 
 
+# ==============================
 # Create FastAPI App
+# ==============================
 app = FastAPI(
     title="BragBoard API",
     description="Professional Employee Recognition System",
@@ -24,20 +24,26 @@ app = FastAPI(
 )
 
 
-# ===== STARTUP =====
+# ==============================
+# STARTUP
+# ==============================
 @app.on_event("startup")
 async def startup_event():
     logger.info("🚀 BragBoard API Started")
-    Base.metadata.create_all(bind=engine)
+    Base.metadata.create_all(bind=engine)  # ✅ table creation
 
 
-# ===== SHUTDOWN =====
+# ==============================
+# SHUTDOWN
+# ==============================
 @app.on_event("shutdown")
 async def shutdown_event():
     logger.info("🛑 BragBoard API Stopped")
 
 
-# ===== EXCEPTION HANDLERS =====
+# ==============================
+# EXCEPTION HANDLERS
+# ==============================
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request: Request, exc: HTTPException):
     return JSONResponse(
@@ -58,11 +64,15 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 async def global_exception_handler(request: Request, exc: Exception):
     return JSONResponse(
         status_code=500,
-        content=error_response("Internal server error"),
+        content={
+            "error": str(exc)   # 🔥 shows real error
+        },
     )
 
 
-# ===== MEDIA CONFIG =====
+# ==============================
+# MEDIA CONFIG
+# ==============================
 BASE_DIR = Path(__file__).resolve().parent.parent
 MEDIA_DIR = BASE_DIR / "media"
 MEDIA_DIR.mkdir(parents=True, exist_ok=True)
@@ -70,7 +80,9 @@ MEDIA_DIR.mkdir(parents=True, exist_ok=True)
 app.mount("/media", StaticFiles(directory=str(MEDIA_DIR)), name="media")
 
 
-# ===== CORS =====
+# ==============================
+# CORS
+# ==============================
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -83,13 +95,15 @@ app.add_middleware(
 )
 
 
-# ===== ROUTERS =====
+# ==============================
+# ROUTERS (ONLY THIS ✅)
+# ==============================
 app.include_router(api_router)
-app.include_router(shoutout_router)
-app.include_router(admin_router)
 
 
-# ===== ROUTES =====
+# ==============================
+# ROUTES
+# ==============================
 @app.get("/")
 def root():
     return {"message": "BragBoard API Running 🚀"}
