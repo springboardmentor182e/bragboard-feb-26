@@ -16,3 +16,6 @@
     background-color: var(--color-page-bg);
   }
 }
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
