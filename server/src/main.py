@@ -6,10 +6,12 @@ from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException
 from pathlib import Path
 
-from .database.core import engine, Base
-from .api import api_router
-from .core.response import error_response
-from .core.logging import logger
+from src.database.core import Base, engine
+from src.shoutouts.controller import router as shoutout_router
+from src.admin.controller import router as admin_router
+from src.api import api_router
+from src.core.response import error_response
+from src.core.logging import logger
 
 
 # Create FastAPI App
@@ -22,20 +24,20 @@ app = FastAPI(
 )
 
 
-# Startup
+# ===== STARTUP =====
 @app.on_event("startup")
 async def startup_event():
     logger.info("🚀 BragBoard API Started")
     Base.metadata.create_all(bind=engine)
 
 
-# Shutdown
+# ===== SHUTDOWN =====
 @app.on_event("shutdown")
 async def shutdown_event():
     logger.info("🛑 BragBoard API Stopped")
 
 
-# Exception Handlers
+# ===== EXCEPTION HANDLERS =====
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request: Request, exc: HTTPException):
     return JSONResponse(
@@ -60,7 +62,7 @@ async def global_exception_handler(request: Request, exc: Exception):
     )
 
 
-# Media
+# ===== MEDIA CONFIG =====
 BASE_DIR = Path(__file__).resolve().parent.parent
 MEDIA_DIR = BASE_DIR / "media"
 MEDIA_DIR.mkdir(parents=True, exist_ok=True)
@@ -68,7 +70,7 @@ MEDIA_DIR.mkdir(parents=True, exist_ok=True)
 app.mount("/media", StaticFiles(directory=str(MEDIA_DIR)), name="media")
 
 
-# CORS
+# ===== CORS =====
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -81,11 +83,13 @@ app.add_middleware(
 )
 
 
-# Router
+# ===== ROUTERS =====
 app.include_router(api_router)
+app.include_router(shoutout_router)
+app.include_router(admin_router)
 
 
-# Routes
+# ===== ROUTES =====
 @app.get("/")
 def root():
     return {"message": "BragBoard API Running 🚀"}
@@ -93,4 +97,8 @@ def root():
 
 @app.get("/health")
 def health_check():
-    return {"status": "healthy"}
+    return {
+        "status": "ok",
+        "message": "BragBoard API is running",
+        "docs": "/docs"
+    }

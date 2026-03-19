@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
-import AddAchievementModal from "./AddAchievementModal";
+import AddAchievementModal from "./AddAchievementModal.jsx";
+import PrimaryButton from "../../../components/ui/PrimaryButton";
+import Card from "../../../components/ui/Card";
+import Badge from "../../../components/ui/Badge";
 
 const AchievementTable = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -21,49 +24,35 @@ const AchievementTable = () => {
     },
   ]);
 
-  const getStatusStyle = (status) => {
-    switch (status) {
-      case "Approved":
-        return "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400";
-      case "Pending":
-        return "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-400";
-      case "Rejected":
-        return "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400";
-      default:
-        return "";
-    }
-  };
-
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow dark:shadow-gray-900/40 p-6 transition-all duration-300">
-      
+    <Card className="p-6">
+
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
+          <h2 className="text-xl font-bold text-slate-800">
             Recent Achievements
           </h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className="text-sm text-slate-500">
             Manage and track your performance
           </p>
         </div>
 
-        <button
+        <PrimaryButton
           onClick={() => {
             setEditingIndex(null);
             setIsOpen(true);
           }}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm transition-all duration-200 shadow-sm"
         >
           + Add Achievement
-        </button>
+        </PrimaryButton>
       </div>
 
       {/* Table */}
       <div className="overflow-x-auto">
         <table className="w-full text-left">
           <thead>
-            <tr className="border-b border-gray-200 dark:border-gray-700 text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
+            <tr className="border-b border-slate-200 text-xs uppercase tracking-wider text-slate-500">
               <th className="pb-3">Title</th>
               <th>Category</th>
               <th>Points</th>
@@ -76,42 +65,46 @@ const AchievementTable = () => {
             {achievements.map((item, index) => (
               <tr
                 key={index}
-                className="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/60 transition-all duration-200"
+                className="border-b border-slate-100 hover:bg-slate-50 transition-all duration-200"
               >
-                <td className="py-4 font-medium text-gray-800 dark:text-gray-100">
+                <td className="py-4 font-semibold text-slate-800">
                   {item.title}
                 </td>
 
-                <td className="text-gray-600 dark:text-gray-300">
+                <td className="text-slate-600">
                   {item.category}
                 </td>
 
-                <td className="font-semibold text-gray-700 dark:text-gray-200">
+                <td className="font-semibold text-indigo-600">
                   {item.points}
                 </td>
 
                 <td>
-                  <span
-                    className={`px-3 py-1 text-xs font-medium rounded-full ${getStatusStyle(
-                      item.status
-                    )}`}
+                  <Badge
+                    type={
+                      item.status === "Approved"
+                        ? "active"
+                        : item.status === "Pending"
+                        ? "manager"
+                        : "suspended"
+                    }
                   >
                     {item.status}
-                  </span>
+                  </Badge>
                 </td>
 
                 <td className="text-right">
-                  <div className="flex justify-end gap-3">
-                    
+                  <div className="flex justify-end gap-4">
+
                     <button
                       onClick={() => {
                         setEditingIndex(index);
                         setIsOpen(true);
                       }}
-                      className="flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:opacity-80 transition"
+                      className="flex items-center gap-1 text-indigo-600 hover:opacity-80 transition"
                     >
                       <Pencil size={16} />
-                      <span className="text-sm">Edit</span>
+                      <span className="text-sm font-medium">Edit</span>
                     </button>
 
                     <button
@@ -120,10 +113,10 @@ const AchievementTable = () => {
                           prev.filter((_, i) => i !== index)
                         )
                       }
-                      className="flex items-center gap-1 text-red-600 dark:text-red-400 hover:opacity-80 transition"
+                      className="flex items-center gap-1 text-rose-600 hover:opacity-80 transition"
                     >
                       <Trash2 size={16} />
-                      <span className="text-sm">Delete</span>
+                      <span className="text-sm font-medium">Delete</span>
                     </button>
 
                   </div>
@@ -143,7 +136,7 @@ const AchievementTable = () => {
         setEditingIndex={setEditingIndex}
         achievements={achievements}
       />
-    </div>
+    </Card>
   );
 };
 

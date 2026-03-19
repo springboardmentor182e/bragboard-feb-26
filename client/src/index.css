@@ -28,7 +28,7 @@
   animation: softBounce 2.2s ease-in-out infinite;
 }
 
-/* ✅ IMPORTANT: NO GLOBAL COLOR */
+/* Global */
 body {
   margin: 0;
   font-family: Arial, sans-serif;
