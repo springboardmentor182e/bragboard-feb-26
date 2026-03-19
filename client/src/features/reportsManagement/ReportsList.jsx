@@ -8,57 +8,8 @@ import {
 } from "lucide-react";
 
 import Card from "../../components/ui/Card";
-import Badge from "../../components/ui/Badge";
 import PrimaryButton from "../../components/ui/PrimaryButton";
 import ReviewReportModal from "./ReviewReportModal";
-
-const reports = [
-  {
-    id: "RPT-001",
-    priority: "HIGH",
-    status: "PENDING",
-    type: "INAPPROPRIATE",
-    title: "Inappropriate language in message",
-    reportedBy: "Sarah Chen",
-    user: "John Smith",
-    time: "2 hours ago",
-    description:
-      "The shout-out contains language that could be considered unprofessional and potentially offensive to some team members.",
-    content:
-      "Great job on the project, but honestly the way you handled the client meeting was pretty terrible. You need to work on your communication skills.",
-    badge: "Team Player",
-  },
-  {
-    id: "RPT-002",
-    priority: "CRITICAL",
-    status: "REVIEWING",
-    type: "HARASSMENT",
-    title: "Possible harassment",
-    reportedBy: "Michael Rodriguez",
-    user: "Emily Watson",
-    time: "5 hours ago",
-    description:
-      "This appears to be targeted and unwanted recognition that makes the recipient uncomfortable.",
-    content:
-      "Emily, you looked amazing in that presentation today! Love working with you every single day. Can't wait for our next meeting! 😍",
-    badge: "Innovation Star",
-  },
-  {
-    id: "RPT-004",
-    priority: "LOW",
-    status: "RESOLVED",
-    type: "MISINFORMATION",
-    title: "Factual inaccuracy",
-    reportedBy: "Jessica Park",
-    user: "Tom Wilson",
-    time: "3 days ago",
-    description:
-      "The claims made in this post are not accurate and could mislead others.",
-    content:
-      "Tom single-handedly completed the entire Q4 roadmap ahead of schedule!",
-    badge: "Going Above & Beyond",
-  },
-];
 
 const priorityStyle = {
   HIGH: "border-l-4 border-orange-500",
@@ -78,13 +29,7 @@ const statusBadge = {
   RESOLVED: "bg-green-50 text-green-600 border-green-200",
 };
 
-const typeBadge = {
-  INAPPROPRIATE: "bg-red-50 text-red-600 border-red-200",
-  HARASSMENT: "bg-purple-50 text-purple-600 border-purple-200",
-  MISINFORMATION: "bg-blue-50 text-blue-600 border-blue-200",
-};
-
-const ReportsList = () => {
+const ReportsList = ({ reports, refreshReports }) => {
   const [selectedReport, setSelectedReport] = useState(null);
 
   return (
@@ -107,7 +52,7 @@ const ReportsList = () => {
                 <div className="flex items-center gap-3 flex-wrap">
 
                   <span className="font-semibold text-slate-700">
-                    {report.id}
+                    {report.report_code || `RPT-${report.id}`}
                   </span>
 
                   <span
@@ -122,17 +67,11 @@ const ReportsList = () => {
                     {report.status}
                   </span>
 
-                  <span
-                    className={`text-xs px-3 py-1 rounded-lg border font-medium ${typeBadge[report.type]}`}
-                  >
-                    {report.type}
-                  </span>
-
                 </div>
 
                 {/* TITLE */}
                 <h3 className="text-lg font-semibold text-slate-900">
-                  {report.title}
+                  {report.reason}
                 </h3>
 
                 {/* META INFO */}
@@ -140,17 +79,17 @@ const ReportsList = () => {
 
                   <div className="flex items-center gap-2">
                     <User size={16} />
-                    Reported by: {report.reportedBy}
+                    Reported by: {report.reported_by}
                   </div>
 
                   <div className="flex items-center gap-2">
                     <Flag size={16} />
-                    User: {report.user}
+                    User: {report.reported_user}
                   </div>
 
                   <div className="flex items-center gap-2">
                     <Calendar size={16} />
-                    {report.time}
+                    {new Date(report.created_at).toLocaleString()}
                   </div>
 
                 </div>
@@ -169,12 +108,8 @@ const ReportsList = () => {
                   </div>
 
                   <p className="text-sm text-slate-700 italic leading-relaxed">
-                    "{report.content}"
+                    "{report.description}"
                   </p>
-
-                  <div className="mt-3 inline-block text-xs px-3 py-1 bg-orange-50 text-orange-600 border border-orange-200 rounded-lg">
-                    {report.badge}
-                  </div>
 
                 </div>
 
@@ -201,10 +136,12 @@ const ReportsList = () => {
 
       </div>
 
+      {/* MODAL */}
       {selectedReport && (
         <ReviewReportModal
           report={selectedReport}
           onClose={() => setSelectedReport(null)}
+          refreshReports={refreshReports}
         />
       )}
     </>
