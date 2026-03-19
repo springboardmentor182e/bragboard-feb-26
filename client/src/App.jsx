@@ -2,9 +2,9 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import AdminDashboard from './features/admin-dash/pages/AdminDashboard';
 // import Sidebar_admin from './layout/Sidebar';
+// import TopNavbar from "./features/employeeDashboard/components/TopNavbar";
 import Navbar from './layout/Navbar';
 import Sidebar from "./layout/Sidebar";
-import TopNavbar from "./features/employeeDashboard/components/TopNavbar";
 import SummaryCards from "./features/employeeDashboard/components/SummaryCards";
 import AchievementTable from "./features/employeeDashboard/components/AchievementTable";
 import Leaderboard from "./features/employeeDashboard/components/Leaderboard";
@@ -17,7 +17,7 @@ function EmployeeLayout({ children }) {
     <div className="flex h-screen bg-gray-100">
       <Sidebar />
       <div className="flex-1 flex flex-col">
-        <TopNavbar />
+        <Navbar />
         <main className="flex-1 p-6 overflow-y-auto">
           {children}
         </main>
@@ -41,7 +41,7 @@ function EmployeeDashboard() {
 function AdminLayout({ children }) {
   return (
     <div className="relative">
-      <Sidebar_admin />
+      <Sidebar />
       <div className="ml-64">
         <Navbar />
         <main className="min-h-screen bg-gray-100 p-6">
