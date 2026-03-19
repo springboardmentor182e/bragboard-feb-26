@@ -1,66 +1,110 @@
 import { useState } from "react";
 import { loginUser } from "../services/api";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
 
-  const [email,setEmail] = useState("");
-  const [password,setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
-  const handleSubmit = async(e) =>{
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    try{
-      const res = await loginUser({email,password});
+    try {
+      const res = await loginUser({ email, password });
 
-      localStorage.setItem("token",res.data.access_token);
-      
+      // Save token
+      localStorage.setItem("token", res.data.access_token);
+
       alert("Login Success");
-      
-      window.location.href="/dashboard";
-      
-      
-    }
-    catch(err){
-      console.log(err);  
+
+      navigate("/dashboard");
+
+    } catch (err) {
+      console.log(err);
       alert("Login Failed");
     }
-  }
+  };
 
-  return(
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-[#0f172a] to-[#1e1b4b]">
 
-<div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="bg-[#111827] p-8 rounded-2xl shadow-xl w-96 text-white">
 
-<form onSubmit={handleSubmit} className="bg-white p-8 rounded-xl shadow-lg w-96">
+        <h1 className="text-3xl font-bold mb-2">
+          Welcome to BargBoard
+        </h1>
 
-<h2 className="text-2xl font-bold mb-6 text-center">
-Login
-</h2>
+        <p className="text-gray-400 mb-6">
+          Sign in to your employee account
+        </p>
 
-<input
-type="email"
-placeholder="Email"
-className="w-full p-3 border rounded mb-4"
-value={email}
-onChange={(e)=>setEmail(e.target.value)}
-/>
+        <form onSubmit={handleSubmit}>
 
-<input
-type="password"
-placeholder="Password"
-className="w-full p-3 border rounded mb-4"
-value={password}
-onChange={(e)=>setPassword(e.target.value)}
-/>
+          {/* Email */}
+          <label className="block mb-2 text-sm">Email Address</label>
+          <input
+            type="email"
+            placeholder="john.doe@company.com"
+            className="w-full p-3 mb-4 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
 
-<button className="w-full bg-blue-500 text-white p-3 rounded hover:bg-blue-600">
+          {/* Password */}
+          <label className="block mb-2 text-sm">Password</label>
+          <input
+            type="password"
+            placeholder="Enter your password"
+            className="w-full p-3 mb-4 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
 
-Login
+          {/* Remember + Forgot */}
+          <div className="flex justify-between items-center mb-6 text-sm">
+            <label>
+              <input type="checkbox" className="mr-2" />
+              Remember me
+            </label>
 
-</button>
+            <span className="text-purple-400 cursor-pointer">
+              Forgot Password?
+            </span>
+          </div>
 
-</form>
+          {/* Login Button */}
+          <button className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 p-3 rounded-lg font-semibold hover:opacity-90">
+            Sign In
+          </button>
 
-</div>
+        </form>
 
+        {/* Divider */}
+        <div className="flex items-center my-6">
+          <div className="flex-1 h-px bg-gray-700"></div>
+          <span className="px-3 text-gray-400">or</span>
+          <div className="flex-1 h-px bg-gray-700"></div>
+        </div>
+
+        {/* Admin Login */}
+        <button className="w-full bg-gray-800 p-3 rounded-lg hover:bg-gray-700">
+          Admin Login →
+        </button>
+
+        {/* Signup */}
+        <p className="text-center mt-6 text-gray-400">
+          Don't have an account?{" "}
+          <span
+            className="text-purple-400 cursor-pointer"
+            onClick={() => navigate("/register")}
+          >
+            Sign Up
+          </span>
+        </p>
+
+      </div>
+    </div>
   );
 }
