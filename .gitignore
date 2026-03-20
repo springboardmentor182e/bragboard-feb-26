@@ -51,3 +51,7 @@ desktop.ini
 *.db
 .temp/
 tmp/
+__pycache__/
+*.pyc
+.vscode/
+client/.vscode/
