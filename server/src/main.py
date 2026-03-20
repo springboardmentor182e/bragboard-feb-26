@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from src.auth.jwt_handler import create_access_token
+# from src.auth.jwt_handler import create_access_token
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
