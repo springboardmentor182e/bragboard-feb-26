@@ -2,8 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import EmployeeDashboard from "./features/employeeDashboard/EmployeeDashboard";
 import React from "react";
 import Home from "./pages/Home";
-import Leaderboard from "./pages/Leaderboard"; // if you have this
-
+import Leaderboard from "./pages/Leaderboard";
 function App() {
   return (
     <BrowserRouter>
@@ -15,5 +14,4 @@ function App() {
     </BrowserRouter>
   );
 }
-
 export default App;
