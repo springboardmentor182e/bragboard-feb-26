@@ -2,7 +2,11 @@
 client/node_modules
 client/dist
 client/dist-ssr
+client/.env
 client/*.local
+client/.env.local
+client/.env.*.local
+!client/.env.example
 client/logs
 client/*.log
 client/npm-debug.log*
@@ -11,6 +15,7 @@ client/yarn-error.log*
 client/pnpm-debug.log*
 
 # --- Backend (FastAPI/Python) ---
+.venv
 **/__pycache__/
 **/*.py[cod]
 **/*$py.class
@@ -18,7 +23,9 @@ server/.venv
 server/venv
 server/env
 server/.env
-server/.env.*
+server/.env.local
+server/.env.*.local
+!server/.env.example
 server/build/
 server/dist/
 server/*.egg-info/
