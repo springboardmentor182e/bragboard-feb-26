@@ -1,23 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-# from src.auth.jwt_handler import create_access_token
-from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
-
-# CORS FIX
-origins = [
-    "http://localhost:5173",
-    "http://localhost:5174",
-]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 class User(BaseModel):
     email: str
@@ -26,18 +10,12 @@ class User(BaseModel):
 
 @app.get("/")
 def home():
-    return {"message": "Backend running"}
-
-
-@app.post("/register")
-def register(user: User):
-    return {"message": "User Registered"}
+    return {"message": "Backend Running 🚀"}
 
 
 @app.post("/login")
 def login(user: User):
-    
     return {
-        "access_token": "fake-token",
+        "access_token": "test-token",
         "token_type": "bearer"
     }
