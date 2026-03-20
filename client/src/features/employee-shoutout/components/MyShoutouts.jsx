@@ -18,11 +18,19 @@ const MyShoutouts = () => {
     const fetchShoutouts = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/my-shoutouts`);
+        const response = await fetch("/api/my-shoutouts");
         if (!response.ok) throw new Error("Failed to fetch your shoutouts");
-        const { given, received } = await response.json();
-        setGivenShoutouts(given);
-        setReceivedShoutouts(received);
+        const data = await response.json();
+        // The backend might return a list or an object, let's handle both
+        if (Array.isArray(data)) {
+          // If it's a list, we'll treat them all as 'given' for now
+          // (matching the old backend behavior)
+          setGivenShoutouts(data);
+          setReceivedShoutouts([]);
+        } else {
+          setGivenShoutouts(data.given || []);
+          setReceivedShoutouts(data.received || []);
+        }
       } catch (err) {
         setError(err.message);
       } finally {

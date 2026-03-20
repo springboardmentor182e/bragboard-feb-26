@@ -20,7 +20,7 @@ const AdminShoutoutTable = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await fetch("http://localhost:8000/api/shoutouts");
+        const response = await fetch("/api/shoutouts");
         if (!response.ok) throw new Error("Failed to fetch shoutouts");
         const json = await response.json();
         setData(json);
@@ -65,7 +65,7 @@ const AdminShoutoutTable = () => {
   // 🔹 Delete Selected
   const deleteSelected = async () => {
     try {
-      const response = await fetch("http://localhost:8000/api/shoutouts/bulk-delete", {
+      const response = await fetch("/api/shoutouts/bulk-delete", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(selectedIds),
@@ -87,7 +87,7 @@ const AdminShoutoutTable = () => {
     const updatedStatus = { status: item.status === "Pinned" ? "Active" : "Pinned" };
 
     try {
-      const response = await fetch(`http://localhost:8000/api/shoutouts/${id}`, {
+      const response = await fetch(`/api/shoutouts/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedStatus),

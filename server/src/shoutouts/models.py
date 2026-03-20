@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Dict, Optional
+from typing import Dict, Optional, List
 
 class BadgeSchema(BaseModel):
     label: str
@@ -40,3 +40,7 @@ class Shoutout(ShoutoutBase):
 
     class Config:
         from_attributes = True
+
+class MyShoutoutsResponse(BaseModel):
+    given: List[Shoutout]
+    received: List[Shoutout]

@@ -10,7 +10,7 @@ const ShoutoutFeed = () => {
     const fetchShoutouts = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/shoutouts`);
+        const response = await fetch("/api/shoutouts");
         if (!response.ok) throw new Error("Failed to fetch shoutouts");
         const json = await response.json();
         setShoutouts(json);
