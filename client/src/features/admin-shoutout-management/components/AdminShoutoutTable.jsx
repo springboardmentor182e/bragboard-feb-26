@@ -105,7 +105,7 @@ const AdminShoutoutTable = () => {
   // 🔹 Create Shoutout
   const handleCreate = async (newShoutout) => {
     try {
-      const response = await fetch("http://localhost:8000/api/shoutouts", {
+      const response = await fetch("/api/shoutouts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newShoutout),
@@ -128,7 +128,7 @@ const AdminShoutoutTable = () => {
     };
 
     try {
-      const response = await fetch(`http://localhost:8000/api/shoutouts/${updatedItem.id}`, {
+      const response = await fetch(`/api/shoutouts/${updatedItem.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatePayload),
@@ -146,7 +146,7 @@ const AdminShoutoutTable = () => {
   // 🔹 Delete Single Shoutout
   const handleDeleteOne = async (id) => {
     try {
-      const response = await fetch(`http://localhost:8000/api/shoutouts/${id}`, {
+      const response = await fetch(`/api/shoutouts/${id}`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
       });
