@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from routes.brag import router as brag_router
+from employeedashboard.brag import router as brag_router
 from auth.controller import router as auth_router
 from database.core import get_db
 
