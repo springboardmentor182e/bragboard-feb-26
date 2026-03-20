@@ -59,7 +59,7 @@ function App() {
     <BrowserRouter basename="/">
       <Routes>
         {/* Admin Routes - Flat */}
-        <Route path="/admin" element={
+        <Route path="/" element={
           <AdminLayout>
             <AdminDashboard />
           </AdminLayout>
@@ -71,7 +71,7 @@ function App() {
         } />
 
         {/* Employee Routes - Flat */}
-        <Route path="/" element={
+        <Route path="/employee" element={
           <EmployeeLayout>
             <EmployeeDashboard />
           </EmployeeLayout>
