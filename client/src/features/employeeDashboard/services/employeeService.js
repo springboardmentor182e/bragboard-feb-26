@@ -1,5 +1,5 @@
 import axios from "axios";
 
-const API = "http://127.0.0.1:8000/employees";
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 export const getEmployees = () => axios.get(API);

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Star, Trophy, BarChart2, Clock } from "lucide-react";
 import axios from "axios";
 
-const BASE_URL = "http://localhost:8000";
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 // Card config — title, icon, key from API data, prefix/suffix formatting
 const CARD_CONFIG = [

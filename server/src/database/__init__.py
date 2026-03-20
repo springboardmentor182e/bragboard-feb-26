@@ -1,17 +1,24 @@
+import os
+from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-DATABASE_URL = "sqlite:///./bragboard.db"
+# Load env variables
+load_dotenv()
 
-engine = create_engine(
-    DATABASE_URL, connect_args={"check_same_thread": False}
-)
+# Get DB URL from .env
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-SessionLocal = sessionmaker(bind=engine)
+# Create engine (NO connect_args for PostgreSQL)
+engine = create_engine(DATABASE_URL)
 
+# Create session
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+# Base class
 Base = declarative_base()
 
-# ✅ ADD THIS FUNCTION (VERY IMPORTANT)
+# Dependency (used in routes)
 def get_db():
     db = SessionLocal()
     try:
