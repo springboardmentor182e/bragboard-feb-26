@@ -40,11 +40,13 @@ function EmployeeDashboard() {
 // Admin Layout
 function AdminLayout({ children }) {
   return (
-    <div className="relative">
-      <AdminSidebar />
-      <div className="ml-64">
+    <div className="bg-[#EEF2F7] min-h-screen">
+      <div className="fixed top-0 left-0 h-full w-72 z-50">
+        <AdminSidebar />
+      </div>
+      <div className="ml-72 min-h-screen">
         <AdminTopbar />
-        <main className="min-h-screen bg-gray-100 p-6">
+        <main className="p-6">
           {children}
         </main>
       </div>
@@ -54,39 +56,56 @@ function AdminLayout({ children }) {
 
 function App() {
   return (
-    <BrowserRouter basename="/">  
+    <BrowserRouter basename="/">
       <Routes>
-        {/* Admin Routes */}
-        <Route
-          path="/admin/*"
-          element={
-            <AdminLayout>
-              <Routes>
-                <Route path="" element={<AdminDashboard />} />
-                <Route path="dashboard" element={<AdminDashboard />} />
-                <Route path="employees" element={<AdminEmployees />} />
-              </Routes>
-            </AdminLayout>
-          }
-        />
+        {/* Admin Routes - Flat */}
+        <Route path="/admin" element={
+          <AdminLayout>
+            <AdminDashboard />
+          </AdminLayout>
+        } />
+        <Route path="/admin/employees" element={
+          <AdminLayout>
+            <AdminEmployees />
+          </AdminLayout>
+        } />
 
-        {/* Employee Routes */}
-        <Route
-          path="/*"
-          element={
-            <EmployeeLayout>
-              <Routes>
-                <Route path="/" element={<EmployeeDashboard />} />
-                <Route path="feed" element={<EmployeeDashboard />} />
-                <Route path="leaderboard" element={<div>Leaderboard Page</div>} />
-                <Route path="team" element={<div>Team Page</div>} />
-                <Route path="badges" element={<div>Badges Page</div>} />
-                <Route path="analytics" element={<div>Analytics Page</div>} />
-                <Route path="my-shoutouts" element={<MyShoutouts />} />
-              </Routes>
-            </EmployeeLayout>
-          }
-        />
+        {/* Employee Routes - Flat */}
+        <Route path="/" element={
+          <EmployeeLayout>
+            <EmployeeDashboard />
+          </EmployeeLayout>
+        } />
+        <Route path="/feed" element={
+          <EmployeeLayout>
+            <EmployeeDashboard />
+          </EmployeeLayout>
+        } />
+        <Route path="/leaderboard" element={
+          <EmployeeLayout>
+            <div>Leaderboard Page</div>
+          </EmployeeLayout>
+        } />
+        <Route path="/team" element={
+          <EmployeeLayout>
+            <div>Team Page</div>
+          </EmployeeLayout>
+        } />
+        <Route path="/badges" element={
+          <EmployeeLayout>
+            <div>Badges Page</div>
+          </EmployeeLayout>
+        } />
+        <Route path="/analytics" element={
+          <EmployeeLayout>
+            <div>Analytics Page</div>
+          </EmployeeLayout>
+        } />
+        <Route path="/my-shoutouts" element={
+          <EmployeeLayout>
+            <MyShoutouts />
+          </EmployeeLayout>
+        } />
       </Routes>
     </BrowserRouter>
   );
