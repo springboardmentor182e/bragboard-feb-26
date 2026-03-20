@@ -9,7 +9,7 @@ import Leaderboard from "./features/employeeDashboard/components/Leaderboard";
 import AdminEmployees from "./pages/AdminEmployees";
 import MyShoutouts from "./pages/MyShoutouts";
 
-// Employee Layout
+// Employee Layout 
 function EmployeeLayout({ children }) {
   return (
     <div className="flex h-screen bg-gray-100">
@@ -24,7 +24,7 @@ function EmployeeLayout({ children }) {
   );
 }
 
-// Employee Dashboard
+// Employee Dashboard 
 function EmployeeDashboard() {
   return (
     <>
@@ -52,16 +52,15 @@ function AdminLayout({ children }) {
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/">  
       <Routes>
-
-        {/* Admin Routes - FIXED */}
+        {/* Admin Routes */}
         <Route
           path="/admin/*"
           element={
             <AdminLayout>
               <Routes>
-                <Route path="" element={<AdminDashboard />} />        {/* 👈 FIXED: path="" not "/" */}
+                <Route path="" element={<AdminDashboard />} />
                 <Route path="dashboard" element={<AdminDashboard />} />
                 <Route path="employees" element={<AdminEmployees />} />
               </Routes>
@@ -86,7 +85,6 @@ function App() {
             </EmployeeLayout>
           }
         />
-
       </Routes>
     </BrowserRouter>
   );
