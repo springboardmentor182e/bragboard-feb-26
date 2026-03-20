@@ -23,7 +23,6 @@ app.add_middleware(
 app.include_router(shoutout_router)
 app.include_router(admin_router)
 
-
 @app.get("/")
 def root():
     return {

@@ -6,6 +6,7 @@ router = APIRouter()
 
 router.include_router(users_router, prefix="/users", tags=["Users"])
 router.include_router(auth_router, prefix="/auth", tags=["Auth"])
+router.include_router(auth_router, prefix="/auth", tags=["Auth"])
 
 from src.admin import controller as admin_controller
 # Import other controllers as needed

@@ -9,6 +9,10 @@ import SummaryCards from "./features/employeeDashboard/components/SummaryCards";
 import AchievementTable from "./features/employeeDashboard/components/AchievementTable";
 import Leaderboard from "./features/employeeDashboard/components/Leaderboard";
 import AdminEmployees from "./pages/AdminEmployees";
+import Signup from "./pages/SignupPage";
+import Login from "./pages/LoginPage"
+import ForgotPassword from "./pages/ForgotPassword";
+
 import MyShoutouts from "./pages/MyShoutouts"; // your page
 
 // Employee Layout
@@ -57,37 +61,28 @@ function App() {
     <BrowserRouter>
       <Routes>
 
+        {/* Employee Area */}
         {/* Admin Routes */}
         <Route
           path="/admin/*"
           element={
-            <AdminLayout>
-              <Routes>
-                <Route path="/" element={<AdminDashboard />} />
-                <Route path="dashboard" element={<AdminDashboard />} />
-                <Route path="employees" element={<AdminEmployees />} />
-              </Routes>
-            </AdminLayout>
-          }
-        />
-
-        {/* Employee Routes */}
-        <Route
-          path="/*"
-          element={
             <EmployeeLayout>
-              <Routes>
-                <Route path="/" element={<EmployeeDashboard />} />
-                <Route path="feed" element={<EmployeeDashboard />} />
-                <Route path="leaderboard" element={<div>Leaderboard Page</div>} />
-                <Route path="team" element={<div>Team Page</div>} />
-                <Route path="badges" element={<div>Badges Page</div>} />
-                <Route path="analytics" element={<div>Analytics Page</div>} />
-                <Route path="my-shoutouts" element={<MyShoutouts />} /> 
-              </Routes>
+              <EmployeeDashboard />
             </EmployeeLayout>
           }
         />
+{/* ----SignupRoute--- */}
+<Route path="/signup" element={<Signup />} />
+
+<Route path="/login" element={<Login />} />
+
+<Route path="/forgot_password" element={<ForgotPassword/>} />
+
+        {/* Admin Area — NO EmployeeLayout */}
+        <Route
+          path="/admin/employees"
+          element={<AdminEmployees />}
+        />    
 
       </Routes>
     </BrowserRouter>
