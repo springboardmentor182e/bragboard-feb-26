@@ -1,7 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import AdminDashboard from './features/admin-dash/pages/AdminDashboard';
-import AdminLayout from './layout/AdminLayout';
 import Navbar from './layout/Navbar';
 import Sidebar from "./layout/Sidebar";
 import SummaryCards from "./features/employeeDashboard/components/SummaryCards";
