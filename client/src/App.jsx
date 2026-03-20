@@ -10,7 +10,6 @@ import AchievementTable from "./features/employeeDashboard/components/Achievemen
 import Leaderboard from "./features/employeeDashboard/components/Leaderboard";
 import AdminEmployees from "./pages/AdminEmployees";
 import MyShoutouts from "./pages/MyShoutouts";
-import AdminSidebar from './layout/AdminSidebar';
 
 // Employee Layout 
 function EmployeeLayout({ children }) {

@@ -1,13 +1,12 @@
-import Sidebar_admin from "./AdminSidebar";
+import AdminSidebar from "./AdminSidebar";
 import AdminTopbar from "./AdminTopbar";
-import Navbar from "./AdminTopbar";
 
 const AdminLayout = ({ children }) => {
   return (
     <div className="bg-[#EEF2F7] min-h-screen">
 
       {/* Fixed Sidebar */}
-      <Sidebar_admin />
+      <AdminSidebar />
 
       {/* Main Section */}
       <div className="ml-72">
