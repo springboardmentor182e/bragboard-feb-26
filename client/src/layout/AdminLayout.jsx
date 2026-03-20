@@ -1,5 +1,6 @@
-import Sidebar_admin from "./Sidebar";
-import Navbar from "./Navbar";
+import Sidebar_admin from "./AdminSidebar";
+import AdminTopbar from "./AdminTopbar";
+import Navbar from "./AdminTopbar";
 
 const AdminLayout = ({ children }) => {
   return (
@@ -13,7 +14,7 @@ const AdminLayout = ({ children }) => {
 
         {/* Fixed Topbar */}
         <div className="fixed top-0 left-72 right-0 z-30 bg-white border-b border-slate-200">
-          <Navbar />
+          <AdminTopbar />
         </div>
 
         {/* Scrollable Content Area */}

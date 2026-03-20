@@ -1,6 +1,8 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import AdminDashboard from './features/admin-dash/pages/AdminDashboard';
+import AdminSidebar from './layout/AdminSidebar';
+import AdminTopbar from './layout/AdminTopbar';
 import Navbar from './layout/Navbar';
 import Sidebar from "./layout/Sidebar";
 import SummaryCards from "./features/employeeDashboard/components/SummaryCards";
@@ -8,6 +10,7 @@ import AchievementTable from "./features/employeeDashboard/components/Achievemen
 import Leaderboard from "./features/employeeDashboard/components/Leaderboard";
 import AdminEmployees from "./pages/AdminEmployees";
 import MyShoutouts from "./pages/MyShoutouts";
+import AdminSidebar from './layout/AdminSidebar';
 
 // Employee Layout 
 function EmployeeLayout({ children }) {
@@ -39,9 +42,9 @@ function EmployeeDashboard() {
 function AdminLayout({ children }) {
   return (
     <div className="relative">
-      <Sidebar />
+      <AdminSidebar />
       <div className="ml-64">
-        <Navbar />
+        <AdminTopbar />
         <main className="min-h-screen bg-gray-100 p-6">
           {children}
         </main>
