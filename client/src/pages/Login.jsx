@@ -1,121 +1,51 @@
-import { useState } from "react"; 
-import { loginUser } from "../services/api"; 
-import { useNavigate } from "react-router-dom"; 
- 
-export default function Login() { 
-  const [email, setEmail] = useState(""); 
-  const [password, setPassword] = useState(""); 
-  const navigate = useNavigate(); 
- 
-  const handleSubmit = async (e) => { 
-    e.preventDefault(); 
- 
-    if (!email || !password) { 
-      alert("Please fill all fields"); 
-      return; 
-    } 
- 
-    try { 
-      const res = await loginUser({ email, password }); 
- 
-      if (res?.data?.access_token) { 
-        localStorage.setItem("token", res.data.access_token); 
-        alert("Login Success"); 
-        navigate("/dashboard"); 
-      } else { 
-        alert("Invalid response from server"); 
-      } 
-    } catch (err) { 
-      console.error("Login Error:", err.response?.data || err.message); 
-      alert(err.response?.data?.message || "Login Failed"); 
-    } 
-  }; 
- 
-  return ( 
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-[#0f172a] to-[#1e1b4b]"> 
- 
-      <div className="bg-[#111827] p-8 rounded-2xl shadow-xl w-96 text-white"> 
- 
-        <h1 className="text-3xl font-bold mb-2 text-white"> 
-          Welcome to BargBoard 
-        </h1> 
- 
-        <p className="text-gray-400 mb-6"> 
-          Sign in to your employee account 
-        </p> 
- 
-        <form onSubmit={handleSubmit}> 
- 
-          {/* Email */} 
-          <label className="block mb-2 text-sm text-gray-300">
-            Email Address
-          </label> 
-          <input 
-            type="email" 
-            placeholder="john.doe@company.com" 
-            className="w-full p-3 mb-4 rounded-lg bg-gray-800 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500" 
-            value={email} 
-            onChange={(e) => setEmail(e.target.value)} 
-          /> 
- 
-          {/* Password */} 
-          <label className="block mb-2 text-sm text-gray-300">
-            Password
-          </label> 
-          <input 
-            type="password" 
-            placeholder="Enter your password" 
-            className="w-full p-3 mb-4 rounded-lg bg-gray-800 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500" 
-            value={password} 
-            onChange={(e) => setPassword(e.target.value)} 
-          /> 
- 
-          {/* Remember + Forgot */} 
-          <div className="flex justify-between items-center mb-6 text-sm text-gray-300"> 
-            <label> 
-              <input type="checkbox" className="mr-2" /> 
-              Remember me 
-            </label> 
- 
-            <span className="text-purple-400 cursor-pointer"> 
-              Forgot Password? 
-            </span> 
-          </div> 
- 
-          {/* Login Button */} 
-          <button 
-            type="submit" 
-            className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 p-3 rounded-lg font-semibold text-white hover:opacity-90" 
-          > 
-            Sign In 
-          </button> 
- 
-        </form> 
- 
-        {/* Divider */} 
-        <div className="flex items-center my-6"> 
-          <div className="flex-1 h-px bg-gray-700"></div> 
-          <span className="px-3 text-gray-400">or</span> 
-          <div className="flex-1 h-px bg-gray-700"></div> 
-        </div> 
- 
-        {/* Admin Login */} 
-        <button className="w-full bg-gray-800 p-3 rounded-lg text-white hover:bg-gray-700"> 
-          Admin Login → 
-        </button> 
- 
-        {/* Signup */} 
-        <p className="text-center mt-6 text-gray-400"> 
-          Don't have an account?{" "} 
-          <span 
-            className="text-purple-400 cursor-pointer" 
-            onClick={() => navigate("/register")} 
-          > 
-            Sign Up 
-          </span> 
-        </p> 
- 
-      </div> 
-    </div> 
-  ); 
+import React, { useState } from "react";
+import axios from "axios";
+
+export default function Login() {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post("[localhost](http://localhost:8000/auth/login)", { username, password });
+      localStorage.setItem("access_token", res.data.access_token);
+      alert("Login successful!");
+    } catch (err) {
+      alert("Invalid credentials");
+    }
+  };
+
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
+      <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-lg p-8 w-full max-w-md text-center">
+        <h2 className="text-2xl font-bold mb-4 text-gray-800">Welcome to BragBoard</h2>
+
+        <input
+          type="text"
+          placeholder="Username or Email"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          className="w-full border rounded-md p-3 mb-3"
+          required
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="w-full border rounded-md p-3 mb-3"
+          required
+        />
+
+        <button className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white font-semibold py-3 rounded-md w-full hover:opacity-90">
+          Sign In
+        </button>
+
+        <p className="mt-4 text-sm text-gray-500">
+          Don't have an account? <a href="/register" className="text-indigo-600 font-medium">Sign up</a>
+        </p>
+      </form>
+    </div>
+  );
 }
