@@ -11,6 +11,27 @@ server/__pycache__
 client/.env
 server/.env
 
+<<<<<<< HEAD
+=======
+*.log
+
+.vscode/
+.idea/
+dist/
+# Node
+client/node_modules
+client/dist
+
+# Python
+server/venv
+server/__pycache__
+*.pyc
+
+# Env
+client/.env
+server/.env
+
+>>>>>>> e29d80eeae906ed8cd6132f2bdd48525c658f7e2
 # OS
 .DS_Store
 Thumbs.db

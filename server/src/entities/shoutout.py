@@ -5,7 +5,6 @@ from src.database.core import Base
 
 
 class Shoutout(Base):
-
     __tablename__ = "shoutouts"
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)

@@ -1,5 +1,8 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import AdminDashboard from './features/admin-dash/pages/AdminDashboard';
+import Sidebar_admin from './layout/Sidebar';
+import Navbar from './layout/Navbar';
 import Sidebar from "./features/employeeDashboard/components/Sidebar";
 import TopNavbar from "./features/employeeDashboard/components/TopNavbar";
 import SummaryCards from "./features/employeeDashboard/components/SummaryCards";
@@ -8,6 +11,7 @@ import Leaderboard from "./features/employeeDashboard/components/Leaderboard";
 import AdminEmployees from "./pages/AdminEmployees";
 import MyShoutouts from "./pages/MyShoutouts";
 
+// Employee Layout
 function EmployeeLayout({ children }) {
   return (
     <div className="flex h-screen bg-gray-100">
@@ -22,6 +26,7 @@ function EmployeeLayout({ children }) {
   );
 }
 
+// Employee Dashboard
 function EmployeeDashboard() {
   return (
     <>
@@ -32,35 +37,56 @@ function EmployeeDashboard() {
   );
 }
 
+// Admin Layout
+function AdminLayout({ children }) {
+  return (
+    <div className="relative">
+      <Sidebar_admin />
+      <div className="ml-64">
+        <Navbar />
+        <main className="min-h-screen bg-gray-100 p-6">
+          {children}
+        </main>
+      </div>
+    </div>
+  );
+}
+
 function App() {
   return (
     <BrowserRouter>
       <Routes>
 
-        {/* Employee Area */}
+        {/* Admin Routes */}
         <Route
-          path="/"
+          path="/admin/*"
           element={
-            <EmployeeLayout>
-              <EmployeeDashboard />
-            </EmployeeLayout>
+            <AdminLayout>
+              <Routes>
+                <Route path="/" element={<AdminDashboard />} />
+                <Route path="dashboard" element={<AdminDashboard />} />
+                <Route path="employees" element={<AdminEmployees />} />
+              </Routes>
+            </AdminLayout>
           }
         />
 
-        {/* My Shoutouts */}
+        {/* Employee Routes */}
         <Route
-          path="/my-shoutouts"
+          path="/*"
           element={
             <EmployeeLayout>
-              <MyShoutouts />
+              <Routes>
+                <Route path="/" element={<EmployeeDashboard />} />
+                <Route path="feed" element={<EmployeeDashboard />} />
+                <Route path="leaderboard" element={<div>Leaderboard Page</div>} />
+                <Route path="team" element={<div>Team Page</div>} />
+                <Route path="badges" element={<div>Badges Page</div>} />
+                <Route path="analytics" element={<div>Analytics Page</div>} />
+                <Route path="my-shoutouts" element={<MyShoutouts />} />
+              </Routes>
             </EmployeeLayout>
           }
-        />
-
-        {/* Admin Area — NO EmployeeLayout */}
-        <Route
-          path="/admin/employees"
-          element={<AdminEmployees />}
         />
 
       </Routes>
