@@ -4,7 +4,7 @@ import { getLeaderboard } from "../services/employeeService";
 const useLeaderboard = (refreshKey = 0) => {
   const [leaders, setLeaders] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError]     = useState(null);
 
   useEffect(() => {
     const fetch = async () => {

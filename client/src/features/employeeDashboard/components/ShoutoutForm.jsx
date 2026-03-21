@@ -4,16 +4,16 @@ import { createShoutout } from "../services/shoutoutService";
 
 const ShoutoutForm = ({ selectedEmployee, onShoutoutCreated }) => {
   const [recipientId, setRecipientId] = useState("");
-  const [message, setMessage] = useState("");
-  const [employees, setEmployees] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [message, setMessage]         = useState("");
+  const [employees, setEmployees]     = useState([]);
+  const [loading, setLoading]         = useState(false);
+  const [error, setError]             = useState(null);
 
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
         const res = await getEmployees();
-        setEmployees(res.data);
+       setEmployees(Array.isArray(res.data) ? res.data : res.data?.data ?? []);
       } catch (err) {
         console.error("Failed to load employees", err);
       }
@@ -57,8 +57,7 @@ const ShoutoutForm = ({ selectedEmployee, onShoutoutCreated }) => {
     }
   };
 
-  // Filter out the sender from the recipient dropdown
-  const recipientOptions = employees.filter(
+  const recipientOptions = (Array.isArray(employees) ? employees : []).filter(
     (emp) => emp.id !== selectedEmployee?.id
   );
 
@@ -74,7 +73,6 @@ const ShoutoutForm = ({ selectedEmployee, onShoutoutCreated }) => {
           : "Select your profile to send a shoutout"}
       </p>
 
-      {/* Inline Error */}
       {error && (
         <div className="mb-4 text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-lg px-4 py-2">
           {error}
@@ -83,7 +81,6 @@ const ShoutoutForm = ({ selectedEmployee, onShoutoutCreated }) => {
 
       <form onSubmit={handleSubmit} className="space-y-4">
 
-        {/* Recipient Dropdown */}
         <div>
           <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">
             Recipient
@@ -102,7 +99,6 @@ const ShoutoutForm = ({ selectedEmployee, onShoutoutCreated }) => {
           </select>
         </div>
 
-        {/* Message */}
         <div>
           <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">
             Message

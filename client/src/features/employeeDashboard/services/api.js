@@ -1,14 +1,12 @@
 import axios from "axios";
-
-// Single source of truth for the API base URL
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL ?? "http://localhost:8000",
+  baseURL: import.meta.env.VITE_API_URL,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// Global error interceptor — log all failed requests in one place
+// Global error interceptor — logs all failed requests in one place
 api.interceptors.response.use(
   (response) => response,
   (error) => {

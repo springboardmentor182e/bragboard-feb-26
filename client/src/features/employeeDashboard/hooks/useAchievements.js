@@ -8,8 +8,8 @@ import {
 
 const useAchievements = (selectedEmployee) => {
   const [achievements, setAchievements] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [loading, setLoading]           = useState(false);
+  const [error, setError]               = useState(null);
 
   useEffect(() => {
     if (!selectedEmployee) return;
@@ -29,19 +29,14 @@ const useAchievements = (selectedEmployee) => {
   }, [selectedEmployee]);
 
   const addAchievement = async (data) => {
-    const res = await createAchievement({
-      ...data,
-      employee_id: selectedEmployee.id,
-    });
+    const res = await createAchievement({ ...data, employee_id: selectedEmployee.id });
     setAchievements((prev) => [res.data, ...prev]);
     return res.data;
   };
 
   const editAchievement = async (id, data) => {
     const res = await updateAchievement(id, data);
-    setAchievements((prev) =>
-      prev.map((a) => (a.id === id ? res.data : a))
-    );
+    setAchievements((prev) => prev.map((a) => (a.id === id ? res.data : a)));
     return res.data;
   };
 
@@ -50,14 +45,7 @@ const useAchievements = (selectedEmployee) => {
     setAchievements((prev) => prev.filter((a) => a.id !== id));
   };
 
-  return {
-    achievements,
-    loading,
-    error,
-    addAchievement,
-    editAchievement,
-    removeAchievement,
-  };
+  return { achievements, loading, error, addAchievement, editAchievement, removeAchievement };
 };
 
 export default useAchievements;

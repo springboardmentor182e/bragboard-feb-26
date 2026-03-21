@@ -1,13 +1,10 @@
 import { useState } from "react";
 
-// Helper: resolve employee id to name
 const getEmployeeName = (employees, id) =>
   employees.find((e) => e.id === id)?.name ?? "Unknown";
 
-// Helper: get initials from name
 const getInitials = (name = "?") => name.charAt(0).toUpperCase();
 
-// Helper: format date
 const formatDate = (dateStr) => {
   if (!dateStr) return "";
   return new Date(dateStr).toLocaleDateString("en-IN", {
@@ -16,7 +13,7 @@ const formatDate = (dateStr) => {
 };
 
 const ShoutoutFeed = ({ shoutouts, employees = [], onReact, onComment }) => {
-  const [commentText, setCommentText] = useState({});
+  const [commentText, setCommentText]   = useState({});
   const [userReactions, setUserReactions] = useState({});
 
   const handleReact = (shoutoutId, reaction) => {
@@ -38,7 +35,6 @@ const ShoutoutFeed = ({ shoutouts, employees = [], onReact, onComment }) => {
         Shoutout Feed
       </h2>
 
-      {/* Empty State */}
       {shoutouts.length === 0 && (
         <div className="text-center py-10 text-gray-400 dark:text-slate-500">
           <p className="text-3xl mb-2">🎉</p>
@@ -99,7 +95,7 @@ const ShoutoutFeed = ({ shoutouts, employees = [], onReact, onComment }) => {
                 ))}
               </div>
 
-              {/* Comments — each comment is a full object with id and text */}
+              {/* Comments */}
               <div className="mt-4 space-y-1">
                 {item.comments?.map((c) => (
                   <p key={c.id} className="text-sm text-gray-500 dark:text-slate-400">
@@ -108,7 +104,7 @@ const ShoutoutFeed = ({ shoutouts, employees = [], onReact, onComment }) => {
                 ))}
               </div>
 
-              {/* Add Comment */}
+              {/* Add comment */}
               <div className="mt-3 flex gap-2">
                 <input
                   type="text"

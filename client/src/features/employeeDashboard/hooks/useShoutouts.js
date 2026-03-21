@@ -4,8 +4,8 @@ import { createComment } from "../services/commentService";
 
 const useShoutouts = (selectedEmployee) => {
   const [shoutouts, setShoutouts] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [loading, setLoading]     = useState(false);
+  const [error, setError]         = useState(null);
 
   useEffect(() => {
     if (!selectedEmployee) return;
@@ -44,7 +44,7 @@ const useShoutouts = (selectedEmployee) => {
     try {
       const res = await createComment({
         shoutout_id: shoutoutId,
-        author_id: selectedEmployee.id,
+        author_id:   selectedEmployee.id,
         text,
       });
       setShoutouts((prev) =>

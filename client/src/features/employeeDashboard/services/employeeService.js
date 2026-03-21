@@ -1,5 +1,6 @@
-import axios from "axios";
+import api from "./api";
 
-const BASE_URL = import.meta.env.VITE_BASE_URL;
+export const getEmployees   = () => api.get("/employees");
 
-export const getEmployees = () => axios.get(API);
+// ADDED: was missing — useLeaderboard.js imports this and crashed without it
+export const getLeaderboard = () => api.get("/employees/leaderboard");

@@ -3,29 +3,14 @@ import DashboardLayout from "../components/layout/DashboardLayout";
 import useEmployees from "../hooks/useEmployees";
 import useDarkMode from "../hooks/useDarkMode";
 
-const SECTIONS = [
-  {
-    title: "Appearance",
-    description: "Customize how BragBoard looks for you.",
-  },
-  {
-    title: "Notifications",
-    description: "Control when and how you get notified.",
-  },
-  {
-    title: "Account",
-    description: "Manage your employee profile settings.",
-  },
-];
-
 const SettingsPage = () => {
   const { employees, selectedEmployee, setSelectedEmployee } = useEmployees();
   const { dark, toggleDark } = useDarkMode();
 
   const [notifications, setNotifications] = useState({
-    shoutouts: true,
+    shoutouts:    true,
     achievements: true,
-    leaderboard: false,
+    leaderboard:  false,
   });
 
   const toggleNotification = (key) => {
@@ -92,9 +77,9 @@ const SettingsPage = () => {
           </p>
           <div className="space-y-4">
             {[
-              { key: "shoutouts",    label: "Shoutout received",     desc: "Notify when someone shouts you out" },
-              { key: "achievements", label: "Achievement added",      desc: "Notify when a new achievement is logged" },
-              { key: "leaderboard", label: "Leaderboard changes",    desc: "Notify when your rank changes" },
+              { key: "shoutouts",    label: "Shoutout received",  desc: "Notify when someone shouts you out" },
+              { key: "achievements", label: "Achievement added",   desc: "Notify when a new achievement is logged" },
+              { key: "leaderboard",  label: "Leaderboard changes", desc: "Notify when your rank changes" },
             ].map(({ key, label, desc }) => (
               <div key={key} className="flex items-center justify-between">
                 <div>
