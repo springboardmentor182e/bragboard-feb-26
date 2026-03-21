@@ -18,22 +18,16 @@ server/__pycache__/
 __pycache__/
 *.pyc
 
-<<<<<<< HEAD
 # Env
 client/.env
 server/.env
 
-<<<<<<< HEAD
-=======
-=======
 # Logs
->>>>>>> 1b97f613829558ead40a690306cf10d1d4154ac2
 *.log
 
 # Database
 *.db
 
-<<<<<<< HEAD
 # Python
 server/venv
 server/__pycache__
@@ -43,11 +37,7 @@ server/__pycache__
 client/.env
 server/.env
 
->>>>>>> e29d80eeae906ed8cd6132f2bdd48525c658f7e2
-# OS
-=======
 # OS files
->>>>>>> 1b97f613829558ead40a690306cf10d1d4154ac2
 .DS_Store
 Thumbs.db
 
