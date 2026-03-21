@@ -1,27 +1,39 @@
 # Node
-client/node_modules
-client/dist
+node_modules/
+client/node_modules/
+dist/
+build/
+client/dist/
+.vite/
+
+# Environment files
+.env
+.env.local
+client/.env
+server/.env
 
 # Python
-server/venv
-server/__pycache__
+server/venv/
+server/__pycache__/
+__pycache__/
 *.pyc
 
+<<<<<<< HEAD
 # Env
 client/.env
 server/.env
 
 <<<<<<< HEAD
 =======
+=======
+# Logs
+>>>>>>> 1b97f613829558ead40a690306cf10d1d4154ac2
 *.log
 
-.vscode/
-.idea/
-dist/
-# Node
-client/node_modules
-client/dist
+# Database
+*.db
 
+<<<<<<< HEAD
 # Python
 server/venv
 server/__pycache__
@@ -33,5 +45,13 @@ server/.env
 
 >>>>>>> e29d80eeae906ed8cd6132f2bdd48525c658f7e2
 # OS
+=======
+# OS files
+>>>>>>> 1b97f613829558ead40a690306cf10d1d4154ac2
 .DS_Store
 Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+.env

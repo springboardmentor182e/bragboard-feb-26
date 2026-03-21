@@ -2,10 +2,12 @@ from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text, JSON
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from src.database.core import Base
-from src.entities.user import User 
+from src.entities.user import User
+
 class Report(Base):
     __tablename__ = "reports"
-    
+    __table_args__ = {'extend_existing': True}
+
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, nullable=False)
     type = Column(String)  # 'admin', 'shoutouts', 'analytics'
@@ -16,7 +18,8 @@ class Report(Base):
 
 class ActivityLog(Base):
     __tablename__ = "activity_logs"
-    
+    __table_args__ = {'extend_existing': True}
+
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"))
     action = Column(String)  # 'login', 'create_post', 'delete_user', etc.
@@ -26,7 +29,8 @@ class ActivityLog(Base):
 
 class DashboardStats(Base):
     __tablename__ = "dashboard_stats"
-    
+    __table_args__ = {'extend_existing': True}
+
     id = Column(Integer, primary_key=True, index=True)
     stat_key = Column(String, unique=True)  # 'total_users', 'active_today', etc.
     stat_value = Column(Integer, default=0)
@@ -37,6 +41,7 @@ class DashboardStats(Base):
 
 class UserContribution(Base):
     __tablename__ = "user_contributions"
+    __table_args__ = {'extend_existing': True}
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), unique=True)
