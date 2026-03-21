@@ -18,3 +18,6 @@ class Report(Base):
     status = Column(String, default="PENDING")
 
     created_at = Column(DateTime, default=datetime.utcnow)
+
+    # ✅ NEW FIELD to track when the report was resolved
+    resolved_at = Column(DateTime, nullable=True)

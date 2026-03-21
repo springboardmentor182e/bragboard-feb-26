@@ -1,6 +1,5 @@
 import axios from "axios";
 
-// Create axios instance
 const API = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   headers: {
@@ -9,7 +8,6 @@ const API = axios.create({
   timeout: 10000,
 });
 
-// Optional: response error handling
 API.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -18,28 +16,25 @@ API.interceptors.response.use(
   }
 );
 
-/*
-GET ALL REPORTS
-*/
 export const fetchReports = async () => {
   const res = await API.get("/reports/");
   return res.data;
 };
 
-/*
-DELETE REPORT
-*/
 export const deleteReport = async (reportId) => {
   const res = await API.delete(`/reports/${reportId}`);
   return res.data;
 };
 
-/*
-UPDATE REPORT STATUS
-*/
 export const updateReportStatus = async (reportId, status) => {
   const res = await API.put(`/reports/${reportId}/status`, null, {
     params: { status },
   });
   return res.data;
+};
+
+// ✅ NEW API CALL
+export const fetchAvgResponseTime = async () => {
+  const res = await API.get("/reports/stats/avg-response-time");
+  return res.data.avg_response_time;
 };
