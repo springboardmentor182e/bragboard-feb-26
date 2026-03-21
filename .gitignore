@@ -8,8 +8,6 @@ server/__pycache__
 *.pyc
 
 # Env
-client/.env
-server/.env
 
 # OS
 .DS_Store
