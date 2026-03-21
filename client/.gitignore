@@ -28,3 +28,4 @@ server/__pycache__/
 *.pyc
 .vscode/
 .env
+.env.local

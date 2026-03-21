@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import AdminLayout from "../layout/AdminLayout";
 import StatsCards from "../features/employeeManagement/components/StatsCards";
-import SearchFilterBar from "../features/employeeManagement/components/SearchFilterBar";
+// import SearchFilterBar from "../features/employeeManagement/components/SearchFilterBar";
 import EmployeeTable from "../features/employeeManagement/components/EmployeeTable";
 import AddEmployeeModal from "../features/employeeManagement/components/AddEmployeeModal";
 import PrimaryButton from "../components/ui/PrimaryButton";
@@ -100,7 +100,7 @@ function AdminEmployees() {
         {/* Stats */}
         <StatsCards employees={employees} />
 
-        {/* Filters */}
+        Filters
         <SearchFilterBar
           search={search}
           setSearch={setSearch}

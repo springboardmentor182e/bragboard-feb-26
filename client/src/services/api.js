@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: 'http://localhost:8000/api',
+  baseURL: 'https://bragboard-feb-26.onrender.com/api',
   timeout: 10000,
 });
 
@@ -22,7 +22,7 @@ getReports: (status = null) => {
   // FIXED: Use backticks ` ` for template literals, not single quotes ' '
   deletePost: (postId) => {
     const url = `/admin/posts/${postId}`;  // ✅ Fixed: backticks with variable
-    console.log('Calling delete URL:', 'http://localhost:8000/api' + url);
+    console.log('Calling delete URL:', 'https://bragboard-feb-26.onrender.com/api' + url);
     return API.delete(url);
   }
 };
