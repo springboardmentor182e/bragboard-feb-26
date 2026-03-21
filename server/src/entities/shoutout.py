@@ -1,29 +1,34 @@
 from datetime import datetime
-from sqlalchemy import String, Integer, Text, DateTime, func
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Text
+from sqlalchemy.orm import relationship, Mapped, mapped_column
 from src.database.core import Base
 
 
 class Shoutout(Base):
     __tablename__ = "shoutouts"
 
-    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True)
 
-    sender_name: Mapped[str] = mapped_column(String(120))
-    receiver_name: Mapped[str] = mapped_column(String(120))
+    # Your teammate A's fields
+    sender_name = Column(String(120), nullable=True)
+    receiver_name = Column(String(120), nullable=True)
+    badge = Column(String(80), nullable=True)
+    campaign = Column(String(120), nullable=True)
+    message = Column(Text, nullable=True)
+    level = Column(Integer, default=1)
+    likes = Column(Integer, default=0)
+    comments = Column(Integer, default=0)
+    shares = Column(Integer, default=0)
 
-    badge: Mapped[str] = mapped_column(String(80))
-    campaign: Mapped[str | None] = mapped_column(String(120), nullable=True)
+    # Your teammate B's fields
+    sender_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    receiver_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    category = Column(String, nullable=True)
+    points = Column(Integer, default=0)
+    status = Column(String, default="PENDING")
 
-    message: Mapped[str] = mapped_column(Text)
+    created_at = Column(DateTime, default=datetime.utcnow)
 
-    level: Mapped[int] = mapped_column(Integer, default=1)
-
-    likes: Mapped[int] = mapped_column(Integer, default=0)
-    comments: Mapped[int] = mapped_column(Integer, default=0)
-    shares: Mapped[int] = mapped_column(Integer, default=0)
-
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        server_default=func.now()
-    )
+    # Relationships
+    sender = relationship("User", foreign_keys=[sender_id])
+    receiver = relationship("User", foreign_keys=[receiver_id])

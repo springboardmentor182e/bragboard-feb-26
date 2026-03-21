@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { lazy, Suspense } from "react";
 
+// Your working employee dashboard pages
 const EmployeeDashboard = lazy(() =>
   import("./features/employeeDashboard/pages/EmployeeDashboard")
 );
@@ -12,6 +13,14 @@ const ProfilePage = lazy(() =>
 );
 const SettingsPage = lazy(() =>
   import("./features/employeeDashboard/pages/SettingsPage")
+);
+
+// Teammate's admin pages (lazy loaded so missing files don't crash the app)
+const AdminEmployees = lazy(() =>
+  import("./pages/AdminEmployees").catch(() => ({ default: () => <div>Admin Employees - Coming Soon</div> }))
+);
+const AdminReports = lazy(() =>
+  import("./pages/AdminReports").catch(() => ({ default: () => <div>Admin Reports - Coming Soon</div> }))
 );
 
 const PageLoader = () => (
@@ -35,11 +44,17 @@ function App() {
     <BrowserRouter>
       <Suspense fallback={<PageLoader />}>
         <Routes>
+          {/* Employee Dashboard routes */}
           <Route path="/"             element={<EmployeeDashboard />} />
           <Route path="/achievements" element={<AchievementsPage />} />
           <Route path="/profile"      element={<ProfilePage />} />
           <Route path="/settings"     element={<SettingsPage />} />
-          <Route path="*"             element={<NotFound />} />
+
+          {/* Admin routes */}
+          <Route path="/admin/employees" element={<AdminEmployees />} />
+          <Route path="/admin/reports"   element={<AdminReports />} />
+
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
     </BrowserRouter>
