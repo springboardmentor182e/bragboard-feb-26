@@ -1,131 +1,33 @@
-export default function LeaderboardTable({ users, startRank = 1, darkMode }) {
+import LeaderboardRow from "./LeaderboardRow";
 
-  // ===== GLASS DEPARTMENT STYLE =====
-  const getDeptStyle = (dept) => {
-
-    // 🌙 DARK MODE (bright glass colors)
-    if (darkMode) {
-      switch (dept) {
-        case "Design":
-          return "bg-pink-500/20 text-pink-300 border border-pink-400/30 backdrop-blur-md";
-        case "Engineering":
-          return "bg-purple-500/20 text-purple-300 border border-purple-400/30 backdrop-blur-md";
-        case "Marketing":
-          return "bg-orange-500/20 text-orange-300 border border-orange-400/30 backdrop-blur-md";
-        default:
-          return "bg-gray-500/20 text-gray-300 border border-gray-400/30 backdrop-blur-md";
-      }
-    }
-
-    // ☀️ LIGHT MODE (soft glass colors)
-    switch (dept) {
-      case "Design":
-        return "bg-pink-200/40 text-pink-700 border border-pink-300/40 backdrop-blur-md";
-      case "Engineering":
-        return "bg-purple-200/40 text-purple-700 border border-purple-300/40 backdrop-blur-md";
-      case "Marketing":
-        return "bg-orange-200/40 text-orange-700 border border-orange-300/40 backdrop-blur-md";
-      default:
-        return "bg-gray-200/40 text-gray-700 border border-gray-300/40 backdrop-blur-md";
-    }
-  };
-
+export default function LeaderboardTable({ users, startRank = 1 }) {
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto rounded-2xl">
 
-      <table className="w-full text-left">
+      <table className="w-full text-left border-collapse">
 
         {/* ===== HEADER ===== */}
         <thead>
-          <tr
-            className={`text-sm border-b ${
-              darkMode
-                ? "text-white border-slate-600"
-                : "text-orange-600 border-orange-100"
-            }`}
-          >
-            <th className="py-3">Rank</th>
-            <th>Employee</th>
-            <th>Department</th>
-            <th className="text-right">Points</th>
+          <tr className="text-sm text-orange-600">
+            <th className="py-3 px-3">Rank</th>
+            <th className="px-3">Employee</th>
+            <th className="px-3">Username</th>
+            <th className="px-3">Email</th>
+            <th className="px-3">Department</th>
+            <th className="text-right px-3">Points</th>
           </tr>
         </thead>
 
-        {/* ===== BODY ===== */}
+        {/* ===== BODY (CONNECTED TO ROW) ===== */}
         <tbody>
-          {users.map((user, index) => {
-
-            const displayName =
-              (user.full_name && user.full_name.trim()) ||
-              user.name ||
-              user.username ||
-              "No Name";
-
-            return (
-              <tr
-                key={user.id || index}
-                className={`border-b transition ${
-                  darkMode
-                    ? "border-slate-700 hover:bg-slate-700/40"
-                    : "border-orange-100 hover:bg-orange-50"
-                }`}
-              >
-
-                {/* Rank */}
-                <td
-                  className={`py-4 font-medium ${
-                    darkMode ? "text-gray-300" : "text-gray-700"
-                  }`}
-                >
-                  #{startRank + index}
-                </td>
-
-                {/* Employee */}
-                <td className="flex items-center gap-3 py-4">
-
-                  <img
-                    src={
-                      user.photo_url
-                        ? `http://127.0.0.1:8000${user.photo_url}`
-                        : "/default-avatar.png"
-                    }
-                    alt={displayName}
-                    className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover"
-                  />
-
-                  <span
-                    className={`font-semibold text-sm sm:text-base ${
-                      darkMode ? "text-white" : "text-gray-800"
-                    }`}
-                  >
-                    {displayName}
-                  </span>
-
-                </td>
-
-                {/* Department (GLASS STYLE 🔥) */}
-                <td>
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs sm:text-sm font-semibold ${getDeptStyle(
-                      user.department
-                    )}`}
-                  >
-                    {user.department || "N/A"}
-                  </span>
-                </td>
-
-                {/* Points */}
-                <td
-                  className={`text-right font-semibold text-sm sm:text-base ${
-                    darkMode ? "text-blue-400" : "text-blue-600"
-                  }`}
-                >
-                  {user.points ?? 0}
-                </td>
-
-              </tr>
-            );
-          })}
+          {users.map((user, index) => (
+            <LeaderboardRow
+              key={user.id || index}
+              user={user}
+              index={index}
+              startRank={startRank}
+            />
+          ))}
         </tbody>
 
       </table>

@@ -1,156 +1,177 @@
-import { useState, useMemo } from "react";
-import { useLeaderboard } from "../features/leaderboard/hooks/useLeaderboard";
+import { useEffect, useState } from "react";
+import PodiumCard from "../features/leaderboard/components/PodiumCard.jsx";
+import LeaderboardTable from "../features/leaderboard/components/LeaderboardTable.jsx";
 
-import PodiumCard from "../features/leaderboard/components/PodiumCard";
-import LeaderboardTable from "../features/leaderboard/components/LeaderboardTable";
+export default function Leaderboard({ darkMode = false }) {
 
-export default function Leaderboard() {
-  const { leaderboard = [], loading, error } = useLeaderboard();
-
+  // 🔥 STATES
+  const [users, setUsers] = useState([]);
+  const [isDark, setIsDark] = useState(darkMode);
+  const [selectedDept, setSelectedDept] = useState("All");
   const [search, setSearch] = useState("");
-  const [departmentFilter, setDepartmentFilter] = useState("All");
 
-  // ✅ Dark Mode Toggle
-  const [darkMode, setDarkMode] = useState(true);
+  // 🔥 FETCH DATA
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/api/v1/leaderboard/leaderboard/")
+      .then(res => res.json())
+      .then(data => {
+        const finalUsers = data?.data || [];
+        setUsers(finalUsers);
+      })
+      .catch(err => console.error("API ERROR:", err));
+  }, []);
 
-  // ===== SORT USERS =====
-  const sorted = useMemo(() => {
-    return [...leaderboard].sort((a, b) => b.points - a.points);
-  }, [leaderboard]);
-
-  // ===== FILTER USERS =====
-  const filteredUsers = useMemo(() => {
-    return sorted.filter((user) => {
-      const name =
-        user.full_name ||
-        user.name ||
-        user.username ||
-        "";
-
-      const matchesSearch = name
-        .toLowerCase()
-        .includes(search.toLowerCase());
-
-      const matchesDepartment =
-        departmentFilter === "All" ||
-        user.department === departmentFilter;
-
-      return matchesSearch && matchesDepartment;
-    });
-  }, [sorted, search, departmentFilter]);
-
-  // ===== PODIUM USERS =====
-  const first = filteredUsers[0] || null;
-  const second = filteredUsers[1] || null;
-  const third = filteredUsers[2] || null;
-
-  const currentUsers = filteredUsers;
-
-  // ===== DEPARTMENTS =====
+  // 🔥 UNIQUE DEPARTMENTS
   const departments = [
     "All",
-    ...new Set(sorted.map((u) => u.department)),
+    ...Array.from(
+      new Set(
+        users
+          .map(u => u.department?.toLowerCase())
+          .filter(Boolean)
+      )
+    ).map(d => d.charAt(0).toUpperCase() + d.slice(1))
   ];
 
-  // ===== LOADING =====
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen bg-slate-950 text-white text-lg">
-        Loading Leaderboard...
-      </div>
-    );
-  }
+  // 🔥 FILTER USERS (SAFE SEARCH)
+  const filteredUsers = users.filter((u) => {
+    const name = u.full_name?.toLowerCase() || "";
+    const username = u.username?.toLowerCase() || "";
+    const email = u.email?.toLowerCase() || "";
 
-  // ===== ERROR =====
-  if (error) {
-    return (
-      <div className="flex justify-center items-center h-screen bg-slate-950 text-red-500 text-lg">
-        {error}
-      </div>
-    );
-  }
+    const matchDept =
+      selectedDept === "All" ||
+      u.department?.toLowerCase() === selectedDept.toLowerCase();
+
+    const matchSearch =
+      name.includes(search.toLowerCase()) ||
+      username.includes(search.toLowerCase()) ||
+      email.includes(search.toLowerCase());
+
+    return matchDept && matchSearch;
+  });
+
+  // 🔥 PODIUM FIX (SAFE)
+  const topUsers = [
+    filteredUsers.find(u => u.rank === 2),
+    filteredUsers.find(u => u.rank === 1),
+    filteredUsers.find(u => u.rank === 3),
+  ].filter(Boolean); // remove undefined
 
   return (
     <div
-      className={`min-h-screen px-4 md:px-8 py-8 transition ${
-        darkMode
-          ? "bg-gradient-to-br from-slate-950 via-slate-900 to-black text-white"
-          : "bg-[#fef7ed] text-gray-800" // ✅ warm cream background
-      }`}
+      className={`
+        min-h-screen p-6
+        ${
+          isDark
+            ? "bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900"
+            : "bg-gradient-to-br from-orange-100 via-amber-50 to-orange-200"
+        }
+      `}
     >
-      {/* ===== TITLE ===== */}
-      <h1 className="text-3xl md:text-4xl font-bold text-center mb-4 tracking-wide text-yellow-400">
-        🏆 Leaderboard
-      </h1>
 
-      {/* ===== DARK MODE BUTTON ===== */}
-      <div className="flex justify-end mb-8">
-        <button
-          onClick={() => setDarkMode(!darkMode)}
-          className="px-4 py-2 rounded-lg font-semibold shadow-md bg-yellow-500 text-black hover:bg-yellow-400 transition"
+      {/* ===== HEADER ===== */}
+      <div className="flex justify-between items-center mb-6">
+
+        <h1
+          className={`
+            text-2xl sm:text-3xl font-bold flex items-center gap-2
+            ${isDark ? "text-yellow-400" : "text-orange-600"}
+          `}
         >
-          {darkMode ? "☀ Light Mode" : "🌙 Dark Mode"}
+          🏆 Leaderboard
+        </h1>
+
+        <button
+          onClick={() => setIsDark(!isDark)}
+          className="px-4 py-2 rounded-xl bg-black text-white text-sm"
+        >
+          {isDark ? "Light ☀️" : "Dark 🌙"}
         </button>
+
       </div>
 
       {/* ===== SEARCH + FILTER ===== */}
-      <div className="max-w-5xl mx-auto flex flex-col md:flex-row gap-4 mb-10">
-        
+      <div className="flex flex-col sm:flex-row gap-4 mb-8">
+
+        {/* SEARCH */}
         <input
           type="text"
-          placeholder="Search employees..."
+          placeholder="Search name / username / email..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className={`flex-1 p-3 rounded-xl border shadow-sm transition ${
-            darkMode
-              ? "bg-slate-800 text-white border-slate-600"
-              : "bg-white border-orange-200 focus:ring-2 focus:ring-orange-300"
-          }`}
+          className={`
+            flex-1 px-4 py-2 rounded-xl outline-none
+            ${
+              isDark
+                ? "bg-slate-800 text-white border border-slate-600"
+                : "bg-white/60 backdrop-blur-md border border-orange-200"
+            }
+          `}
         />
 
+        {/* DEPARTMENT FILTER */}
         <select
-          value={departmentFilter}
-          onChange={(e) => setDepartmentFilter(e.target.value)}
-          className={`p-3 rounded-xl border shadow-sm transition ${
-            darkMode
-              ? "bg-slate-800 text-white border-slate-600"
-              : "bg-white border-orange-200 focus:ring-2 focus:ring-orange-300"
-          }`}
+          value={selectedDept}
+          onChange={(e) => setSelectedDept(e.target.value)}
+          className={`
+            px-4 py-2 rounded-xl
+            ${
+              isDark
+                ? "bg-slate-800 text-white border border-slate-600"
+                : "bg-white/60 backdrop-blur-md border border-orange-200"
+            }
+          `}
         >
-          {departments.map((dept) => (
-            <option key={dept}>{dept}</option>
+          {departments.map((dept, index) => (
+            <option key={index} value={dept}>
+              {dept}
+            </option>
           ))}
         </select>
 
       </div>
 
       {/* ===== PODIUM ===== */}
-      <div className="flex justify-center items-end gap-3 md:gap-6 mb-14 flex-wrap">
-        {second && <PodiumCard user={second} place={2} />}
-        {first && <PodiumCard user={first} place={1} />}
-        {third && <PodiumCard user={third} place={3} />}
+      <div className="flex flex-col sm:flex-row justify-center items-end gap-6 mb-10 w-full">
+
+        {filteredUsers.find(u => u.rank === 2) && (
+          <div className="flex flex-col items-center">
+            <div className="text-xl mb-1">🥈</div>
+            <PodiumCard user={filteredUsers.find(u => u.rank === 2)} place={2} />
+          </div>
+        )}
+
+        {filteredUsers.find(u => u.rank === 1) && (
+          <div className="flex flex-col items-center">
+            <div className="text-2xl mb-1">🥇</div>
+            <PodiumCard user={filteredUsers.find(u => u.rank === 1)} place={1} />
+          </div>
+        )}
+
+        {filteredUsers.find(u => u.rank === 3) && (
+          <div className="flex flex-col items-center">
+            <div className="text-xl mb-1">🥉</div>
+            <PodiumCard user={filteredUsers.find(u => u.rank === 3)} place={3} />
+          </div>
+        )}
+
       </div>
 
       {/* ===== TABLE ===== */}
       <div
-        className={`max-w-5xl mx-auto rounded-3xl shadow-xl p-4 md:p-6 ${
-          darkMode
-            ? "bg-slate-800 border border-slate-700"
-            : "bg-white/90 backdrop-blur-md border border-orange-100"
-        }`}
+        className={`
+          rounded-2xl p-4
+          ${
+            isDark
+              ? "bg-slate-800 border border-slate-700"
+              : "bg-white/60 backdrop-blur-lg border border-orange-200"
+          }
+        `}
       >
-        {currentUsers.length > 0 ? (
-          <LeaderboardTable
-            users={currentUsers}
-            startRank={1}
-            darkMode={darkMode} // ✅ IMPORTANT
-          />
-        ) : (
-          <p className="text-center py-10 text-gray-400">
-            No employees found.
-          </p>
-        )}
+        <LeaderboardTable users={filteredUsers} />
       </div>
+
     </div>
   );
 }
