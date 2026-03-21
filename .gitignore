@@ -1,38 +1,35 @@
+# Node
 node_modules/
 client/node_modules/
 dist/
 build/
+client/dist/
 .vite/
 
+# Environment files
 .env
 .env.local
+client/.env
+server/.env
 
+# Python
+server/venv/
+server/__pycache__/
 __pycache__/
 *.pyc
 *.pyo
 
-venv/
-env/
-.venv/
-
+# Logs
 *.log
 
-.vscode/
-.idea/
-dist/
-# Node
-client/node_modules
-client/dist
+# Database
+*.db
 
-# Python
-server/venv
-server/__pycache__
-*.pyc
-
-# Env
-client/.env
-server/.env
-
-# OS
+# OS files
 .DS_Store
 Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+.env
