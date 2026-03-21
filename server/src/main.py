@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException
 from pathlib import Path
@@ -30,7 +30,7 @@ app = FastAPI(
 @app.on_event("startup")
 async def startup_event():
     logger.info("🚀 BragBoard API Started")
-    Base.metadata.create_all(bind=engine)  # ✅ table creation
+    Base.metadata.create_all(bind=engine)
 
 
 # ==============================
@@ -39,6 +39,16 @@ async def startup_event():
 @app.on_event("shutdown")
 async def shutdown_event():
     logger.info("🛑 BragBoard API Stopped")
+
+
+# ==============================
+# MEDIA CONFIG (KEEP ABOVE ROUTERS)
+# ==============================
+BASE_DIR = Path(__file__).resolve().parent.parent
+MEDIA_DIR = BASE_DIR / "media"
+MEDIA_DIR.mkdir(parents=True, exist_ok=True)
+
+app.mount("/media", StaticFiles(directory=str(MEDIA_DIR)), name="media")
 
 
 # ==============================
@@ -62,22 +72,16 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
+    # ✅ VERY IMPORTANT: Allow media files to return normally
+    if request.url.path.startswith("/media"):
+        return Response(status_code=404)
+
     return JSONResponse(
         status_code=500,
         content={
-            "error": str(exc)   # 🔥 shows real error
+            "error": str(exc)
         },
     )
-
-
-# ==============================
-# MEDIA CONFIG
-# ==============================
-BASE_DIR = Path(__file__).resolve().parent.parent
-MEDIA_DIR = BASE_DIR / "media"
-MEDIA_DIR.mkdir(parents=True, exist_ok=True)
-
-app.mount("/media", StaticFiles(directory=str(MEDIA_DIR)), name="media")
 
 
 # ==============================
@@ -96,7 +100,7 @@ app.add_middleware(
 
 
 # ==============================
-# ROUTERS (ONLY THIS ✅)
+# ROUTERS
 # ==============================
 app.include_router(api_router)
 

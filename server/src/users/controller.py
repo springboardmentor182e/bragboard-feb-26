@@ -2,7 +2,6 @@ from src.auth.dependencies import require_admin
 from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, Form
 from sqlalchemy.orm import Session
 from src.database.core import get_db
-from .models import UserCreate
 from .service import (
     get_users,
     update_user_status,
@@ -16,6 +15,7 @@ import shutil
 
 router = APIRouter()
 
+
 # ==============================
 # GET USERS
 # ==============================
@@ -25,7 +25,7 @@ def fetch_users(db: Session = Depends(get_db)):
 
 
 # ==============================
-# CREATE USER (UPDATED FOR PHOTO)
+# CREATE USER (FINAL FIXED ✅)
 # ==============================
 @router.post("/")
 def create_user(
@@ -34,27 +34,27 @@ def create_user(
     photo: UploadFile = File(...),
     db: Session = Depends(get_db)
 ):
-    # Validate image
+    # ===== VALIDATE IMAGE =====
     if not photo.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="Only image files allowed")
 
-    # Create folder
-    BASE_DIR = Path(__file__).resolve().parent.parent
+    # ===== FIXED PATH (IMPORTANT 🔥) =====
+    BASE_DIR = Path(__file__).resolve().parent.parent.parent
     USERS_DIR = BASE_DIR / "media" / "users"
     USERS_DIR.mkdir(parents=True, exist_ok=True)
 
-    # Save file
+    # ===== SAVE IMAGE =====
     filename = f"{uuid.uuid4()}.{photo.filename.split('.')[-1]}"
     filepath = USERS_DIR / filename
 
     with open(filepath, "wb") as buffer:
         shutil.copyfileobj(photo.file, buffer)
 
-    # Save to DB
+    # ===== SAVE USER IN DB =====
     user = User(
         full_name=name,
         department=department,
-        photo_url=f"/media/users/{filename}",
+        photo_url=f"/media/users/{filename}",  # ✅ IMPORTANT
         points=0
     )
 
