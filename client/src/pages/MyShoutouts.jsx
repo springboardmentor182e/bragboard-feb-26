@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 
-const API = import.meta.env.VITE_API_URL 
+const API = import.meta.env.VITE_API_URL;
+
 export default function MyShoutouts() {
   const [shoutouts, setShoutouts] = useState([]);
   const [stats, setStats] = useState({ total_given: 0, total_received: 0, points_earned: 0 });
@@ -138,6 +139,20 @@ function ShoutoutCard({ s, type }) {
     "Team Player": "🤝", "Innovation Star": "🏅", "Customer Champion": "🏆",
     "Data Wizard": "🔮", "Problem Solver": "🧩", "Above & Beyond": "🚀",
   };
+
+  const [reactions, setReactions] = useState({
+    likes: s.likes ?? 0,
+    stars: s.stars ?? 0,
+    claps: s.claps ?? 0,
+    shares: s.shares ?? 0,
+  });
+  const [showComments, setShowComments] = useState(false);
+  const [comments, setComments] = useState([]);
+  const [commentInput, setCommentInput] = useState("");
+  const [commentCount, setCommentCount] = useState(s.comments ?? 0);
+  const [loadingComments, setLoadingComments] = useState(false);
+  const [postingComment, setPostingComment] = useState(false);
+
   const displayName = type === "received" ? s.sender_name : s.receiver_name;
   const arrowLabel  = type === "received" ? "→ You" : `→ ${s.receiver_name}`;
   const initials    = displayName?.split(" ").map((n) => n.charAt(0).toUpperCase()).slice(0, 2).join("");
@@ -151,6 +166,64 @@ function ShoutoutCard({ s, type }) {
     if (diff < 2592000) return `${Math.floor(diff / 86400)} days ago`;
     return new Date(dateStr).toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" });
   }
+
+  const handleReaction = async (reactionType) => {
+    const keyMap = { like: "likes", star: "stars", clap: "claps", repost: "shares" };
+    const key = keyMap[reactionType];
+    setReactions(prev => ({ ...prev, [key]: prev[key] + 1 }));
+    try {
+      const res = await fetch(`${API}/employee/shoutouts/${s.id}/${reactionType}`, { method: "POST" });
+      const data = await res.json();
+      setReactions({
+        likes: data.likes,
+        stars: data.stars ?? 0,
+        claps: data.claps ?? 0,
+        shares: data.shares,
+      });
+    } catch {
+      // keep optimistic update
+    }
+  };
+
+  const fetchComments = async () => {
+    setLoadingComments(true);
+    try {
+      const res = await fetch(`${API}/employee/shoutouts/${s.id}/comments`);
+      const data = await res.json();
+      const list = Array.isArray(data) ? data : [];
+      setComments(list);
+      setCommentCount(list.length);
+    } catch {
+      setComments([]);
+    } finally {
+      setLoadingComments(false);
+    }
+  };
+
+  const toggleComments = () => {
+    if (!showComments) fetchComments();
+    setShowComments(!showComments);
+  };
+
+  const postComment = async () => {
+    if (!commentInput.trim()) return;
+    setPostingComment(true);
+    try {
+      const res = await fetch(`${API}/employee/shoutouts/${s.id}/comments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ author_name: "You", content: commentInput }),
+      });
+      const data = await res.json();
+      setComments(prev => [...prev, data]);
+      setCommentCount(prev => prev + 1);
+      setCommentInput("");
+    } catch {
+      // silently fail
+    } finally {
+      setPostingComment(false);
+    }
+  };
 
   return (
     <div className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-200 p-6 border border-gray-100">
@@ -191,19 +264,82 @@ function ShoutoutCard({ s, type }) {
         </div>
       )}
 
+      {/* REACTIONS BAR */}
       <div className="flex items-center gap-3 pt-4 border-t border-gray-100">
-        <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-50 hover:bg-red-50 hover:text-red-500 transition-colors text-sm text-gray-500">
-          ❤️ <span className="font-medium">{s.likes ?? 0}</span>
+        <button
+          onClick={() => handleReaction("like")}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-50 hover:bg-red-50 hover:text-red-500 transition-colors text-sm text-gray-500"
+        >
+          ❤️ <span className="font-medium">{reactions.likes}</span>
         </button>
-        <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-50 hover:bg-indigo-50 hover:text-indigo-500 transition-colors text-sm text-gray-500">
-          💬 <span className="font-medium">{s.comments ?? 0}</span>
+        <button
+          onClick={() => handleReaction("star")}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-50 hover:bg-yellow-50 hover:text-yellow-500 transition-colors text-sm text-gray-500"
+        >
+          ⭐ <span className="font-medium">{reactions.stars}</span>
         </button>
-        {(s.shares ?? 0) > 0 && (
-          <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-50 hover:bg-green-50 hover:text-green-500 transition-colors text-sm text-gray-500">
-            🔁 <span className="font-medium">{s.shares}</span>
-          </button>
-        )}
+        <button
+          onClick={() => handleReaction("clap")}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-50 hover:bg-amber-50 hover:text-amber-500 transition-colors text-sm text-gray-500"
+        >
+          👏 <span className="font-medium">{reactions.claps}</span>
+        </button>
+        <button
+          onClick={toggleComments}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-50 hover:bg-indigo-50 hover:text-indigo-500 transition-colors text-sm text-gray-500"
+        >
+          💬 <span className="font-medium">{commentCount}</span>
+        </button>
+        <button
+          onClick={() => handleReaction("repost")}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-50 hover:bg-green-50 hover:text-green-500 transition-colors text-sm text-gray-500"
+        >
+          🔁 <span className="font-medium">{reactions.shares}</span>
+        </button>
       </div>
+
+      {/* COMMENTS SECTION */}
+      {showComments && (
+        <div className="mt-4 border-t border-gray-100 pt-4">
+          {loadingComments ? (
+            <div className="text-sm text-gray-400 text-center py-2">Loading comments...</div>
+          ) : comments.length === 0 ? (
+            <div className="text-sm text-gray-400 text-center py-2">No comments yet. Be the first!</div>
+          ) : (
+            <div className="space-y-3 mb-4">
+              {comments.map((c) => (
+                <div key={c.id} className="flex gap-3">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-indigo-400 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                    {c.author_name?.charAt(0).toUpperCase()}
+                  </div>
+                  <div className="flex-1 bg-gray-50 rounded-xl px-4 py-2">
+                    <p className="text-xs font-semibold text-gray-700">{c.author_name}</p>
+                    <p className="text-sm text-gray-600 mt-0.5">{c.content}</p>
+                    <p className="text-xs text-gray-400 mt-1">{timeAgo(c.created_at)}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+          <div className="flex gap-2 mt-3">
+            <input
+              type="text"
+              value={commentInput}
+              onChange={(e) => setCommentInput(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && postComment()}
+              placeholder="Write a comment..."
+              className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-indigo-300"
+            />
+            <button
+              onClick={postComment}
+              disabled={postingComment || !commentInput.trim()}
+              className="px-4 py-2 bg-indigo-600 text-white rounded-xl text-sm font-semibold hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+            >
+              {postingComment ? "..." : "Post"}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

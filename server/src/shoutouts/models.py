@@ -19,6 +19,8 @@ class ShoutoutOut(BaseModel):
     message: str
     level: int
     likes: int
+    stars: int
+    claps: int
     comments: int
     shares: int
     created_at: datetime
@@ -30,3 +32,18 @@ class StatsOut(BaseModel):
     total_given: int
     total_received: int
     points_earned: int
+
+
+class CommentCreate(BaseModel):
+    author_name: str
+    content: str
+
+
+class CommentOut(BaseModel):
+    id: int
+    shoutout_id: int
+    author_name: str
+    content: str
+    created_at: datetime
+
+    model_config = {"from_attributes": True}

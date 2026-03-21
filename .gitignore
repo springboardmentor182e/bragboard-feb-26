@@ -1,21 +1,16 @@
-node_modules/
-client/node_modules/
-dist/
-build/
-.vite/
+# Node
+client/node_modules
+client/dist
 
-.env
-.env.local
-
-__pycache__/
+# Python
+server/venv
+server/__pycache__
 *.pyc
-*.pyo
 
-venv/
-env/
-.venv/
+# Env
+client/.env
+server/.env
 
-*.log
-
-.vscode/
-.idea/
+# OS
+.DS_Store
+Thumbs.db
