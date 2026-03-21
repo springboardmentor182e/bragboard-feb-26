@@ -1,17 +1,26 @@
+from datetime import datetime, timedelta
 from jose import jwt
-from datetime import datetime,timedelta
+from passlib.context import CryptContext
 
-SECRET_KEY="mysecretkey"
-ALGORITHM="HS256"
+SECRET_KEY = "your_secret_key"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
+REFRESH_TOKEN_EXPIRE_DAYS = 7
 
-def create_access_token(data:dict):
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-    to_encode = data.copy()
+def hash_password(password: str):
+    return pwd_context.hash(password)
 
-    expire = datetime.utcnow() + timedelta(minutes=30)
+def verify_password(plain_password, hashed_password):
+    return pwd_context.verify(plain_password, hashed_password)
 
-    to_encode.update({"exp":expire})
+def create_access_token(data: dict):
+    expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    data.update({"exp": expire})
+    return jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
 
-    token = jwt.encode(to_encode,SECRET_KEY,algorithm=ALGORITHM)
-
-    return token
+def create_refresh_token(data: dict):
+    expire = datetime.utcnow() + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
+    data.update({"exp": expire})
+    return jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
