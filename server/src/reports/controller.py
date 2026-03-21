@@ -9,7 +9,6 @@ from src.reports import service
 router = APIRouter()
 
 
-# ✅ GET REPORTS (FILTERS + SEARCH)
 @router.get("/", response_model=List[ReportResponse])
 def fetch_reports(
     status: Optional[str] = Query(None),
@@ -20,7 +19,6 @@ def fetch_reports(
     return service.get_reports(db, status, priority, search)
 
 
-# ✅ CREATE REPORT
 @router.post("/", response_model=ReportResponse)
 def create_report(
     report: ReportCreate,
@@ -29,7 +27,6 @@ def create_report(
     return service.create_report(db, report)
 
 
-# ✅ UPDATE STATUS (Resolve / Reject etc.)
 @router.put("/{report_id}/status", response_model=ReportResponse)
 def update_status(
     report_id: int,
@@ -44,7 +41,6 @@ def update_status(
     return updated
 
 
-# ✅ DELETE REPORT
 @router.delete("/{report_id}")
 def delete_report(
     report_id: int,
@@ -56,3 +52,10 @@ def delete_report(
         raise HTTPException(status_code=404, detail="Report not found")
 
     return {"message": "Report deleted successfully"}
+
+
+# ✅ NEW API
+@router.get("/stats/avg-response-time")
+def avg_response_time(db: Session = Depends(get_db)):
+    avg = service.get_avg_response_time(db)
+    return {"avg_response_time": avg}

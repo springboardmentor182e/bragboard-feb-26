@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
+from datetime import datetime
 from src.entities.report import Report
 
 
@@ -35,7 +36,7 @@ def create_report(db: Session, report):
 
     except Exception as e:
         db.rollback()
-        print("ERROR:", e)  # 🔥 This will show real issue in terminal
+        print("ERROR:", e)
         raise
 
 
@@ -46,6 +47,11 @@ def update_report_status(db: Session, report_id: int, status: str):
         return None
 
     report.status = status
+
+    # ✅ NEW LOGIC to set resolved_at when status is updated to RESOLVED
+    if status == "RESOLVED":
+        report.resolved_at = datetime.utcnow()
+
     db.commit()
     db.refresh(report)
 
@@ -62,3 +68,23 @@ def delete_report(db: Session, report_id: int):
     db.commit()
 
     return True
+
+
+# ✅ NEW FUNCTION to calculate average response time for resolved reports
+def get_avg_response_time(db: Session):
+    reports = db.query(Report).filter(
+        Report.resolved_at.isnot(None)
+    ).all()
+
+    if not reports:
+        return 0
+
+    total_seconds = 0
+
+    for r in reports:
+        diff = r.resolved_at - r.created_at
+        total_seconds += diff.total_seconds()
+
+    avg_hours = (total_seconds / len(reports)) / 3600
+
+    return round(avg_hours, 2)

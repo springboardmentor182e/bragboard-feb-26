@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
+from typing import Optional
 
 
 class ReportCreate(BaseModel):
@@ -19,6 +20,8 @@ class ReportResponse(BaseModel):
     priority: str
     status: str
     created_at: datetime
+
+    resolved_at: Optional[datetime]
 
     class Config:
         from_attributes = True

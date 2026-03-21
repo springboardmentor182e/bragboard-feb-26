@@ -23,7 +23,7 @@ const ReportsStatsCards = ({ stats }) => {
     },
     {
       title: "Avg Response Time",
-      value: "2.3h",
+      value: stats.avgResponseTime || "0s", // ✅ UPDATED
       icon: Clock,
       color: "bg-yellow-100 text-yellow-600",
     },

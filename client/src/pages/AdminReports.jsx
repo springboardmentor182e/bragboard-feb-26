@@ -37,7 +37,7 @@ function AdminReports() {
   }, [loadReports]);
 
   /*
-  FILTER LOGIC (CLEAN + SAFE)
+  FILTER LOGIC
   */
   const filteredReports = reports.filter((report) => {
 
@@ -47,7 +47,7 @@ function AdminReports() {
       report.report_code?.toLowerCase().includes(query) ||
       report.id?.toString().includes(query) ||
       report.reported_user?.toLowerCase().includes(query) ||
-      report.reported_by?.toLowerCase().includes(query) ||
+      report.reported_by?.toString().includes(query) ||
       report.reason?.toLowerCase().includes(query);
 
     const matchesStatus =
@@ -62,12 +62,66 @@ function AdminReports() {
   });
 
   /*
-  LIVE STATS (REAL DATA)
+  🔥 FORMAT TIME (NEW)
+  */
+  const formatTime = (seconds) => {
+    if (seconds < 60) {
+      return `${Math.floor(seconds)}s`;
+    }
+
+    const minutes = seconds / 60;
+    if (minutes < 60) {
+      const m = Math.floor(minutes);
+      const s = Math.floor(seconds % 60);
+      return `${m}m ${s}s`;
+    }
+
+    const hours = minutes / 60;
+    if (hours < 24) {
+      const h = Math.floor(hours);
+      const m = Math.floor(minutes % 60);
+      return `${h}h ${m}m`;
+    }
+
+    const days = hours / 24;
+    const d = Math.floor(days);
+    const h = Math.floor(hours % 24);
+    return `${d}d ${h}h`;
+  };
+
+  /*
+  🔥 AVG RESPONSE TIME (NEW)
+  */
+  const calculateAvgResponseTime = () => {
+    const resolvedReports = reports.filter(
+      (r) => r.status === "RESOLVED" && r.resolved_at
+    );
+
+    if (resolvedReports.length === 0) return "0s";
+
+    let totalSeconds = 0;
+
+    resolvedReports.forEach((r) => {
+      const created = new Date(r.created_at);
+      const resolved = new Date(r.resolved_at);
+
+      const diffSeconds = (resolved - created) / 1000;
+      totalSeconds += diffSeconds;
+    });
+
+    const avgSeconds = totalSeconds / resolvedReports.length;
+
+    return formatTime(avgSeconds);
+  };
+
+  /*
+  STATS
   */
   const stats = {
     pending: reports.filter((r) => r.status === "PENDING").length,
     reviewing: reports.filter((r) => r.status === "REVIEWING").length,
     resolved: reports.filter((r) => r.status === "RESOLVED").length,
+    avgResponseTime: calculateAvgResponseTime(), // ✅ NEW
   };
 
   return (
@@ -93,7 +147,7 @@ function AdminReports() {
         {/* STATS */}
         <ReportsStatsCards stats={stats} />
 
-        {/* SEARCH + FILTER */}
+        {/* SEARCH */}
         <ReportsSearchBar
           onSearch={setSearchQuery}
           statusFilter={statusFilter}
@@ -107,7 +161,7 @@ function AdminReports() {
           Showing {filteredReports.length} of {reports.length} reports
         </p>
 
-        {/* LOADING STATE */}
+        {/* LIST */}
         {loading ? (
           <div className="text-center py-10 text-slate-500">
             Loading reports...
