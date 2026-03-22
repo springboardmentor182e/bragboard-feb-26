@@ -1,0 +1,14 @@
+# Node
+client/node_modules
+client/dist
+
+# Python
+server/venv
+server/__pycache__
+*.pyc
+
+# Env
+
+# OS
+.DS_Store
+Thumbs.db
