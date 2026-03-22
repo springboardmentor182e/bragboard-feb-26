@@ -4,50 +4,35 @@ const API = axios.create({
   baseURL: "http://localhost:8000",
 });
 
-
-// 🔐 Attach access token automatically
+// attach token
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem("access_token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
+  if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
 
-
-// 🔄 Auto refresh token if expired
+// refresh token
 API.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    if (error.response && error.response.status === 401) {
-      try {
-        const refreshToken = localStorage.getItem("refresh_token");
+  (res) => res,
+  async (err) => {
+    if (err.response?.status === 401) {
+      const refresh = localStorage.getItem("refresh_token");
 
-        const res = await axios.post("http://localhost:8000/refresh", {
-          token: refreshToken,
-        });
+      const res = await axios.post("http://localhost:8000/refresh", {
+        token: refresh,
+      });
 
-        localStorage.setItem("access_token", res.data.access_token);
+      localStorage.setItem("access_token", res.data.access_token);
 
-        error.config.headers.Authorization = `Bearer ${res.data.access_token}`;
-        return axios(error.config);
-      } catch (err) {
-        localStorage.clear();
-        window.location.href = "/";
-      }
+      err.config.headers.Authorization = `Bearer ${res.data.access_token}`;
+      return API(err.config);
     }
-
-    return Promise.reject(error);
   }
 );
 
-
-// ✅ Your existing APIs (keep them)
+// APIs
 export const loginUser = (data) => API.post("/login", data);
-export const registerUser = (data) => API.post("/register", data);
-
-// ➕ Add more APIs
-export const getShoutouts = () => API.get("/shoutouts");
 export const createShoutout = (data) => API.post("/shoutout", data);
+export const getShoutouts = () => API.get("/shoutouts");
 
 export default API;
