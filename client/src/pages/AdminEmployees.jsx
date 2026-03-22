@@ -75,12 +75,11 @@ function AdminEmployees() {
   });
 
   return (
-    <AdminLayout>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="space-y-8"
-      >
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="space-y-8"
+    >
         {/* Page Header */}
         <div className="flex justify-between items-center">
           <div>
@@ -126,7 +125,6 @@ function AdminEmployees() {
           />
         )}
       </motion.div>
-    </AdminLayout>
   );
 }
 

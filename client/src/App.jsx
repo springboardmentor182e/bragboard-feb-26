@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import Sidebar from "./features/employeeDashboard/components/Sidebar";
-import TopNavbar from "./features/employeeDashboard/components/TopNavbar";
+import AdminSidebar from "./layout/AdminSidebar";
+import AdminTopbar from "./layout/AdminTopbar";
 import SummaryCards from "./features/employeeDashboard/components/SummaryCards";
 import AchievementTable from "./features/employeeDashboard/components/AchievementTable";
 import Leaderboard from "./features/employeeDashboard/components/Leaderboard";
@@ -9,16 +9,24 @@ import Leaderboard from "./features/employeeDashboard/components/Leaderboard";
 import AdminEmployees from "./pages/AdminEmployees";
 import AdminReports from "./pages/AdminReports";
 
-function EmployeeLayout({ children }) {
+function MainLayout({ children }) {
   return (
-    <div className="flex h-screen bg-gray-100">
-      <Sidebar />
+    <div className="bg-[#EEF2F7] min-h-screen">
+      {/* Fixed Sidebar */}
+      <AdminSidebar />
 
-      <div className="flex-1 flex flex-col">
-        <TopNavbar />
+      {/* Main Section */}
+      <div className="ml-72 flex flex-col min-h-screen">
+        {/* Fixed Topbar */}
+        <div className="fixed top-0 left-72 right-0 z-30 bg-white border-b border-slate-200">
+          <AdminTopbar />
+        </div>
 
-        <main className="flex-1 p-6 overflow-y-auto">
-          {children}
+        {/* Scrollable Content Area */}
+        <main className="flex-1 pt-24 p-8">
+          <div className="bg-white rounded-[28px] shadow-sm border border-slate-200 p-10 min-h-[calc(100vh-8rem)]">
+            {children}
+          </div>
         </main>
       </div>
     </div>
@@ -27,11 +35,24 @@ function EmployeeLayout({ children }) {
 
 function EmployeeDashboard() {
   return (
-    <>
+    <div className="space-y-8">
       <SummaryCards />
       <AchievementTable />
-      <Leaderboard />
-    </>
+    </div>
+  );
+}
+
+function PlaceholderPage({ title }) {
+  return (
+    <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
+      <div className="w-20 h-20 bg-indigo-50 rounded-full flex items-center justify-center mb-6">
+        <div className="text-4xl">🏗️</div>
+      </div>
+      <h2 className="text-2xl font-bold text-slate-800 mb-2">{title}</h2>
+      <p className="text-slate-500 max-w-md">
+        We're currently building this page. Check back soon for exciting new features!
+      </p>
+    </div>
   );
 }
 
@@ -44,22 +65,120 @@ function App() {
         <Route
           path="/"
           element={
-            <EmployeeLayout>
+            <MainLayout>
               <EmployeeDashboard />
-            </EmployeeLayout>
+            </MainLayout>
+          }
+        />
+
+        {/* Leaderboard */}
+        <Route
+          path="/leaderboard"
+          element={
+            <MainLayout>
+              <Leaderboard />
+            </MainLayout>
+          }
+        />
+
+        {/* Team */}
+        <Route
+          path="/team"
+          element={
+            <MainLayout>
+              <PlaceholderPage title="Team" />
+            </MainLayout>
+          }
+        />
+
+        {/* Badges */}
+        <Route
+          path="/badges"
+          element={
+            <MainLayout>
+              <PlaceholderPage title="Badges" />
+            </MainLayout>
+          }
+        />
+
+        {/* Analytics */}
+        <Route
+          path="/analytics"
+          element={
+            <MainLayout>
+              <PlaceholderPage title="Analytics" />
+            </MainLayout>
+          }
+        />
+
+        {/* Dashboard Placeholder */}
+        <Route
+          path="/dashboard"
+          element={
+            <MainLayout>
+              <PlaceholderPage title="Dashboard" />
+            </MainLayout>
+          }
+        />
+
+        {/* My Shout-Outs Placeholder */}
+        <Route
+          path="/my-shoutouts"
+          element={
+            <MainLayout>
+              <PlaceholderPage title="My Shout-Outs" />
+            </MainLayout>
+          }
+        />
+
+        {/* Admin Dashboard Placeholder */}
+        <Route
+          path="/admin/dashboard"
+          element={
+            <MainLayout>
+              <PlaceholderPage title="Admin Dashboard" />
+            </MainLayout>
+          }
+        />
+
+        {/* Admin Shoutouts Placeholder */}
+        <Route
+          path="/admin/shoutouts"
+          element={
+            <MainLayout>
+              <PlaceholderPage title="Shout-Outs" />
+            </MainLayout>
+          }
+        />
+
+        {/* Admin Settings Placeholder */}
+        <Route
+          path="/admin/settings"
+          element={
+            <MainLayout>
+              <PlaceholderPage title="Settings" />
+            </MainLayout>
           }
         />
 
         {/* Admin Employee Management */}
         <Route
           path="/admin/employees"
-          element={<AdminEmployees />}
+          element={
+            <MainLayout>
+              <AdminEmployees />
+            </MainLayout>
+          }
         />
 
         {/* Admin Reports */}
         <Route
           path="/admin/reports"
-          element={<AdminReports />}
+          element={
+            <MainLayout>
+              <AdminReports />
+            </MainLayout>
+          }
         />
 
       </Routes>

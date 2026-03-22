@@ -125,13 +125,11 @@ function AdminReports() {
   };
 
   return (
-    <AdminLayout>
-
-      <motion.div
-        initial={{ opacity: 0, y: 15 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="space-y-8"
-      >
+    <motion.div
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="space-y-8"
+    >
 
         {/* HEADER */}
         <div>
@@ -178,8 +176,6 @@ function AdminReports() {
         )}
 
       </motion.div>
-
-    </AdminLayout>
   );
 }
 
