@@ -1,4 +1,4 @@
-import { Home, Users, Trophy, Award } from 'lucide-react';
+import { Home, Users, Trophy, Award, MessageSquare } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
 const menuItems = [
@@ -6,6 +6,7 @@ const menuItems = [
   { path: '/team', label: 'Teams', icon: Users },
   { path: '/leaderboard', label: 'Leaderboard', icon: Trophy },
   { path: '/badges', label: 'Badges', icon: Award },
+  { path: '/shoutouts', label: 'Shoutouts', icon: MessageSquare },
 ];
 
 export default function Sidebar() {

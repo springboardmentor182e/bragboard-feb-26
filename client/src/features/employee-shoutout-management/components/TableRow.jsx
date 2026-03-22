@@ -77,23 +77,23 @@ const TableRow = ({ item, isSelected, onSelect, onTogglePin, onView, onEdit, onD
       </td>
 
       <td className="p-4">
-        <div className="flex flex-col gap-1 text-sm text-gray-700">
-          <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3 text-sm text-gray-700">
+          <div className="flex items-center gap-1">
             <span>❤️</span>
             <span className="font-medium">{item.reactions?.hearts ?? 0}</span>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             <span>👏</span>
             <span className="font-medium">{item.reactions?.claps ?? 0}</span>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             <span>⭐</span>
             <span className="font-medium">{item.reactions?.stars ?? 0}</span>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             <span>💬</span>
             <span className="font-medium">{item.reactions?.comments ?? 0}</span>
           </div>

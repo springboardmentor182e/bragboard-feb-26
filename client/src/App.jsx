@@ -7,6 +7,7 @@ import Home from './pages/Home';
 import Leaderboard from './pages/Leaderboard';
 import Team from './pages/Team';
 import Badges from './pages/Badges';
+import ShoutoutManagementPage from './features/employee-shoutout-management/pages/ShoutoutManagementPage';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
               <Route path="/leaderboard" element={<Leaderboard />} />
               <Route path="/team" element={<Team />} />
               <Route path="/badges" element={<Badges />} />
+              <Route path="/shoutouts" element={<ShoutoutManagementPage />} />
             </Routes>
           </main>
         </div>
