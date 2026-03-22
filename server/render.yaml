@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: bragboard-api
+    runtime: python
+    buildCommand: cd server && pip install -r requirements.txt
+    startCommand: cd server && uvicorn src.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: bragboard-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+
+databases:
+  - name: bragboard-db
+    databaseName: bragboard_db
+    user: bragboard_user
