@@ -8,6 +8,7 @@ import Leaderboard from "./features/employeeDashboard/components/Leaderboard";
 
 import AdminEmployees from "./pages/AdminEmployees";
 import AdminReports from "./pages/AdminReports";
+import AdminDashboard from "./features/Adminshoutout/AdminDashboard";
 
 function EmployeeLayout({ children }) {
   return (
@@ -60,6 +61,15 @@ function App() {
         <Route
           path="/admin/reports"
           element={<AdminReports />}
+        />
+
+        <Route
+          path="/admin-dashboard"
+          element={
+            <EmployeeLayout>
+              <AdminDashboard />
+            </EmployeeLayout>
+          }
         />
 
       </Routes>
