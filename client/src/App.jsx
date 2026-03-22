@@ -5,6 +5,7 @@ import SummaryCards from "./features/employeeDashboard/components/SummaryCards";
 import AchievementTable from "./features/employeeDashboard/components/AchievementTable";
 import Leaderboard from "./features/employeeDashboard/components/Leaderboard";
 import AdminEmployees from "./pages/AdminEmployees";
+import AdminDashboard from "./features/Adminshoutout/AdminDashboard";
 
 function EmployeeLayout({ children }) {
   return (
@@ -34,8 +35,6 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-
-        {/* Employee Area */}
         <Route
           path="/"
           element={
@@ -45,12 +44,19 @@ function App() {
           }
         />
 
-        {/* Admin Area — NO EmployeeLayout */}
         <Route
           path="/admin/employees"
           element={<AdminEmployees />}
         />
 
+        <Route
+          path="/admin-dashboard"
+          element={
+            <EmployeeLayout>
+              <AdminDashboard />
+            </EmployeeLayout>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );
