@@ -10,6 +10,19 @@ from src.shoutouts.service import (
     delete_shoutout,
 )
 
+router = APIRouter(prefix="/admin/shoutouts", tags=["Admin Shoutouts"])
+
+@router.get("")
+def fetch_shoutouts(db: Session = Depends(get_db)):
+    return get_all_shoutouts(db)
+
+@router.post("")
+def add_shoutout(data: dict, db: Session = Depends(get_db)):
+    return create_shoutout(db, data)
+
+@router.delete("/{shoutout_id}")
+def remove_shoutout(shoutout_id: int, db: Session = Depends(get_db)):
+    return delete_shoutout(db, shoutout_id)
 router = APIRouter(prefix="/shoutouts", tags=["Shoutouts"])
 
 
