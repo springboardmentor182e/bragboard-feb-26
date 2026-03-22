@@ -1,43 +1,38 @@
 import { useState } from "react";
-import API from "../services/api";
+import { loginUser } from "../services/api";
 
 export default function Login() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [data, setData] = useState({ username: "", password: "" });
 
-  const handleLogin = async () => {
-    const res = await API.post("/auth/login", { username, password });
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const res = await loginUser(data);
     localStorage.setItem("token", res.data.access_token);
     window.location.href = "/dashboard";
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-xl w-96 shadow-lg">
-        <h2 className="text-2xl font-bold text-center mb-4">
-          Welcome to BragBoard
-        </h2>
+    <div className="h-screen flex items-center justify-center bg-gray-100">
+      <form onSubmit={handleSubmit} className="bg-white p-8 rounded-xl shadow w-96">
+        <h2 className="text-2xl font-bold mb-4 text-center">Welcome to BragBoard</h2>
 
         <input
-          className="w-full p-2 border rounded mb-3"
           placeholder="Username"
-          onChange={(e) => setUsername(e.target.value)}
+          className="w-full mb-3 p-2 border rounded"
+          onChange={(e) => setData({...data, username: e.target.value})}
         />
 
         <input
           type="password"
-          className="w-full p-2 border rounded mb-3"
           placeholder="Password"
-          onChange={(e) => setPassword(e.target.value)}
+          className="w-full mb-3 p-2 border rounded"
+          onChange={(e) => setData({...data, password: e.target.value})}
         />
 
-        <button
-          onClick={handleLogin}
-          className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white p-2 rounded"
-        >
+        <button className="w-full bg-purple-600 text-white p-2 rounded">
           Sign In
         </button>
-      </div>
+      </form>
     </div>
   );
 }
