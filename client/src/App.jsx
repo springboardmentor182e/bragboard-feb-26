@@ -91,17 +91,17 @@ function App() {
       <Suspense fallback={<PageLoader />}>
         <Routes>
 
-          {/* Employee Routes */}
+          {/* Employee Routes — WITH EmployeeLayout */}
           <Route path="/" element={<EmployeeLayout><EmployeeDashboard /></EmployeeLayout>} />
           <Route path="/feed" element={<EmployeeLayout><EmployeeDashboard /></EmployeeLayout>} />
-          <Route path="/achievements" element={<EmployeeLayout><AchievementsPage /></EmployeeLayout>} />
-          <Route path="/profile" element={<EmployeeLayout><ProfilePage /></EmployeeLayout>} />
-          <Route path="/settings" element={<EmployeeLayout><SettingsPage /></EmployeeLayout>} />
           <Route path="/leaderboard" element={<EmployeeLayout><div>Leaderboard Page</div></EmployeeLayout>} />
           <Route path="/team" element={<EmployeeLayout><div>Team Page</div></EmployeeLayout>} />
           <Route path="/badges" element={<EmployeeLayout><div>Badges Page</div></EmployeeLayout>} />
           <Route path="/analytics" element={<EmployeeLayout><div>Analytics Page</div></EmployeeLayout>} />
           <Route path="/my-shoutouts" element={<EmployeeLayout><MyShoutouts /></EmployeeLayout>} />
+          <Route path="/achievements" element={<AchievementsPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/settings" element={<SettingsPage />} />
 
           {/* Admin Routes */}
           <Route path="/admin/*" element={
