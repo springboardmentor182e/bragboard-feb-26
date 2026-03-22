@@ -1,5 +1,6 @@
 from jose import jwt
 from datetime import datetime, timedelta
+from src.core.auth import create_access_token
 
 SECRET_KEY = "secret"
 ALGORITHM = "HS256"
