@@ -1,5 +1,7 @@
 from sqlalchemy import Column, Integer, String, JSON
+from sqlalchemy.orm import relationship
 from ..database.core import Base
+from .comment import CommentEntity
 
 class ShoutoutEntity(Base):
     __tablename__ = "shoutouts"
@@ -13,3 +15,5 @@ class ShoutoutEntity(Base):
     reactions = Column(JSON)  # Stores {"hearts": 38, ...}
     status = Column(String)
     date = Column(String)
+
+    comments = relationship("CommentEntity", back_populates=None, cascade="all, delete-orphan")
