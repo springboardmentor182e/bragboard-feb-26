@@ -5,7 +5,9 @@ class UserCreate(BaseModel):
     username: str
     email: str
     password: str
+    department: str
+    job_title: str
 
-class UserLogin(BaseModel):
+class LoginSchema(BaseModel):
     username: str
     password: str
