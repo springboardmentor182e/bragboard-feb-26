@@ -1,12 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-<<<<<<< HEAD
 
 /* Optional custom styles */
 body {
   margin: 0;
   font-family: Arial, sans-serif;
 }
-=======
->>>>>>> b965fc4a7c5ebee34091241f01986483a1400b8f
