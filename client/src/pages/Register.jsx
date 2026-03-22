@@ -1,54 +1,46 @@
-// src/pages/Register.jsx
 import { useState } from "react";
-import axios from "axios";
+import API from "../services/api";
 
 export default function Register() {
-  const [form, setForm] = useState({
-    full_name: "",
-    username: "",
-    email: "",
-    department: "",
-    job_title: "",
-    password: "",
-  });
+  const [form, setForm] = useState({});
 
-  const handleChange = (e) =>
-    setForm({ ...form, [e.target.name]: e.target.value });
-
-  const handleRegister = async (e) => {
-    e.preventDefault();
-    try {
-      await axios.post("http://localhost:8000/auth/register", form);
-      alert("Account created successfully!");
-    } catch (err) {
-      alert("Error creating account");
-    }
+  const handleRegister = async () => {
+    await API.post("/auth/register", form);
+    alert("Registered Successfully");
+    window.location.href = "/";
   };
 
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-100">
-      <form
-        onSubmit={handleRegister}
-        className="bg-white p-8 rounded shadow-md w-96"
-      >
-        <h2 className="text-2xl font-bold mb-6 text-center">Create Account</h2>
-        {["full_name", "username", "email", "department", "job_title", "password"].map((field) => (
-          <input
-            key={field}
-            type={field === "password" ? "password" : "text"}
-            name={field}
-            placeholder={field.replace("_", " ")}
-            className="w-full p-2 mb-4 border rounded"
-            onChange={handleChange}
-          />
-        ))}
-        <button
-          type="submit"
-          className="w-full bg-purple-600 text-white py-2 rounded hover:bg-purple-700"
-        >
-          Register
+    <div className="min-h-screen flex justify-center items-center">
+      <div className="bg-white p-8 rounded-xl w-[500px] shadow-lg">
+        <h2 className="text-xl font-bold mb-4">Join BragBoard</h2>
+
+        <input placeholder="Full Name"
+          className="input" 
+          onChange={(e)=>setForm({...form, full_name:e.target.value})}
+        />
+
+        <input placeholder="Username"
+          className="input"
+          onChange={(e)=>setForm({...form, username:e.target.value})}
+        />
+
+        <input placeholder="Email"
+          className="input"
+          onChange={(e)=>setForm({...form, email:e.target.value})}
+        />
+
+        <input type="password"
+          placeholder="Password"
+          className="input"
+          onChange={(e)=>setForm({...form, password:e.target.value})}
+        />
+
+        <button onClick={handleRegister}
+          className="w-full mt-4 bg-purple-600 text-white p-2 rounded">
+          Create Account
         </button>
-      </form>
+      </div>
     </div>
   );
 }
