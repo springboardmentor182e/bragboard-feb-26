@@ -28,4 +28,4 @@ def login(data: LoginSchema):
 @router.post("/refresh")
 def refresh(token: str):
     new_access = create_access_token({"sub": token})
-    return {"access_token": new_access}we
+    return {"access_token": new_access}
