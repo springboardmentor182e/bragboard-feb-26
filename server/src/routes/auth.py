@@ -1,12 +1,10 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from app.database import SessionLocal
-from app import models, schemas
-from app.auth import create_access_token, create_refresh_token
-from passlib.context import CryptContext
+from src.database import SessionLocal
+from src.schemas.user import LoginSchema
+from src.core.auth import create_access_token, create_refresh_token
 
 router = APIRouter()
-pwd_context = CryptContext(schemes=["bcrypt"])
 
 def get_db():
     db = SessionLocal()
@@ -15,31 +13,19 @@ def get_db():
     finally:
         db.close()
 
-@router.post("/register")
-def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    hashed_pw = pwd_context.hash(user.password)
-
-    new_user = models.User(
-        full_name=user.full_name,
-        username=user.username,
-        email=user.email,
-        password=hashed_pw,
-        department=user.department,
-        job_title=user.job_title
-    )
-
-    db.add(new_user)
-    db.commit()
-    return {"message": "User created"}
-
 @router.post("/login")
-def login(data: schemas.LoginSchema, db: Session = Depends(get_db)):
-    user = db.query(models.User).filter(models.User.username == data.username).first()
+def login(data: LoginSchema):
+    # ⚠️ For now simple login (no DB check)
+    access = create_access_token({"sub": data.username})
+    refresh = create_refresh_token({"sub": data.username})
 
-    if not user or not pwd_context.verify(data.password, user.password):
-        return {"error": "Invalid credentials"}
+    return {
+        "access_token": access,
+        "refresh_token": refresh
+    }
 
-    access = create_access_token({"sub": user.username})
-    refresh = create_refresh_token({"sub": user.username})
-
-    return {"access_token": access, "refresh_token": refresh}
+# ✅ REFRESH ROUTE (Paste here)
+@router.post("/refresh")
+def refresh(token: str):
+    new_access = create_access_token({"sub": token})
+    return {"access_token": new_access}we
