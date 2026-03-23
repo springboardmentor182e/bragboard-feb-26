@@ -5,9 +5,13 @@ import os
 
 load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL")
+import os
 
-engine = create_engine(DATABASE_URL)
+# Get the absolute path to the project root (where the .db should live)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+DATABASE_URL = f"sqlite:///{os.path.join(BASE_DIR, 'bragboard.db')}"
+
+engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 
 SessionLocal = sessionmaker(
     autocommit=False,

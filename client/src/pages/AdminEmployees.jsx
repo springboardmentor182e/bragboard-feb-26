@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import AdminLayout from "../layout/AdminLayout";
 import StatsCards from "../features/employeeManagement/components/StatsCards";
 import SearchFilterBar from "../features/employeeManagement/components/SearchFilterBar";
 import EmployeeTable from "../features/employeeManagement/components/EmployeeTable";
@@ -29,9 +28,10 @@ function AdminEmployees() {
   const loadEmployees = async () => {
     try {
       const data = await fetchEmployees();
-      setEmployees(data);
+      setEmployees(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Failed to load employees:", error);
+      setEmployees([]);
     }
   };
 

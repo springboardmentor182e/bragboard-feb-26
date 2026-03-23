@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 
-import AdminLayout from "../layout/AdminLayout";
 import ReportsStatsCards from "../features/reportsManagement/ReportsStatsCards";
 import ReportsSearchBar from "../features/reportsManagement/ReportsSearchBar";
 import ReportsList from "../features/reportsManagement/ReportsList";
@@ -24,9 +23,10 @@ function AdminReports() {
     try {
       setLoading(true);
       const data = await fetchReports();
-      setReports(data);
+      setReports(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Failed to load reports:", error);
+      setReports([]);
     } finally {
       setLoading(false);
     }

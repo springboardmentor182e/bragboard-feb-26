@@ -5,6 +5,7 @@ import AdminTopbar from "./layout/AdminTopbar";
 import SummaryCards from "./features/employeeDashboard/components/SummaryCards";
 import AchievementTable from "./features/employeeDashboard/components/AchievementTable";
 import Leaderboard from "./features/employeeDashboard/components/Leaderboard";
+import MyShoutouts from "./features/employeeDashboard/components/MyShoutouts";
 
 import AdminEmployees from "./pages/AdminEmployees";
 import AdminReports from "./pages/AdminReports";
@@ -121,12 +122,12 @@ function App() {
           }
         />
 
-        {/* My Shout-Outs Placeholder */}
+        {/* My Shout-Outs */}
         <Route
           path="/my-shoutouts"
           element={
             <MainLayout>
-              <PlaceholderPage title="My Shout-Outs" />
+              <MyShoutouts />
             </MainLayout>
           }
         />

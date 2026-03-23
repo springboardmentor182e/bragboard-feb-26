@@ -1,80 +1,79 @@
-import { Trophy, Award, Heart, Star, Zap, TrendingUp, TrendingDown } from "lucide-react";
+import { Trophy, Award, Heart, Star, Zap, TrendingUp, TrendingDown, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 const Leaderboard = () => {
-  const topThree = [
-    {
-      name: "Jessica Park",
-      role: "Engineering",
-      points: "2,845",
-      rank: 1,
-      image: "https://i.pravatar.cc/150?u=jessica",
-      stats: { hearts: 12, stars: 8, muscles: 5 },
-      color: "border-yellow-400",
-      icon: <Trophy className="text-yellow-500" size={24} />,
-      bg: "bg-yellow-50",
-    },
-    {
-      name: "David Kim",
-      role: "Design",
-      points: "2,730",
-      rank: 2,
-      image: "https://i.pravatar.cc/150?u=david",
-      stats: { hearts: 9, stars: 11, muscles: 6 },
-      color: "border-slate-200",
-      icon: <Award className="text-slate-400" size={24} />,
-      bg: "bg-slate-50",
-    },
-    {
-      name: "Michael Rodriguez",
-      role: "Engineering",
-      points: "2,615",
-      rank: 3,
-      image: "https://i.pravatar.cc/150?u=michael",
-      stats: { hearts: 10, stars: 7, muscles: 8 },
-      color: "border-orange-200",
-      icon: <Award className="text-orange-400" size={24} />,
-      bg: "bg-orange-50",
-    },
-  ];
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [leaderboard, setLeaderboard] = useState([]);
 
-  const tableData = [
-    {
-      rank: "#4",
-      trend: "up",
-      name: "Rachel Anderson",
-      role: "Customer Success",
-      points: "2,490",
-      badges: { hearts: 8, stars: 5, muscles: 14 },
-      image: "https://i.pravatar.cc/150?u=rachel",
-    },
-    {
-      rank: "#5",
-      trend: "down",
-      name: "Marcus Johnson",
-      role: "Data & Analytics",
-      points: "2,380",
-      badges: { hearts: 7, stars: 9, muscles: 4 },
-      initials: "JP",
-    },
-    {
-      rank: "#6",
-      trend: "up",
-      name: "Emily Chen",
-      role: "Marketing",
-      points: "2,265",
-      badges: { hearts: 11, stars: 6, muscles: 5 },
-      initials: "EC",
-    },
-    {
-      rank: "#7",
-      trend: "none",
-      name: "Alex Thompson",
-      role: "Customer Success",
-      points: "2,180",
-      badges: { hearts: 9, stars: 4, muscles: 9 },
-      initials: "AT",
-    },
-  ];
+  useEffect(() => {
+    const fetchLeaderboard = async () => {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/shoutouts/leaderboard`);
+        setLeaderboard(response.data);
+      } catch (error) {
+        console.error("Error fetching leaderboard:", error);
+        setError("Could not load leaderboard. Please make sure the backend is running.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchLeaderboard();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20">
+        <Loader2 className="animate-spin text-[#5B59FF] mb-4" size={40} />
+        <p className="text-slate-500 font-medium italic">Fetching the champions...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 bg-white rounded-[32px] border border-red-100 shadow-sm">
+        <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mb-6">
+          <Trophy className="text-red-300" size={40} />
+        </div>
+        <h2 className="text-2xl font-bold text-slate-800 mb-2">Oops!</h2>
+        <p className="text-slate-500 max-w-md text-center">
+          {error}
+        </p>
+      </div>
+    );
+  }
+
+  if (leaderboard.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 bg-white rounded-[32px] border border-slate-100 shadow-sm">
+        <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-6">
+          <Trophy className="text-slate-300" size={40} />
+        </div>
+        <h2 className="text-2xl font-bold text-slate-800 mb-2">No Rankings Yet</h2>
+        <p className="text-slate-500 max-w-md text-center">
+          Start recognizing your teammates to see them climb the leaderboard!
+        </p>
+      </div>
+    );
+  }
+
+  // Map backend data to UI structure
+  const topThree = leaderboard.slice(0, 3).map((user, idx) => ({
+    ...user,
+    image: `https://i.pravatar.cc/150?u=${user.id}`,
+    stats: { hearts: Math.floor(Math.random() * 15), stars: Math.floor(Math.random() * 15), muscles: Math.floor(Math.random() * 15) },
+    color: idx === 0 ? "border-yellow-400" : idx === 1 ? "border-slate-200" : "border-orange-200",
+    bg: idx === 0 ? "bg-yellow-50" : idx === 1 ? "bg-slate-50" : "bg-orange-50",
+  }));
+
+  const tableData = leaderboard.slice(3).map(user => ({
+    ...user,
+    trend: "up", // Mock trend
+    badges: { hearts: Math.floor(Math.random() * 15), stars: Math.floor(Math.random() * 15), muscles: Math.floor(Math.random() * 15) },
+    image: `https://i.pravatar.cc/150?u=${user.id}`,
+  }));
 
   return (
     <div className="space-y-10">
@@ -90,15 +89,15 @@ const Leaderboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
         {/* David Kim (Rank 2) */}
         <div className="order-2 md:order-1">
-          <TopCard user={topThree[1]} />
+          {topThree[1] && <TopCard user={topThree[1]} />}
         </div>
         {/* Jessica Park (Rank 1) */}
         <div className="order-1 md:order-2">
-          <TopCard user={topThree[0]} highlighted />
+          {topThree[0] && <TopCard user={topThree[0]} highlighted />}
         </div>
         {/* Michael Rodriguez (Rank 3) */}
         <div className="order-3 md:order-3">
-          <TopCard user={topThree[2]} />
+          {topThree[2] && <TopCard user={topThree[2]} />}
         </div>
       </div>
 

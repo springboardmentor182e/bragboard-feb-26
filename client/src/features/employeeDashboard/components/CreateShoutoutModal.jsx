@@ -1,23 +1,64 @@
-import React, { useState } from "react";
-import { X, Search, Heart, Star, Zap, Rocket, Puzzle, ShieldCheck, Image as ImageIcon, FileText, Sparkles } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { X, Search, Heart, Star, Zap, Rocket, Puzzle, ShieldCheck, Image as ImageIcon, FileText, Sparkles, Loader2 } from "lucide-react";
 
 const CreateShoutoutModal = ({ isOpen, onClose }) => {
-  const [teammate, setTeammate] = useState("");
+  const [teammateSearch, setTeammateSearch] = useState("");
+  const [selectedTeammate, setSelectedTeammate] = useState(null);
+  const [allUsers, setAllUsers] = useState([]);
+  const [showDropdown, setShowTeammateDropdown] = useState(false);
   const [selectedBadge, setSelectedBadge] = useState(null);
   const [selectedCampaign, setSelectedCampaign] = useState(null);
   const [message, setMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Alex Cooper is our current user (ID 8)
+  const currentUserId = 8;
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/users/`);
+        setAllUsers(response.data.filter(u => u.id !== currentUserId));
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+    if (isOpen) fetchUsers();
+  }, [isOpen]);
 
   const handleClose = () => {
-    setTeammate("");
+    setTeammateSearch("");
+    setSelectedTeammate(null);
     setSelectedBadge(null);
     setSelectedCampaign(null);
     setMessage("");
     onClose();
   };
 
+  const handleSend = async () => {
+    if (!isFormValid) return;
+    setIsSubmitting(true);
+    try {
+      await axios.post(`${import.meta.env.VITE_API_URL}/shoutouts/`, {
+        sender_id: currentUserId,
+        receiver_id: selectedTeammate.id,
+        message: message,
+        category: selectedBadge.label,
+        points: 50 // Default points
+      });
+      handleClose();
+      // Optional: Show success toast or refresh feed
+    } catch (error) {
+      console.error("Error sending shoutout:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   if (!isOpen) return null;
 
-  const isFormValid = teammate.trim() !== "" && selectedBadge !== null && message.trim() !== "";
+  const isFormValid = selectedTeammate !== null && selectedBadge !== null && message.trim() !== "" && !isSubmitting;
 
   const badges = [
     { id: "team-player", label: "Team Player", desc: "Exceptional collaboration", icon: <Heart className="text-orange-400 fill-orange-400" size={20} /> },
@@ -52,21 +93,68 @@ const CreateShoutoutModal = ({ isOpen, onClose }) => {
         <div className="flex-1 overflow-y-auto px-8 pb-8 space-y-8 scrollbar-hide">
           
           {/* Who deserves recognition */}
-          <div className="space-y-3">
+          <div className="space-y-3 relative">
             <label className="text-sm font-bold text-slate-900 flex items-center gap-1">
               Who deserves recognition? <span className="text-rose-500">*</span>
             </label>
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
-              <input 
-                type="text" 
-                value={teammate}
-                onChange={(e) => setTeammate(e.target.value)}
-                placeholder="Search and select teammates..." 
-                className="w-full pl-12 pr-4 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all text-slate-700 font-medium"
-              />
-            </div>
-            <p className="text-xs font-medium text-slate-400">You can select multiple teammates</p>
+            {selectedTeammate ? (
+              <div className="flex items-center justify-between p-4 rounded-2xl border border-indigo-100 bg-indigo-50/30">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center text-white font-bold text-xs">
+                    {selectedTeammate.name.charAt(0)}
+                  </div>
+                  <div>
+                    <div className="text-sm font-bold text-slate-900">{selectedTeammate.name}</div>
+                    <div className="text-[11px] font-medium text-slate-500">{selectedTeammate.department}</div>
+                  </div>
+                </div>
+                <button onClick={() => setSelectedTeammate(null)} className="text-slate-400 hover:text-rose-500 transition-colors">
+                  <X size={18} />
+                </button>
+              </div>
+            ) : (
+              <div className="relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+                <input 
+                  type="text" 
+                  value={teammateSearch}
+                  onChange={(e) => {
+                    setTeammateSearch(e.target.value);
+                    setShowTeammateDropdown(true);
+                  }}
+                  onFocus={() => setShowTeammateDropdown(true)}
+                  placeholder="Search and select teammates..." 
+                  className="w-full pl-12 pr-4 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all text-slate-700 font-medium"
+                />
+                
+                {showDropdown && teammateSearch.trim() !== "" && (
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-100 rounded-2xl shadow-xl z-10 max-h-60 overflow-y-auto scrollbar-hide py-2">
+                    {allUsers
+                      .filter(u => u.name.toLowerCase().includes(teammateSearch.toLowerCase()))
+                      .map(user => (
+                        <button
+                          key={user.id}
+                          onClick={() => {
+                            setSelectedTeammate(user);
+                            setShowTeammateDropdown(false);
+                            setTeammateSearch("");
+                          }}
+                          className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors text-left"
+                        >
+                          <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold text-xs">
+                            {user.name.charAt(0)}
+                          </div>
+                          <div>
+                            <div className="text-sm font-bold text-slate-900">{user.name}</div>
+                            <div className="text-[10px] font-medium text-slate-400">{user.department}</div>
+                          </div>
+                        </button>
+                      ))}
+                  </div>
+                )}
+              </div>
+            )}
+            <p className="text-xs font-medium text-slate-400">You can select one teammate</p>
           </div>
 
           {/* Choose a recognition badge */}
@@ -78,9 +166,9 @@ const CreateShoutoutModal = ({ isOpen, onClose }) => {
               {badges.map((badge) => (
                 <button
                   key={badge.id}
-                  onClick={() => setSelectedBadge(badge.id)}
+                  onClick={() => setSelectedBadge(badge)}
                   className={`flex items-center gap-4 p-4 rounded-2xl border transition-all text-left ${
-                    selectedBadge === badge.id 
+                    selectedBadge?.id === badge.id 
                       ? "border-yellow-400 bg-yellow-50/30 ring-4 ring-yellow-400/5" 
                       : "border-slate-100 hover:border-slate-200 hover:bg-slate-50/50"
                   }`}
@@ -179,14 +267,15 @@ const CreateShoutoutModal = ({ isOpen, onClose }) => {
             Cancel
           </button>
           <button 
+            onClick={handleSend}
             disabled={!isFormValid}
-            className={`flex-[1.5] py-4 rounded-2xl text-white text-sm font-black shadow-lg transition-all ${
+            className={`flex-[1.5] py-4 rounded-2xl text-white text-sm font-black shadow-lg transition-all flex items-center justify-center gap-2 ${
               isFormValid 
                 ? "bg-[#5B59FF] shadow-indigo-500/20 hover:opacity-90" 
                 : "bg-slate-400 shadow-none cursor-not-allowed opacity-60"
             }`}
           >
-            Send Shout-Out
+            {isSubmitting ? <Loader2 className="animate-spin" size={18} /> : "Send Shout-Out"}
           </button>
         </div>
       </div>
