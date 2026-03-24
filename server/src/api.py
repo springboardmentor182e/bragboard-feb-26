@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-
+from src.admin.controller import router as admin_router
 from src.users.controller import router as users_router
 from src.auth.controller import router as auth_router
 from src.reports.controller import router as reports_router
@@ -17,3 +17,5 @@ router.include_router(auth_router, prefix="/auth", tags=["Auth"])
 router.include_router(reports_router, prefix="/reports", tags=["Reports"])
 
 router.include_router(shoutouts_router)
+# Admin APIs
+router.include_router(admin_router,prefix="/api/admin",tags=["Admin"])
