@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 from flask_sqlalchemy import SQLAlchemy
+=======
+from pydantic import BaseModel
+from typing import Dict, Optional, List
+>>>>>>> ca8e3839491ef5dd39f3e81410cdbf583e55e0c2
 
 db = SQLAlchemy()
 
@@ -14,6 +19,7 @@ class Report(db.Model):
     category = db.Column(db.String(100))
     content = db.Column(db.Text)
 
+<<<<<<< HEAD
     # ✅ THIS WAS MISSING (VERY IMPORTANT)
     def to_dict(self):
         return {
@@ -26,3 +32,29 @@ class Report(db.Model):
             "category": self.category,
             "content": self.content,
         }
+=======
+class ShoutoutCreate(ShoutoutBase):
+    pass
+
+
+class ShoutoutUpdate(BaseModel):
+    author: Optional[str] = None
+    recipient: Optional[str] = None
+    department: Optional[str] = None
+    message: Optional[str] = None
+    badge: Optional[BadgeSchema] = None
+    reactions: Optional[ReactionsSchema] = None
+    status: Optional[str] = None
+    date: Optional[str] = None
+
+
+class Shoutout(ShoutoutBase):
+    id: int
+
+    class Config:
+        from_attributes = True
+
+class MyShoutoutsResponse(BaseModel):
+    given: List[Shoutout]
+    received: List[Shoutout]
+>>>>>>> ca8e3839491ef5dd39f3e81410cdbf583e55e0c2

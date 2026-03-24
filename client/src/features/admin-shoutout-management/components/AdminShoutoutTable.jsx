@@ -3,13 +3,13 @@ import TableRow from "./TableRow";
 import FilterBar from "./FilterBar";
 import StatsSection from "./StatsSection";
 import ShoutoutHeader from "./ShoutoutHeader";
-import ViewShoutoutModal from "./Modals/ViewShoutoutModal";
-import EditShoutoutModal from "./Modals/EditShoutoutModal";
-import DeleteShoutoutModal from "./Modals/DeleteShoutoutModal";
-import CreateShoutoutModal from "./Modals/CreateShoutoutModal";
+import ViewShoutoutModal from "../../employee-shoutout/components/Modals/ViewShoutoutModal";
+import EditShoutoutModal from "../../employee-shoutout/components/Modals/EditShoutoutModal";
+import DeleteShoutoutModal from "../../employee-shoutout/components/Modals/DeleteShoutoutModal";
+import CreateShoutoutModal from "../../employee-shoutout/components/Modals/CreateShoutoutModal";
 import BulkDeleteConfirmModal from "./Modals/BulkDeleteConfirmModal";
 
-const ShoutoutTable = () => {
+const AdminShoutoutTable = () => {
   const [data, setData] = useState([]);
   const [selectedIds, setSelectedIds] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,7 +20,7 @@ const ShoutoutTable = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await fetch("http://localhost:8000/api/shoutouts");
+        const response = await fetch("/api/shoutouts");
         if (!response.ok) throw new Error("Failed to fetch shoutouts");
         const json = await response.json();
         setData(json);
@@ -65,7 +65,7 @@ const ShoutoutTable = () => {
   // 🔹 Delete Selected
   const deleteSelected = async () => {
     try {
-      const response = await fetch("http://localhost:8000/api/shoutouts/bulk-delete", {
+      const response = await fetch("/api/shoutouts/bulk-delete", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(selectedIds),
@@ -84,16 +84,13 @@ const ShoutoutTable = () => {
     const item = data.find((i) => i.id === id);
     if (!item) return;
 
-    const updatedItem = {
-      ...item,
-      status: item.status === "Pinned" ? "Active" : "Pinned",
-    };
+    const updatedStatus = { status: item.status === "Pinned" ? "Active" : "Pinned" };
 
     try {
-      const response = await fetch(`http://localhost:8000/api/shoutouts/${id}`, {
+      const response = await fetch(`/api/shoutouts/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedItem),
+        body: JSON.stringify(updatedStatus),
       });
       if (!response.ok) throw new Error("Failed to toggle pin");
       const json = await response.json();
@@ -108,7 +105,7 @@ const ShoutoutTable = () => {
   // 🔹 Create Shoutout
   const handleCreate = async (newShoutout) => {
     try {
-      const response = await fetch("http://localhost:8000/api/shoutouts", {
+      const response = await fetch("/api/shoutouts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newShoutout),
@@ -123,11 +120,18 @@ const ShoutoutTable = () => {
 
   // 🔹 Update Shoutout
   const handleUpdate = async (updatedItem) => {
+    const updatePayload = {
+      message: updatedItem.message,
+      department: updatedItem.department,
+      badge: { label: updatedItem.badge.label },
+      status: updatedItem.status,
+    };
+
     try {
-      const response = await fetch(`http://localhost:8000/api/shoutouts/${updatedItem.id}`, {
+      const response = await fetch(`/api/shoutouts/${updatedItem.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedItem),
+        body: JSON.stringify(updatePayload),
       });
       if (!response.ok) throw new Error("Failed to update shoutout");
       const json = await response.json();
@@ -142,8 +146,9 @@ const ShoutoutTable = () => {
   // 🔹 Delete Single Shoutout
   const handleDeleteOne = async (id) => {
     try {
-      const response = await fetch(`http://localhost:8000/api/shoutouts/${id}`, {
+      const response = await fetch(`/api/shoutouts/${id}`, {
         method: "DELETE",
+        headers: { "Content-Type": "application/json" },
       });
       if (!response.ok) throw new Error("Failed to delete shoutout");
       setData((prev) => prev.filter((item) => item.id !== id));
@@ -300,7 +305,7 @@ const ShoutoutTable = () => {
                 <th className="p-4">Message</th>
                 <th className="p-4">Department</th>
                 <th className="p-4">Reactions</th>
-                <th className="p-4">Date</th>
+                <th className="p-4 w-40">Date</th>
                 <th className="p-4">Status</th>
                 <th className="p-4 text-center">Actions</th>
               </tr>
@@ -373,4 +378,4 @@ const ShoutoutTable = () => {
   );
 };
 
-export default ShoutoutTable;
+export default AdminShoutoutTable;
