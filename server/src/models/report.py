@@ -1,9 +1,7 @@
-from flask_sqlalchemy import SQLAlchemy
-
-db = SQLAlchemy()
+from extensions import db
 
 class Report(db.Model):
-    __tablename__ = "report"
+    __tablename__ = "report"   # ✅ IMPORTANT
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200))
@@ -14,7 +12,6 @@ class Report(db.Model):
     category = db.Column(db.String(100))
     content = db.Column(db.Text)
 
-    # ✅ THIS WAS MISSING (VERY IMPORTANT)
     def to_dict(self):
         return {
             "id": self.id,
