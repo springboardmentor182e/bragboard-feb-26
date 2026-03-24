@@ -9,6 +9,7 @@ import AdminDashboard from "./features/admin-dash/pages/AdminDashboard.jsx";
 
 import AdminEmployees from "./pages/AdminEmployees";
 import AdminReports from "./pages/AdminReports";
+import AdminDashboard from "./features/Adminshoutout/AdminDashboard";
 import AdminSidebar from "./layout/AdminSidebar.jsx";
 import AdminTopbar from "./layout/AdminTopbar.jsx";
 
@@ -82,6 +83,15 @@ function App() {
         <Route
           path="/admin/reports"
           element={<AdminReports />}
+        />
+
+        <Route
+          path="/admin-dashboard"
+          element={
+            <EmployeeLayout>
+              <AdminDashboard />
+            </EmployeeLayout>
+          }
         />
 
       </Routes>
