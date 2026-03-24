@@ -1,8 +1,14 @@
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .dashboard.controller_new import router as dashboard_router
 from .database.core import init_db, SessionLocal
 from .dashboard.database_models import UserDB
+from .database.core import engine, Base
+from .entities.shoutout import ShoutoutEntity
+from .shoutouts.controller import router as shoutouts_router
+from .my_shoutouts.router import router as my_shoutouts_router
+from .interactions.router import router as interactions_router
 
 app = FastAPI(
     title="Employee Dashboard API",
@@ -54,7 +60,10 @@ async def startup_event():
 
 # Include dashboard routes
 app.include_router(dashboard_router)
-
+app.include_router(leaderboard_router)
+app.include_router(shoutouts_router)
+app.include_router(my_shoutouts_router)
+app.include_router(interactions_router)
 
 @app.get("/")
 async def root():
