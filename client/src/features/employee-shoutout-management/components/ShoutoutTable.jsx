@@ -281,7 +281,7 @@ const ShoutoutTable = () => {
         )}
 
         <div className="overflow-x-auto">
-          <table className="min-w-[1200px]w-full text-left">
+          <table className="min-w-[1200px] w-full text-left">
             <thead className="bg-gray-50 text-gray-600 text-sm">
               <tr>
                 <th className="p-4">
