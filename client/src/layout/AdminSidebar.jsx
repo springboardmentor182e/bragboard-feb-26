@@ -61,7 +61,7 @@ const AdminSidebar = () => {
           </p>
 
           <div className="space-y-2">
-            <NavLink to="/admin/dashboard" className={linkClass}>
+            <NavLink to="/admin" className={linkClass}>
               <LayoutDashboard size={18} />
               Admin Dashboard
             </NavLink>
