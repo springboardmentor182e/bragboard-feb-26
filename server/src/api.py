@@ -16,6 +16,8 @@ router.include_router(auth_router, prefix="/auth", tags=["Auth"])
 # Reports APIs
 router.include_router(reports_router, prefix="/reports", tags=["Reports"])
 
-router.include_router(shoutouts_router)
+# Shoutouts APIs
+router.include_router(shoutouts_router, prefix="/shoutouts", tags=["Shoutouts"])
+# router.include_router(shoutouts_router)
 # Admin APIs
 router.include_router(admin_router,prefix="/api/admin",tags=["Admin"])

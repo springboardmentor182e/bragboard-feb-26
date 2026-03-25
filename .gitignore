@@ -3,11 +3,14 @@ client/node_modules
 client/dist
 
 # Python
+**/__pycache__/
+*.py[cod]
+*$py.class
 server/venv
-server/__pycache__
-*.pyc
 
 # Env
+client/.env
+server/.env
 
 # OS
 .DS_Store
