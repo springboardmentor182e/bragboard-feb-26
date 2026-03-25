@@ -7,7 +7,7 @@ from src.entities import user
 app = FastAPI(title="BragBoard API")
 
 # Create tables
-Base.metadata.create_all(bind=engine)
+# Base.metadata.create_all(bind=engine)
 
 app.add_middleware(
     CORSMiddleware,

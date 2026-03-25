@@ -17,8 +17,9 @@ EMPLOYEE PAGES
 import MyShoutouts from "./features/employeeDashboard/pages/MyShoutouts";
 import CreateShoutout from "./features/employeeDashboard/pages/CreateShoutout";
 import Leaderboard from "./features/employeeDashboard/pages/Leaderboard";
-import Team from "./features/employeeDashboard/pages/Team"; // ✅ ADDED
+import Team from "./features/employeeDashboard/pages/Team";
 import AllRecognitions from "./features/employeeDashboard/pages/AllRecognitions";
+import UserProfile from "./features/employeeDashboard/pages/UserProfile"; // ✅ NEW
 
 /*
 ADMIN PAGES
@@ -34,16 +35,12 @@ function EmployeeLayout({ children }) {
   return (
     <div className="flex h-screen bg-gray-100">
 
-      {/* SIDEBAR */}
       <Sidebar />
 
-      {/* MAIN AREA */}
       <div className="flex-1 flex flex-col">
 
-        {/* TOP NAVBAR */}
         <TopNavbar />
 
-        {/* PAGE CONTENT */}
         <main className="flex-1 p-6 overflow-y-auto">
           {children}
         </main>
@@ -63,7 +60,6 @@ function App() {
 
       <Routes>
 
-        {/* DASHBOARD */}
         <Route
           path="/"
           element={
@@ -73,7 +69,6 @@ function App() {
           }
         />
 
-        {/* CREATE SHOUTOUT */}
         <Route
           path="/create-shoutout"
           element={
@@ -83,7 +78,6 @@ function App() {
           }
         />
 
-        {/* MY SHOUTOUTS */}
         <Route
           path="/my-shoutouts"
           element={
@@ -93,7 +87,6 @@ function App() {
           }
         />
 
-        {/* LEADERBOARD */}
         <Route
           path="/leaderboard"
           element={
@@ -103,7 +96,6 @@ function App() {
           }
         />
 
-        {/* ✅ TEAM PAGE (IMPORTANT FIX) */}
         <Route
           path="/team"
           element={
@@ -113,7 +105,6 @@ function App() {
           }
         />
 
-        {/* ALL RECOGNITIONS */}
         <Route
           path="/recognitions"
           element={
@@ -123,16 +114,19 @@ function App() {
           }
         />
 
-        {/* ADMIN */}
+        {/* ✅ PROFILE PAGE */}
         <Route
-          path="/admin/employees"
-          element={<AdminEmployees />}
+          path="/profile/:id"
+          element={
+            <EmployeeLayout>
+              <UserProfile />
+            </EmployeeLayout>
+          }
         />
 
-        <Route
-          path="/admin/reports"
-          element={<AdminReports />}
-        />
+        {/* ADMIN */}
+        <Route path="/admin/employees" element={<AdminEmployees />} />
+        <Route path="/admin/reports" element={<AdminReports />} />
 
       </Routes>
 

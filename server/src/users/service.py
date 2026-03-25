@@ -3,8 +3,16 @@ from src.entities.user import User
 from src.auth.utils import hash_password
 
 
+# =========================================================
+# BASIC USER OPERATIONS
+# =========================================================
+
 def get_users(db: Session):
     return db.query(User).all()
+
+
+def get_user_by_id(db: Session, user_id: int):
+    return db.query(User).filter(User.id == user_id).first()
 
 
 def add_user(db: Session, user_data):
@@ -16,7 +24,12 @@ def add_user(db: Session, user_data):
         department=user_data.department,
         role=user_data.role,
         status=user_data.status,
-        password=default_password
+        password=default_password,
+
+        # 🔥 NEW DEFAULTS FOR DASHBOARD
+        points=0,
+        shoutouts_count=0,
+        reactions_count=0
     )
 
     db.add(user)
@@ -26,8 +39,12 @@ def add_user(db: Session, user_data):
     return user
 
 
+# =========================================================
+# UPDATE OPERATIONS
+# =========================================================
+
 def update_user_status(db: Session, user_id: int):
-    user = db.query(User).filter(User.id == user_id).first()
+    user = get_user_by_id(db, user_id)
 
     if not user:
         return None
@@ -41,7 +58,7 @@ def update_user_status(db: Session, user_id: int):
 
 
 def update_user_role(db: Session, user_id: int, role: str):
-    user = db.query(User).filter(User.id == user_id).first()
+    user = get_user_by_id(db, user_id)
 
     if not user:
         return None
@@ -54,8 +71,12 @@ def update_user_role(db: Session, user_id: int, role: str):
     return user
 
 
+# =========================================================
+# DELETE
+# =========================================================
+
 def delete_user(db: Session, user_id: int):
-    user = db.query(User).filter(User.id == user_id).first()
+    user = get_user_by_id(db, user_id)
 
     if not user:
         return False
@@ -64,3 +85,20 @@ def delete_user(db: Session, user_id: int):
     db.commit()
 
     return True
+
+
+# =========================================================
+# 🔥 DASHBOARD FEATURES
+# =========================================================
+
+# ✅ LEADERBOARD (sorted by points)
+def get_leaderboard(db: Session):
+    return db.query(User).order_by(User.points.desc()).all()
+
+
+# ✅ OPTIONAL: TOP 3 USERS (for UI cards)
+def get_top_users(db: Session, limit: int = 3):
+    return db.query(User)\
+        .order_by(User.points.desc())\
+        .limit(limit)\
+        .all()

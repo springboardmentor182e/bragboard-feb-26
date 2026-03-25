@@ -1,89 +1,48 @@
-import { Trophy, Medal, Star } from "lucide-react";
-
-const topUsers = [
-  {
-    name: "David Kim",
-    dept: "Design",
-    points: 2730,
-    initials: "DK",
-    position: 2,
-  },
-  {
-    name: "Jessica Park",
-    dept: "Engineering",
-    points: 2845,
-    initials: "JP",
-    position: 1,
-  },
-  {
-    name: "Michael Rodriguez",
-    dept: "Engineering",
-    points: 2615,
-    initials: "MR",
-    position: 3,
-  },
-];
-
-const leaderboard = [
-  {
-    rank: 4,
-    name: "Rachel Anderson",
-    dept: "Customer Success",
-    points: 2490,
-    initials: "RA",
-    badges: { heart: 8, star: 5, fire: 14 },
-  },
-  {
-    rank: 5,
-    name: "Marcus Johnson",
-    dept: "Data & Analytics",
-    points: 2380,
-    initials: "MJ",
-    badges: { heart: 7, star: 9, fire: 4 },
-  },
-  {
-    rank: 6,
-    name: "Emily Chen",
-    dept: "Marketing",
-    points: 2265,
-    initials: "EC",
-    badges: { heart: 11, star: 6, fire: 5 },
-  },
-  {
-    rank: 7,
-    name: "Alex Thompson",
-    dept: "Customer Success",
-    points: 2180,
-    initials: "AT",
-    badges: { heart: 9, star: 4, fire: 9 },
-  },
-  {
-    rank: 8,
-    name: "Sarah Chen",
-    dept: "Product",
-    points: 2095,
-    initials: "SC",
-    badges: { heart: 6, star: 8, fire: 7 },
-  },
-  {
-    rank: 9,
-    name: "Emma Watson",
-    dept: "Design",
-    points: 1980,
-    initials: "EW",
-    badges: { heart: 8, star: 10, fire: 3 },
-  },
-  {
-    rank: 10,
-    name: "James Wilson",
-    dept: "Engineering",
-    points: 1875,
-    initials: "JW",
-    badges: { heart: 5, star: 7, fire: 6 },
-  },
-];
+import { Trophy, Medal } from "lucide-react";
+import { useEffect, useState } from "react";
+import { fetchLeaderboard } from "../../../services/userService";
 
 const Leaderboard = () => {
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    loadLeaderboard();
+  }, []);
+
+  const loadLeaderboard = async () => {
+    try {
+      const res = await fetchLeaderboard();
+      setUsers(res);
+    } catch (err) {
+      console.error("Leaderboard fetch failed", err);
+    }
+  };
+
+  // 🔥 TOP 3 USERS
+  const topUsers = users.slice(0, 3).map((user, index) => ({
+    ...user,
+    position: index + 1,
+    initials: user.name
+      ?.split(" ")
+      .map((n) => n[0])
+      .join(""),
+  }));
+
+  // 🔥 REST USERS
+  const leaderboard = users.slice(3).map((user, index) => ({
+    ...user,
+    rank: index + 4,
+    initials: user.name
+      ?.split(" ")
+      .map((n) => n[0])
+      .join(""),
+    badges: {
+      heart: user.reactions_count || 0,
+      star: user.shoutouts_count || 0,
+      fire: Math.floor((user.points || 0) / 50),
+    },
+  }));
+
   return (
     <div className="space-y-10">
 
@@ -93,7 +52,7 @@ const Leaderboard = () => {
           Leaderboard
         </h1>
         <p className="text-slate-500">
-          Top performers this month • Updated daily
+          Top performers this month • Updated live
         </p>
       </div>
 
@@ -105,7 +64,7 @@ const Leaderboard = () => {
             key={i}
             className={`
               relative bg-white rounded-2xl p-6 text-center
-              border shadow-sm
+              border shadow-sm transition-all
               ${
                 user.position === 1
                   ? "border-yellow-400 shadow-lg scale-105"
@@ -128,7 +87,11 @@ const Leaderboard = () => {
                   }
                 `}
               >
-                {user.position === 1 ? <Trophy size={18} /> : <Medal size={18} />}
+                {user.position === 1 ? (
+                  <Trophy size={18} />
+                ) : (
+                  <Medal size={18} />
+                )}
               </div>
             </div>
 
@@ -144,12 +107,12 @@ const Leaderboard = () => {
 
             {/* DEPT */}
             <span className="text-xs px-3 py-1 rounded-full bg-slate-100 text-slate-600 inline-block mt-2">
-              {user.dept}
+              {user.department}
             </span>
 
             {/* POINTS */}
             <p className="text-3xl font-bold text-indigo-600 mt-4">
-              {user.points.toLocaleString()}
+              {(user.points || 0).toLocaleString()}
             </p>
             <p className="text-sm text-slate-500">points</p>
 
@@ -194,12 +157,12 @@ const Leaderboard = () => {
 
             {/* DEPT */}
             <span className="text-xs px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 w-fit">
-              {user.dept}
+              {user.department}
             </span>
 
             {/* POINTS */}
             <span className="font-semibold text-indigo-600">
-              {user.points.toLocaleString()}
+              {(user.points || 0).toLocaleString()}
             </span>
 
             {/* BADGES */}
@@ -219,24 +182,24 @@ const Leaderboard = () => {
 
         <div className="bg-indigo-50 p-6 rounded-2xl border border-indigo-100">
           <p className="text-2xl font-bold text-slate-900">
-            2,845
+            {users[0]?.points?.toLocaleString() || 0}
           </p>
           <p className="text-sm text-slate-500">Top Score</p>
         </div>
 
         <div className="bg-green-50 p-6 rounded-2xl border border-green-100">
           <p className="text-2xl font-bold text-slate-900">
-            487
+            {users.reduce((acc, u) => acc + (u.shoutouts_count || 0), 0)}
           </p>
-          <p className="text-sm text-slate-500">Total Badges</p>
+          <p className="text-sm text-slate-500">Total Shoutouts</p>
         </div>
 
         <div className="bg-yellow-50 p-6 rounded-2xl border border-yellow-100">
           <p className="text-2xl font-bold text-slate-900">
-            +23%
+            {users.length}
           </p>
           <p className="text-sm text-slate-500">
-            From Last Month
+            Active Employees
           </p>
         </div>
 

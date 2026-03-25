@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { createShoutout } from "../../../services/shoutoutService";
 
 const badges = [
   { title: "Team Player", desc: "Exceptional collaboration", icon: "🤝" },
@@ -16,15 +17,55 @@ const CreateShoutout = () => {
     message: "",
   });
 
-  const handleSubmit = (e) => {
+  const [loading, setLoading] = useState(false);
+
+  /*
+  TEMP: Map name → userId
+  ⚠️ Later replace with dropdown API
+  */
+  const getReceiverId = (name) => {
+    // Temporary logic (replace later with real user select)
+    if (!name) return null;
+    return 2; // 🔥 replace later
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log({
-      ...form,
-      badge: selectedBadge,
-    });
+    if (!form.to || !form.message || !selectedBadge) {
+      alert("Please fill all fields");
+      return;
+    }
 
-    alert("Shoutout created (frontend)");
+    const receiver_id = getReceiverId(form.to);
+
+    if (!receiver_id) {
+      alert("Invalid user");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      await createShoutout({
+        sender_id: 1, // ⚠️ replace with logged-in user later
+        receiver_id,
+        message: form.message,
+        badge: selectedBadge,
+      });
+
+      alert("Shoutout sent successfully 🚀");
+
+      // RESET
+      setForm({ to: "", message: "" });
+      setSelectedBadge(null);
+
+    } catch (err) {
+      console.error(err);
+      alert("Failed to send shoutout");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -121,6 +162,7 @@ const CreateShoutout = () => {
         {/* BUTTON */}
         <button
           type="submit"
+          disabled={loading}
           className="
             w-full
             bg-gradient-to-r from-indigo-500 to-purple-600
@@ -128,9 +170,10 @@ const CreateShoutout = () => {
             hover:scale-[1.02]
             transition-all duration-300
             shadow-md hover:shadow-lg
+            disabled:opacity-50 disabled:cursor-not-allowed
           "
         >
-          Send Shout-Out 🚀
+          {loading ? "Sending..." : "Send Shout-Out 🚀"}
         </button>
 
       </form>
