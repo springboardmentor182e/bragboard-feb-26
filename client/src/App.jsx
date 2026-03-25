@@ -6,9 +6,12 @@ import SummaryCards from "./features/employeeDashboard/components/SummaryCards";
 import AchievementTable from "./features/employeeDashboard/components/AchievementTable";
 import Leaderboard from "./features/employeeDashboard/components/Leaderboard";
 import MyShoutouts from "./features/employeeDashboard/components/MyShoutouts";
+import AdminDashboard from "./features/admin-dash/pages/AdminDashboard.jsx";
 
 import AdminEmployees from "./pages/AdminEmployees";
 import AdminReports from "./pages/AdminReports";
+// import AdminDashboard from "./features/Adminshoutout/AdminDashboard";
+
 
 function MainLayout({ children }) {
   return (
@@ -56,7 +59,21 @@ function PlaceholderPage({ title }) {
     </div>
   );
 }
-
+function AdminLayout({ children }) {
+  return (
+    <div className="bg-[#EEF2F7] min-h-screen">
+      <div className="fixed top-0 left-0 h-full w-72 z-50">
+        <AdminSidebar />
+      </div>
+      <div className="ml-72 min-h-screen">
+        <AdminTopbar />
+        <main className="p-6">
+          {children}
+        </main>
+      </div>
+    </div>
+  );
+}
 function App() {
   return (
     <BrowserRouter>
@@ -132,15 +149,15 @@ function App() {
           }
         />
 
-        {/* Admin Dashboard Placeholder */}
+        {/* Admin Dashboard Placeholder
         <Route
-          path="/admin/dashboard"
+          path="/admin"
           element={
             <MainLayout>
               <PlaceholderPage title="Admin Dashboard" />
             </MainLayout>
           }
-        />
+        /> */}
 
         {/* Admin Shoutouts Placeholder */}
         <Route
@@ -161,7 +178,12 @@ function App() {
             </MainLayout>
           }
         />
-
+{/* Admin Routes - Flat */}
+          <Route path="/admin" element={
+            <AdminLayout>
+              <AdminDashboard />
+            </AdminLayout>
+          } />
         {/* Admin Employee Management */}
         <Route
           path="/admin/employees"
@@ -181,6 +203,15 @@ function App() {
             </MainLayout>
           }
         />
+
+        {/* <Route
+          path="/admin-dashboard"
+          element={
+            <EmployeeLayout>
+              <AdminDashboard />
+            </EmployeeLayout>
+          }
+        /> */}
 
       </Routes>
     </BrowserRouter>

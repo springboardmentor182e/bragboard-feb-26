@@ -5,6 +5,7 @@ from .models import ShoutoutCreate, ShoutoutResponse, LeaderboardEntry
 from .service import create_shoutout, get_received_shoutouts, get_given_shoutouts, get_leaderboard
 from typing import List
 
+from src.shoutouts.service import get_all_shoutouts, delete_shoutout
 
 router = APIRouter()
 
@@ -27,3 +28,13 @@ def fetch_given_shoutouts(user_id: int, db: Session = Depends(get_db)):
 @router.get("/leaderboard", response_model=List[LeaderboardEntry])
 def fetch_leaderboard(limit: int = 10, db: Session = Depends(get_db)):
     return get_leaderboard(db, limit)
+
+router = APIRouter(prefix="/admin/shoutouts", tags=["Admin Shoutouts"])
+
+@router.get("")
+def fetch_shoutouts(db: Session = Depends(get_db)):
+    return get_all_shoutouts(db)
+
+@router.delete("/{shoutout_id}")
+def remove_shoutout(shoutout_id: int, db: Session = Depends(get_db)):
+    return delete_shoutout(db, shoutout_id)

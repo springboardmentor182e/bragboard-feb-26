@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import func, desc
+from sqlalchemy import func, desc,text 
 from src.entities.shoutout import Shoutout
 from src.entities.user import User
 from .models import ShoutoutCreate
@@ -55,3 +55,32 @@ def get_leaderboard(db: Session, limit: int = 10):
         })
     
     return leaderboard
+
+def get_all_shoutouts(db: Session):
+    result = db.execute(text("""
+        SELECT id, sender, message, department, date
+        FROM shoutouts
+        ORDER BY id DESC
+    """))
+
+    rows = result.fetchall()
+
+    return [
+        {
+            "id": row.id,
+            "sender": row.sender,
+            "message": row.message,
+            "department": row.department,
+            "date": str(row.date),
+        }
+        for row in rows
+    ]
+
+
+def delete_shoutout(db: Session, shoutout_id: int):
+    db.execute(
+        text("DELETE FROM shoutouts WHERE id = :id"),
+        {"id": shoutout_id}
+    )
+    db.commit()
+    return {"message": "Shoutout deleted successfully"}

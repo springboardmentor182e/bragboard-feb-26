@@ -105,7 +105,7 @@ const AdminSidebar = () => {
             </p>
 
             <div className="space-y-2">
-              <NavLink to="/admin/dashboard" className={linkClass}>
+              <NavLink to="/admin" className={linkClass}>
                 <Shield size={18} />
                 Admin Dashboard
               </NavLink>
