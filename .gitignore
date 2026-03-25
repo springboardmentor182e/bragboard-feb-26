@@ -1,9 +1,30 @@
+<<<<<<< HEAD
 # Python
+=======
+# Node
+node_modules/
+client/node_modules/
+dist/
+build/
+client/dist/
+.vite/
+
+# Environment files
+.env
+.env.local
+client/.env
+server/.env
+
+# Python
+server/venv/
+server/__pycache__/
+>>>>>>> 1b97f613829558ead40a690306cf10d1d4154ac2
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 
+<<<<<<< HEAD
 # Virtual env
 venv/
 env/
@@ -19,10 +40,19 @@ env/
 # Logs
 *.log
 
+=======
+# Logs
+*.log
+
+# Database
+*.db
+
+>>>>>>> 1b97f613829558ead40a690306cf10d1d4154ac2
 # OS files
 .DS_Store
 Thumbs.db
 
+<<<<<<< HEAD
 # IDE
 .vscode/
 .idea/
@@ -37,4 +67,9 @@ build/
 media/
 src/media/
 __pycache__/
+=======
+# Editor
+.vscode/
+.idea/
+>>>>>>> 1b97f613829558ead40a690306cf10d1d4154ac2
 .env

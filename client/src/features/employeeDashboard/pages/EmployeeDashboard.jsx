@@ -1,219 +1,107 @@
-import { useEffect, useState } from "react";
-import {
-  getAchievements,
-  addAchievement,
-  deleteAchievement,
-} from "../../services/achievementService";
+import { useState } from "react";
+import Leaderboard from "../components/Leaderboard";
 
-import DashboardLayout from "../components/layout/DashboardLayout";
-import Card from "../../../components/ui/Card";
-import PrimaryButton from "../../../components/ui/PrimaryButton";
-
-const EmployeeDashboardPage = () => {
-  const [achievements, setAchievements] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    points: "",
-  });
-
-  useEffect(() => {
-    fetchAchievements();
-  }, []);
-
-  const fetchAchievements = async () => {
-    try {
-      setLoading(true);
-      const res = await getAchievements();
-      setAchievements(res.data);
-    } catch (err) {
-      setError("Failed to load achievements.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await addAchievement({
-        ...formData,
-        points: Number(formData.points),
-      });
-
-      setFormData({ title: "", description: "", points: "" });
-      setIsModalOpen(false);
-      fetchAchievements();
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const handleDelete = async (id) => {
-    try {
-      await deleteAchievement(id);
-      fetchAchievements();
-    } catch (err) {
-      console.error(err);
-    }
-  };
+const EmployeeDashboard = () => {
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
 
   return (
-    <DashboardLayout>
+    <div className="space-y-6">
 
-      {/* Header Section */}
-      <div className="flex justify-between items-center mb-10">
-        <div>
-          <h2 className="text-3xl font-bold text-slate-900">
-            Manage Achievements
-          </h2>
-          <p className="text-slate-500 mt-2">
-            Add and manage employee achievements in real-time
-          </p>
+      {/* 🔷 Header */}
+      <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">
+        Employee Dashboard
+      </h1>
+
+      {/* 🔷 Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+
+        <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow">
+          <p className="text-sm text-gray-500">Total Points</p>
+          <h2 className="text-xl font-bold">0</h2>
         </div>
 
-        <PrimaryButton onClick={() => setIsModalOpen(true)}>
-          + Add Achievement
-        </PrimaryButton>
+        <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow">
+          <p className="text-sm text-gray-500">Achievements</p>
+          <h2 className="text-xl font-bold">0</h2>
+        </div>
+
+        <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow">
+          <p className="text-sm text-gray-500">Rank</p>
+          <h2 className="text-xl font-bold">-</h2>
+        </div>
+
+        <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow">
+          <p className="text-sm text-gray-500">Shoutouts</p>
+          <h2 className="text-xl font-bold">0</h2>
+        </div>
+
       </div>
 
-      {/* Loading */}
-      {loading && (
-        <div className="text-indigo-600 font-medium">
-          Loading achievements...
+      {/* 🔷 Recent Achievements */}
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-semibold text-gray-800 dark:text-white">
+            Recent Achievements
+          </h2>
+
+          <button className="bg-indigo-500 text-white px-3 py-1 rounded text-sm">
+            + Add Achievement
+          </button>
         </div>
-      )}
 
-      {/* Error */}
-      {error && (
-        <div className="text-rose-600 font-medium">
-          {error}
-        </div>
-      )}
+        <p className="text-gray-400 text-sm">
+          No achievements yet. Add your first one!
+        </p>
+      </div>
 
-      {/* Empty State */}
-      {!loading && achievements.length === 0 && (
-        <Card className="p-10 text-center">
-          <p className="text-slate-500 text-lg">
-            No achievements added yet.
-          </p>
-        </Card>
-      )}
+      {/* 🔷 Main Section */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-      {/* Table */}
-      {!loading && achievements.length > 0 && (
-        <Card className="p-6">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="border-b border-slate-200 text-xs uppercase tracking-wider text-slate-500">
-                  <th className="pb-3">Title</th>
-                  <th>Description</th>
-                  <th>Points</th>
-                  <th className="text-right">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {achievements.map((item) => (
-                  <tr
-                    key={item.id}
-                    className="border-b border-slate-100 hover:bg-slate-50 transition"
-                  >
-                    <td className="py-4 font-semibold text-slate-800">
-                      {item.title}
-                    </td>
-                    <td className="text-slate-600">
-                      {item.description}
-                    </td>
-                    <td className="font-semibold text-indigo-600">
-                      {item.points}
-                    </td>
-                    <td className="text-right">
-                      <button
-                        onClick={() => handleDelete(item.id)}
-                        className="px-4 py-2 text-sm rounded-lg bg-rose-100 text-rose-600 hover:bg-rose-200 transition"
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        {/* LEFT */}
+        <div className="md:col-span-2 space-y-6">
+
+          {/* Shoutout */}
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
+            <h2 className="text-lg font-semibold mb-3 text-gray-800 dark:text-white">
+              Send a Shoutout 🎉
+            </h2>
+
+            <select className="w-full mb-3 p-2 border rounded">
+              <option>Select Employee</option>
+            </select>
+
+            <textarea
+              placeholder="Write your appreciation message..."
+              className="w-full mb-3 p-2 border rounded"
+            />
+
+            <button className="bg-indigo-500 text-white px-4 py-2 rounded text-sm">
+              Post Shoutout
+            </button>
           </div>
-        </Card>
-      )}
 
-      {/* Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white rounded-3xl p-8 w-full max-w-md shadow-2xl border border-slate-200">
-            <h3 className="text-2xl font-bold mb-6 text-slate-900">
-              Add Achievement
-            </h3>
+          {/* Feed */}
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
+            <h2 className="text-lg font-semibold text-gray-800 dark:text-white">
+              Shoutout Feed
+            </h2>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <input
-                type="text"
-                name="title"
-                placeholder="Title"
-                value={formData.title}
-                onChange={handleChange}
-                required
-                className="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none"
-              />
-
-              <input
-                type="text"
-                name="description"
-                placeholder="Description"
-                value={formData.description}
-                onChange={handleChange}
-                required
-                className="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none"
-              />
-
-              <input
-                type="number"
-                name="points"
-                placeholder="Points"
-                value={formData.points}
-                onChange={handleChange}
-                required
-                className="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none"
-              />
-
-              <div className="flex justify-end gap-3 pt-4">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 bg-slate-100 rounded-xl hover:bg-slate-200"
-                >
-                  Cancel
-                </button>
-
-                <PrimaryButton type="submit">
-                  Add
-                </PrimaryButton>
-              </div>
-            </form>
+            <p className="text-gray-400 text-sm mt-2">
+              No shoutouts yet.
+            </p>
           </div>
-        </div>
-      )}
 
-    </DashboardLayout>
+        </div>
+
+        {/* RIGHT → Leaderboard */}
+        <div>
+          <Leaderboard selectedEmployee={selectedEmployee} />
+        </div>
+
+      </div>
+
+    </div>
   );
 };
 
-export default EmployeeDashboardPage;
+export default EmployeeDashboard;

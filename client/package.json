@@ -3,18 +3,19 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
+
   "dependencies": {
     "@heroicons/react": "^2.2.0",
-    "@reduxjs/toolkit": "^2.11.2",
+    "@reduxjs/toolkit": "^2.1.2",
     "axios": "^1.13.6",
-    "chart.js": "^4.5.1",
-    "framer-motion": "^12.34.3",
+    "framer-motion": "^12.36.0",
     "lucide-react": "^0.575.0",
     "react": "^19.2.4",
     "react-chartjs-2": "^5.3.1",
@@ -24,6 +25,7 @@
     "react-router-dom": "^7.13.1",
     "recharts": "^3.7.0"
   },
+
   "devDependencies": {
     "@eslint/js": "^9.39.1",
     "@types/react": "^19.2.7",

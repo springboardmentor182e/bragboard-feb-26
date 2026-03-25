@@ -2,24 +2,23 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from typing import List
 
-from ..database import get_db
-from ..core.response import success_response
+from src.database.core import get_db   # ✅ FIXED import
 from .schemas import LeaderboardUser
 from .service import get_leaderboard_service
 
 
 router = APIRouter(
-    prefix="/leaderboard",
+    prefix="/employees",   # ✅ IMPORTANT (match frontend)
     tags=["Leaderboard"]
 )
 
 
-@router.get("/", response_model=dict)
+# ==============================
+# ✅ GET LEADERBOARD
+# ==============================
+@router.get("/leaderboard", response_model=List[LeaderboardUser])
 def get_leaderboard(db: Session = Depends(get_db)):
-
+    
     leaderboard = get_leaderboard_service(db)
 
-    return success_response(
-        data=leaderboard,
-        message="Leaderboard fetched successfully"
-    )
+    return leaderboard   # ✅ RETURN DIRECT ARRAY (NO WRAPPER)

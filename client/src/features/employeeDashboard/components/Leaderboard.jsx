@@ -1,84 +1,100 @@
-import Card from "../../../components/ui/Card";
+import useLeaderboard from "../hooks/useLeaderboard";
 
-const Leaderboard = () => {
-  const users = [
-    { name: "Rahul Sharma", points: 3200 },
-    { name: "Satyam Dubey", points: 2450 },
-    { name: "Ananya Singh", points: 2100 },
-    { name: "Vikas Patel", points: 1800 },
-  ];
+const MEDALS = ["🥇", "🥈", "🥉"];
 
-  const getRankColor = (index) => {
-    switch (index) {
-      case 0:
-        return "text-yellow-500"; // Gold
-      case 1:
-        return "text-gray-400"; // Silver
-      case 2:
-        return "text-amber-600"; // Bronze
-      default:
-        return "text-slate-500";
-    }
-  };
+const Leaderboard = ({ selectedEmployee, refreshKey }) => {
+  const { leaders, loading } = useLeaderboard(refreshKey);
+
+  const safeLeaders = Array.isArray(leaders) ? leaders : [];
 
   return (
-    <Card className="p-6">
+    <div className="bg-white dark:bg-gray-800/80 backdrop-blur-md p-6 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700">
+      
+      <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">
+        🏆 Leaderboard
+      </h2>
 
-      {/* Header */}
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-bold text-slate-800">
-          Leaderboard
-        </h2>
-        <span className="text-sm text-slate-500">
-          Top Performers
-        </span>
-      </div>
+      {/* 🔄 LOADING */}
+      {loading && (
+        <div className="space-y-3">
+          {[...Array(4)].map((_, i) => (
+            <div
+              key={i}
+              className="h-12 rounded-lg bg-gray-100 dark:bg-slate-700 animate-pulse"
+            />
+          ))}
+        </div>
+      )}
 
-      {/* List */}
-      <ul className="space-y-4">
-        {users.map((user, index) => (
-          <li
-            key={index}
-            className={`flex justify-between items-center p-4 rounded-2xl transition-all duration-200 hover:bg-slate-50 ${
-              user.name === "Satyam Dubey"
-                ? "bg-indigo-50 border border-indigo-200"
-                : ""
-            }`}
-          >
-            {/* Left Section */}
-            <div className="flex items-center gap-4">
+      {/* ❌ EMPTY */}
+      {!loading && safeLeaders.length === 0 && (
+        <p className="text-sm text-center text-gray-400 dark:text-slate-500 py-6">
+          No leaderboard data yet.
+        </p>
+      )}
 
-              {/* Rank */}
-              <span
-                className={`text-sm font-bold ${getRankColor(index)}`}
+      {/* ✅ DATA */}
+      {!loading && safeLeaders.length > 0 && (
+        <div className="space-y-3">
+          {safeLeaders.map((item, index) => {
+            const isCurrentEmployee =
+              item.id === selectedEmployee?.id;
+
+            const medal = MEDALS[index] ?? index + 1;
+
+            return (
+              <div
+                key={item.id ?? index}
+                className={`flex items-center justify-between p-3 rounded-lg transition-all ${
+                  isCurrentEmployee
+                    ? "bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-300 dark:border-indigo-700"
+                    : "bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700"
+                }`}
               >
-                #{index + 1}
-              </span>
+                {/* LEFT */}
+                <div className="flex items-center gap-3">
+                  <span className="text-lg w-7 text-center">
+                    {medal}
+                  </span>
 
-              {/* Avatar */}
-              <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-indigo-700 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-                {user.name.charAt(0)}
+                  <div>
+                    <p
+                      className={`font-medium text-sm ${
+                        isCurrentEmployee
+                          ? "text-indigo-600 dark:text-indigo-400"
+                          : "text-gray-800 dark:text-gray-100"
+                      }`}
+                    >
+                      {item.full_name ?? "Unknown"}
+                      {isCurrentEmployee && (
+                        <span className="ml-2 text-xs text-indigo-400">
+                          (you)
+                        </span>
+                      )}
+                    </p>
+
+                    <p className="text-xs text-gray-400 dark:text-slate-500">
+                      {item.department ?? "N/A"}
+                    </p>
+                  </div>
+                </div>
+
+                {/* RIGHT */}
+                <div className="text-right">
+                  <p className="text-indigo-500 dark:text-indigo-400 font-semibold text-sm">
+                    {item.points ?? 0} pts
+                  </p>
+
+                  <p className="text-xs text-gray-400 dark:text-slate-500">
+                    Rank: {item.rank ?? "-"}
+                  </p>
+                </div>
               </div>
-
-              {/* Name */}
-              <div className="flex flex-col">
-                <span className="font-semibold text-slate-800">
-                  {user.name}
-                </span>
-                <span className="text-xs text-slate-500">
-                  Employee
-                </span>
-              </div>
-            </div>
-
-            {/* Points */}
-            <span className="font-semibold text-indigo-600">
-              {user.points} pts
-            </span>
-          </li>
-        ))}
-      </ul>
-    </Card>
+            );
+          })}
+        </div>
+      )}
+    </div>
   );
 };
 

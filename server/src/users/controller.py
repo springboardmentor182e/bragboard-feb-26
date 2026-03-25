@@ -17,7 +17,7 @@ router = APIRouter()
 
 
 # ==============================
-# GET USERS
+# GET USERS (ORIGINAL)
 # ==============================
 @router.get("/")
 def fetch_users(db: Session = Depends(get_db)):
@@ -25,7 +25,26 @@ def fetch_users(db: Session = Depends(get_db)):
 
 
 # ==============================
-# CREATE USER (FINAL FIXED ✅)
+# ✅ NEW: GET EMPLOYEES (FOR FRONTEND)
+# ==============================
+@router.get("/employees")
+def fetch_employees(db: Session = Depends(get_db)):
+    users = get_users(db)
+
+    return [
+        {
+            "id": u.id,
+            "name": u.full_name,   # 🔥 important mapping
+            "department": u.department,
+            "points": u.points,
+            "photo_url": u.photo_url,
+        }
+        for u in users
+    ]
+
+
+# ==============================
+# CREATE USER
 # ==============================
 @router.post("/")
 def create_user(
@@ -34,27 +53,23 @@ def create_user(
     photo: UploadFile = File(...),
     db: Session = Depends(get_db)
 ):
-    # ===== VALIDATE IMAGE =====
     if not photo.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="Only image files allowed")
 
-    # ===== FIXED PATH (IMPORTANT 🔥) =====
     BASE_DIR = Path(__file__).resolve().parent.parent.parent
     USERS_DIR = BASE_DIR / "media" / "users"
     USERS_DIR.mkdir(parents=True, exist_ok=True)
 
-    # ===== SAVE IMAGE =====
     filename = f"{uuid.uuid4()}.{photo.filename.split('.')[-1]}"
     filepath = USERS_DIR / filename
 
     with open(filepath, "wb") as buffer:
         shutil.copyfileobj(photo.file, buffer)
 
-    # ===== SAVE USER IN DB =====
     user = User(
         full_name=name,
         department=department,
-        photo_url=f"/media/users/{filename}",  # ✅ IMPORTANT
+        photo_url=f"/media/users/{filename}",
         points=0
     )
 

@@ -1,24 +1,26 @@
 from sqlalchemy import Column, Integer, String, Boolean, DateTime
 from sqlalchemy.sql import func
-from sqlalchemy.orm import relationship
 from src.database.core import Base
 
 
 class User(Base):
     __tablename__ = "users"
 
+    # ==============================
+    # Primary Key
+    # ==============================
     id = Column(Integer, primary_key=True, index=True)
 
     # ==============================
-    # Basic info
+    # Basic Info
     # ==============================
     full_name = Column(String, nullable=False)
-    department = Column(String)
-    points = Column(Integer, default=0)
-    photo_url = Column(String)
+    department = Column(String, nullable=False)
+    points = Column(Integer, default=0, nullable=False)
+    photo_url = Column(String, nullable=True)
 
     # ==============================
-    # Auth fields (FIXED ✅)
+    # Auth Fields
     # ==============================
     email = Column(String, unique=True, index=True, nullable=True)
     username = Column(String, unique=True, index=True, nullable=True)
@@ -37,18 +39,3 @@ class User(Base):
     # ==============================
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-
-    # ==============================
-    # Profile
-    # ==============================
-    avatar_url = Column(String, nullable=True)
-    position = Column(String, nullable=True)
-
-    # ==============================
-    # Relations
-    # ==============================
-    contributions = relationship(
-        "UserContribution",
-        back_populates="user",
-        uselist=False
-    )

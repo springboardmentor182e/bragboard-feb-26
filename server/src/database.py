@@ -1,25 +1,23 @@
+import os
+from dotenv import load_dotenv
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import declarative_base, sessionmaker
+from typing import Generator
 
-DATABASE_URL = "sqlite:///./bragboard.db"
+load_dotenv()  # reads .env file before os.getenv runs
 
-engine = create_engine(
-    DATABASE_URL,
-    connect_args={"check_same_thread": False}
-)
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./bragboard.db")
 
-SessionLocal = sessionmaker(
-    autocommit=False,
-    autoflush=False,
-    bind=engine
-)
+connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
+
+engine = create_engine(DATABASE_URL, connect_args=connect_args)
+
+SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
 
 Base = declarative_base()
 
 
-# ✅ This was missing
-def get_db():
+def get_db() -> Generator:
     db = SessionLocal()
     try:
         yield db

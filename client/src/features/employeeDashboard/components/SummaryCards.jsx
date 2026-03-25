@@ -1,77 +1,117 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { Award, Trophy, Star, Clock } from "lucide-react";
+import { Star, Trophy, BarChart2, Clock } from "lucide-react";
+import api from "../services/api";
 
-const SummaryCards = () => {
-  const stats = [
-    {
-      title: "Total Points",
-      value: 2450,
-      icon: <Star className="w-6 h-6 text-indigo-600" />,
-      bg: "bg-indigo-100",
-    },
-    {
-      title: "Achievements",
-      value: 18,
-      icon: <Award className="w-6 h-6 text-amber-600" />,
-      bg: "bg-amber-100",
-    },
-    {
-      title: "Rank",
-      value: 4,
-      icon: <Trophy className="w-6 h-6 text-purple-600" />,
-      bg: "bg-purple-100",
-    },
-    {
-      title: "Pending Reviews",
-      value: 2,
-      icon: <Clock className="w-6 h-6 text-rose-600" />,
-      bg: "bg-rose-100",
-    },
-  ];
+const CARD_CONFIG = [
+  { title: "Total Points", icon: <Star size={20} />, key: "achievement_points", prefix: "", suffix: " pts" },
+  { title: "Achievements", icon: <Trophy size={20} />, key: "achievement_count", prefix: "", suffix: "" },
+  { title: "Rank", icon: <BarChart2 size={20} />, key: "rank", prefix: "#", suffix: "" },
+  { title: "Shoutouts", icon: <Clock size={20} />, key: "shoutout_count", prefix: "", suffix: "" },
+];
+
+const SummaryCards = ({ selectedEmployee }) => {
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!selectedEmployee) return;
+
+    const fetchStats = async () => {
+      setLoading(true);
+      try {
+        const [achievementsRes, leaderboardRes] = await Promise.all([
+          api.get(`/achievements/employee/${selectedEmployee.id}`),
+          api.get("/employees/leaderboard"),
+        ]);
+
+        // ✅ FIX: SAFE ARRAY HANDLING
+        const achievements = Array.isArray(achievementsRes.data)
+          ? achievementsRes.data
+          : achievementsRes.data?.data || [];
+
+        const leaderboard = Array.isArray(leaderboardRes.data)
+          ? leaderboardRes.data
+          : leaderboardRes.data?.data || [];
+
+        // ✅ SAFE OPERATIONS
+        const rankIndex = leaderboard.findIndex(
+          (e) => e.employee_id === selectedEmployee.id
+        );
+
+        const rank = rankIndex === -1 ? "-" : rankIndex + 1;
+
+        const entry = leaderboard.find(
+          (e) => e.employee_id === selectedEmployee.id
+        );
+
+        setStats({
+          achievement_points: entry?.achievement_points ?? 0,
+          achievement_count: achievements.length,
+          rank,
+          shoutout_count: entry?.shoutout_count ?? 0,
+        });
+      } catch (err) {
+        console.error("Failed to fetch summary stats", err);
+        setStats({
+          achievement_points: 0,
+          achievement_count: 0,
+          rank: "-",
+          shoutout_count: 0,
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStats();
+  }, [selectedEmployee]);
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      {stats.map((item, index) => (
+      {CARD_CONFIG.map((card, index) => (
         <motion.div
-          key={index}
+          key={card.key}
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: index * 0.12, duration: 0.4 }}
           whileHover={{ scale: 1.03 }}
           className="bg-white/90 backdrop-blur-md rounded-3xl shadow-xl border border-slate-200 p-6 transition-all duration-300"
         >
-          {/* Icon */}
-          <div
-            className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 ${item.bg}`}
-          >
-            {item.icon}
+          <div className="flex items-center gap-2 text-gray-500">
+            <span className="text-indigo-500">{card.icon}</span>
+            <h3 className="text-sm">{card.title}</h3>
           </div>
 
-          {/* Title */}
-          <h3 className="text-sm font-medium text-slate-500">
-            {item.title}
-          </h3>
-
-          {/* Animated Number */}
-          <AnimatedNumber value={item.value} />
+          {loading || !stats ? (
+            <div className="mt-2 h-9 w-24 bg-gray-200 rounded animate-pulse" />
+          ) : (
+            <p className="text-3xl font-bold mt-2 text-gray-800">
+              {card.prefix}
+              {typeof stats[card.key] === "number" ? (
+                <AnimatedNumber value={stats[card.key]} />
+              ) : (
+                stats[card.key]
+              )}
+              {card.suffix}
+            </p>
+          )}
         </motion.div>
       ))}
     </div>
   );
 };
 
-/* 🔥 Animated Counter Component */
 const AnimatedNumber = ({ value }) => {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
     let start = 0;
-    const duration = 1000;
-    const increment = value / (duration / 16);
+    const increment = value / (1000 / 16);
 
     const counter = setInterval(() => {
       start += increment;
+
       if (start >= value) {
         setCount(value);
         clearInterval(counter);
@@ -83,15 +123,7 @@ const AnimatedNumber = ({ value }) => {
     return () => clearInterval(counter);
   }, [value]);
 
-  return (
-    <p className="text-3xl font-bold mt-2 text-slate-800">
-      {typeof value === "number"
-        ? value === 4
-          ? `#${count}`
-          : count
-        : value}
-    </p>
-  );
+  return <span>{count}</span>;
 };
 
 export default SummaryCards;

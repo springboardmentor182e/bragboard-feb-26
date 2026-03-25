@@ -1,6 +1,5 @@
 {
-  "dependencies": {
-    "@heroicons/react": "^2.2.0",
-    "axios": "^1.13.6"
-  }
+  "name": "bragboard-feb-26",
+  "version": "1.0.0",
+  "private": true
 }
