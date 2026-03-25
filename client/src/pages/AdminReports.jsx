@@ -155,7 +155,6 @@ function AdminReports() {
           priorityFilter={priorityFilter}
           setPriorityFilter={setPriorityFilter}
         />
-
         {/* COUNT */}
         <p className="text-sm text-slate-500">
           Showing {filteredReports.length} of {reports.length} reports
