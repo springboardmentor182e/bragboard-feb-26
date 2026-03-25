@@ -3,14 +3,46 @@ from sqlalchemy.orm import Session
 from src.database.core import get_db
 
 from src.shoutouts import service
-from src.shoutouts.models import ShoutoutOut, StatsOut, CommentOut, CommentCreate, ShoutoutCreate
+from src.shoutouts.models import (
+    ShoutoutOut,
+    StatsOut,
+    CommentOut,
+    CommentCreate,
+    ShoutoutCreate,
+)
+
 from src.shoutouts.service import (
     get_all_shoutouts,
     create_shoutout,
     delete_shoutout,
 )
 
+# Routers
 router = APIRouter(prefix="/employee/shoutouts", tags=["Shoutouts"])
+admin_router = APIRouter(prefix="/admin/shoutouts", tags=["Admin Shoutouts"])
+
+
+# -------- Admin APIs --------
+
+@admin_router.get("")
+def fetch_shoutouts(db: Session = Depends(get_db)):
+    return get_all_shoutouts(db)
+
+
+@admin_router.post("")
+def add_shoutout_admin(
+    data: ShoutoutCreate,
+    db: Session = Depends(get_db)
+):
+    return create_shoutout(db, data)
+
+
+@admin_router.delete("/{shoutout_id}")
+def remove_shoutout(
+    shoutout_id: int,
+    db: Session = Depends(get_db)
+):
+    return delete_shoutout(db, shoutout_id)
 
 
 # -------- Employee MyShoutouts APIs --------
@@ -68,8 +100,17 @@ def get_comments(shoutout_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("/{shoutout_id}/comments", response_model=CommentOut)
-def add_comment(shoutout_id: int, body: CommentCreate, db: Session = Depends(get_db)):
-    return service.add_comment(db, shoutout_id, body.author_name, body.content)
+def add_comment(
+    shoutout_id: int,
+    body: CommentCreate,
+    db: Session = Depends(get_db)
+):
+    return service.add_comment(
+        db,
+        shoutout_id,
+        body.author_name,
+        body.content
+    )
 
 
 # -------- General CRUD APIs --------
@@ -80,7 +121,10 @@ def get_shoutouts(db: Session = Depends(get_db)):
 
 
 @router.post("/")
-def add_shoutout(shoutout: ShoutoutCreate, db: Session = Depends(get_db)):
+def add_shoutout(
+    shoutout: ShoutoutCreate,
+    db: Session = Depends(get_db)
+):
     return create_shoutout(db, shoutout)
 
 

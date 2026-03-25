@@ -1,11 +1,13 @@
 from fastapi import APIRouter
 from src.users.controller import router as users_router
 from src.auth.controller import router as auth_router
+from src.shoutouts.controller import router as shoutouts_router
 
 router = APIRouter()
 
 router.include_router(users_router, prefix="/users", tags=["Users"])
 router.include_router(auth_router, prefix="/auth", tags=["Auth"])
+router.include_router(shoutouts_router)
 
 from src.admin import controller as admin_controller
 # Import other controllers as needed

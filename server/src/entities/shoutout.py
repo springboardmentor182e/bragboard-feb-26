@@ -6,11 +6,10 @@ from src.database.core import Base
 
 class Shoutout(Base):
     __tablename__ = "shoutouts"
-    __table_args__ = {'extend_existing': True}  # Fix: prevents duplicate table error
+    __table_args__ = {'extend_existing': True}
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
 
-    # Your teammate A's fields
     sender_name: Mapped[str] = mapped_column(String(120), nullable=True)
     receiver_name: Mapped[str] = mapped_column(String(120), nullable=True)
     badge: Mapped[str] = mapped_column(String(80), nullable=True)
@@ -23,7 +22,6 @@ class Shoutout(Base):
     comments: Mapped[int] = mapped_column(Integer, default=0)
     shares: Mapped[int] = mapped_column(Integer, default=0)
 
-    # Your teammate B's fields
     sender_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     receiver_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     category = Column(String, nullable=True)
@@ -35,6 +33,5 @@ class Shoutout(Base):
         server_default=func.now()
     )
 
-    # Relationships
     sender = relationship("User", foreign_keys=[sender_id])
     receiver = relationship("User", foreign_keys=[receiver_id])

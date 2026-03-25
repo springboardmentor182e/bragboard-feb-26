@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import AdminDashboard from './features/admin-dash/pages/AdminDashboard';
+import AdminShoutoutDashboard from "./features/Adminshoutout/AdminDashboard"; // renamed to avoid conflict
 import Sidebar_admin from './layout/Sidebar';
 import Navbar from './layout/Navbar';
 import Sidebar from "./features/employeeDashboard/components/Sidebar";
@@ -12,7 +13,6 @@ import Leaderboard from "./features/employeeDashboard/components/Leaderboard";
 import AdminEmployees from "./pages/AdminEmployees";
 import MyShoutouts from "./pages/MyShoutouts";
 
-// Your working employee dashboard pages
 const AchievementsPage = lazy(() =>
   import("./features/employeeDashboard/pages/AchievementsPage")
 );
@@ -23,7 +23,6 @@ const SettingsPage = lazy(() =>
   import("./features/employeeDashboard/pages/SettingsPage")
 );
 
-// Teammate's admin pages (lazy loaded so missing files don't crash the app)
 const AdminReports = lazy(() =>
   import("./pages/AdminReports").catch(() => ({ default: () => <div>Admin Reports - Coming Soon</div> }))
 );
@@ -102,6 +101,7 @@ function App() {
           <Route path="/achievements" element={<AchievementsPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/admin-dashboard" element={<EmployeeLayout><AdminShoutoutDashboard /></EmployeeLayout>} />
 
           {/* Admin Routes */}
           <Route path="/admin/*" element={
