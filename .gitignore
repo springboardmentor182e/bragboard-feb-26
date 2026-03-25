@@ -49,3 +49,6 @@ __pycache__/
 *.pyc
 .vscode/
 client/.vscode/
+
+package-lock.json
+package.json
