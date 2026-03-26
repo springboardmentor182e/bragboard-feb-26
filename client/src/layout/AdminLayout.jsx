@@ -12,7 +12,7 @@ const AdminLayout = ({ children }) => {
       <div className="ml-72">
 
         {/* Fixed Topbar */}
-        <div className="fixed top-0 left-72 right-0 z-30 bg-white border-b border-slate-200">
+        <div className="fixed top-0 left-72 right-0 z-40 bg-white border-b border-slate-200">
           <AdminTopbar />
         </div>
 
@@ -22,7 +22,6 @@ const AdminLayout = ({ children }) => {
             {children}
           </div>
         </div>
-
       </div>
     </div>
   );
