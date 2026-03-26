@@ -1,83 +1,87 @@
 import { Heart, Users, Gift } from "lucide-react";
-import Card from "@/components/ui/Card";
 
 const statsConfig = [
   {
-    title: "Received This Week",
+    title: "Received",
     value: 3,
     icon: Heart,
     gradient: "from-emerald-400 to-green-500",
-    bg: "from-emerald-50 to-green-50",
   },
   {
-    title: "People Recognized",
+    title: "Recognized",
     value: 5,
     icon: Users,
     gradient: "from-indigo-400 to-purple-500",
-    bg: "from-indigo-50 to-purple-50",
   },
   {
-    title: "Points Earned",
+    title: "Points",
     value: "+250",
     icon: Gift,
-    gradient: "from-amber-400 to-yellow-500",
-    bg: "from-amber-50 to-yellow-50",
+    gradient: "from-amber-400 to-orange-500",
   },
 ];
 
 const StatsCards = () => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+
       {statsConfig.map((stat, index) => {
         const Icon = stat.icon;
 
         return (
           <div
             key={index}
-            className={`
-              relative
-              rounded-2xl
-              p-6
-              bg-gradient-to-br ${stat.bg}
-              border border-white/40
-              shadow-[0_10px_30px_rgba(0,0,0,0.06)]
-              backdrop-blur-md
-              hover:-translate-y-1 hover:shadow-xl
+            className="
+              group relative overflow-hidden
+              rounded-2xl p-5
+              bg-gradient-to-br from-white to-slate-50
+              border border-slate-200/70
+              shadow-sm
+              hover:shadow-xl hover:-translate-y-1
               transition-all duration-300
-              overflow-hidden
-            `}
+            "
           >
-            {/* Glow background */}
-            <div className="absolute inset-0 opacity-20 bg-white blur-2xl"></div>
 
-            {/* Top icon */}
+            {/* Glow Background */}
             <div
-              className={`
-                w-12 h-12 rounded-xl
-                flex items-center justify-center
-                bg-gradient-to-r ${stat.gradient}
-                text-white
-                shadow-md
-              `}
-            >
-              <Icon size={22} />
+              className={`absolute -top-8 -right-8 w-28 h-28 bg-gradient-to-r ${stat.gradient} opacity-20 blur-3xl group-hover:opacity-30 transition`}
+            />
+
+            {/* Subtle Border Glow on Hover */}
+            <div className="absolute inset-0 rounded-2xl ring-1 ring-transparent group-hover:ring-indigo-200 transition" />
+
+            <div className="flex items-center justify-between relative z-10">
+
+              {/* TEXT */}
+              <div>
+                <p className="text-xs text-slate-500 uppercase tracking-wide">
+                  {stat.title}
+                </p>
+
+                <p className="text-3xl font-bold text-slate-900 mt-1 tracking-tight">
+                  {stat.value}
+                </p>
+              </div>
+
+              {/* ICON */}
+              <div
+                className={`
+                  w-12 h-12 rounded-xl
+                  bg-gradient-to-r ${stat.gradient}
+                  text-white flex items-center justify-center
+                  shadow-lg
+                  group-hover:scale-110 transition
+                `}
+              >
+                <Icon size={20} />
+              </div>
+
             </div>
 
-            {/* Value */}
-            <p className="text-3xl font-bold text-slate-900 mt-6">
-              {stat.value}
-            </p>
-
-            {/* Label */}
-            <p className="text-sm text-slate-600 mt-1">
-              {stat.title}
-            </p>
-
-            {/* Accent dot */}
-            <div className="absolute top-4 right-4 w-2.5 h-2.5 bg-green-400 rounded-full shadow-md shadow-green-400/50"></div>
           </div>
         );
       })}
+
     </div>
   );
 };

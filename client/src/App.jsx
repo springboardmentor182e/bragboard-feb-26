@@ -15,10 +15,10 @@ import EmployeeDashboard from "./features/employeeDashboard/pages/EmployeeDashbo
 EMPLOYEE PAGES
 */
 import MyShoutouts from "./features/employeeDashboard/pages/MyShoutouts";
-import CreateShoutout from "./features/employeeDashboard/pages/CreateShoutout";
+// import CreateShoutout from "./features/employeeDashboard/pages/CreateShoutout";
 import Leaderboard from "./features/employeeDashboard/pages/Leaderboard";
 import Team from "./features/employeeDashboard/pages/Team"; // ✅ ADDED
-import AllRecognitions from "./features/employeeDashboard/pages/AllRecognitions";
+import AllRecognitions from "./features/employeeDashboard/pages/RecognitionsPage";
 
 /*
 ADMIN PAGES
@@ -69,16 +69,6 @@ function App() {
           element={
             <EmployeeLayout>
               <EmployeeDashboard />
-            </EmployeeLayout>
-          }
-        />
-
-        {/* CREATE SHOUTOUT */}
-        <Route
-          path="/create-shoutout"
-          element={
-            <EmployeeLayout>
-              <CreateShoutout />
             </EmployeeLayout>
           }
         />
