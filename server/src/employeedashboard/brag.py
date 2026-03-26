@@ -45,3 +45,10 @@ def like_brag(brag_id: int):
     db.close()
 
     return {"message": "Liked"}
+
+@router.delete("/brags/{id}")
+def delete_brag(id: int):
+    cursor = db.cursor()
+    cursor.execute("DELETE FROM brags WHERE id = %s", (id,))
+    db.commit()
+    return {"message": "Deleted successfully"}
