@@ -5,7 +5,7 @@ import DepartmentPiechart from '../components/DepartmentPiechart';
 import ReportedPosts from '../components/ReportedPosts';
 import { adminAPI } from '../../../services/api';
 import { mockDashboardStats } from '../mockData';
-
+import AdminLayout from '../../../layout/AdminLayout';
 const AdminDashboard = () => {
   const [stats, setStats] = useState({
     total_shoutouts: 0,

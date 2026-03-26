@@ -26,8 +26,9 @@ ADMIN PAGES
 import AdminEmployees from "./pages/AdminEmployees";
 import AdminReports from "./pages/AdminReports";
 
-// admindashboard
-import Admindashboard from "./features/admin-dash/pages/AdminDashboard";
+// admindashboard 
+import AdminDashboard from "./features/admin-dash/pages/AdminDashboard.jsx";
+
 /*
 EMPLOYEE LAYOUT
 */
@@ -53,8 +54,6 @@ function EmployeeLayout({ children }) {
     </div>
   );
 }
-
-
 /*
 APP ROUTES
 */
@@ -135,10 +134,10 @@ function App() {
           element={<AdminReports />}
         />
         {/* ADMIN DASHBOARD */}
-        {/* ADMIN */}
         <Route
           path="/admin/dashboard"
-          element={<Admindashboard />}
+          element={<AdminDashboard />}
+
         />
       </Routes>
 
