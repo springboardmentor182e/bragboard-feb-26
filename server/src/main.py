@@ -7,14 +7,12 @@ from .shoutouts.controller import router as shoutouts_router
 from .my_shoutouts.router import router as my_shoutouts_router
 from .interactions.router import router as interactions_router
 
-from src.database.core import engine, Base
-from src.leaderboard.controller import router as leaderboard_router
-from src.shoutouts.controller import router as shoutouts_router
+from src.database import Base, engine
+from src.routes import auth, shoutout
 
-app = FastAPI(title="Leaderboard")
+app = FastAPI()
 
-Base.metadata.create_all(bind=engine)
-
+# ✅ CORS (fix network error)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -23,11 +21,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# ✅ create tables
+Base.metadata.create_all(bind=engine)
 app.include_router(leaderboard_router)
 app.include_router(shoutouts_router)
 app.include_router(my_shoutouts_router)
 app.include_router(interactions_router)
 
-@app.get("/")
-def root():
-    return {"message": "FastAPI Backend Running 🚀"}
+# ✅ include routes
+app.include_router(auth.router)
+app.include_router(shoutout.router)
