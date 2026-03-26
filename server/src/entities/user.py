@@ -27,6 +27,13 @@ class User(Base):
     password = Column(String, nullable=True)
 
     # ==============================
+    # Badges                          ✅ ADD THIS BLOCK
+    # ==============================
+    fire_badges = Column(Integer, default=0, nullable=False)
+    star_badges = Column(Integer, default=0, nullable=False)
+    thumb_badges = Column(Integer, default=0, nullable=False)
+
+    # ==============================
     # Status
     # ==============================
     is_active = Column(Boolean, default=True)

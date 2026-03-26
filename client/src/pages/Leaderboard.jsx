@@ -1,48 +1,37 @@
 import { useEffect, useState } from "react";
 import PodiumCard from "../features/leaderboard/components/PodiumCard.jsx";
 import LeaderboardTable from "../features/leaderboard/components/LeaderboardTable.jsx";
-
+ 
 export default function Leaderboard() {
   const [users, setUsers] = useState([]);
   const [selectedDept, setSelectedDept] = useState("All");
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+ 
   const BASE_URL = import.meta.env.VITE_API_URL;
-
-  // 🔥 FETCH DATA
+ 
   useEffect(() => {
     if (!BASE_URL) {
-      console.error("VITE_API_URL is not defined in your .env file");
       setError("API URL is not configured.");
       setLoading(false);
       return;
     }
-
-    console.log("Fetching from:", `${BASE_URL}/leaderboard/leaderboard/`);
-
-    fetch(`${BASE_URL}/leaderboard/leaderboard/`)
+ 
+    fetch(`${BASE_URL}/employees/leaderboard`)
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         return res.json();
       })
       .then((data) => {
-        console.log("RAW DATA:", data);
-
-        // ✅ Handle plain array, Django pagination (results), or custom wrapper (data)
         const finalUsers = Array.isArray(data)
           ? data
           : data?.results || data?.data || [];
-
-        // ✅ SORT + ADD RANK
+ 
         const sorted = finalUsers
           .sort((a, b) => (b.points || 0) - (a.points || 0))
-          .map((u, i) => ({
-            ...u,
-            rank: i + 1,
-          }));
-
+          .map((u, i) => ({ ...u, rank: i + 1 }));
+ 
         setUsers(sorted);
       })
       .catch((err) => {
@@ -51,105 +40,173 @@ export default function Leaderboard() {
       })
       .finally(() => setLoading(false));
   }, [BASE_URL]);
-
-  // 🔥 DEPARTMENTS
+ 
   const departments = [
     "All",
     ...Array.from(
-      new Set(
-        users
-          .map((u) => u.department?.toLowerCase())
-          .filter(Boolean)
-      )
-    ).map((d) => d.charAt(0).toUpperCase() + d.slice(1)),
+      new Set(users.map((u) => u.department).filter(Boolean))
+    ),
   ];
-
-  // 🔥 FILTER USERS
+ 
   const filteredUsers = users.filter((u) => {
-    const searchText = search.toLowerCase();
+    const s = search.toLowerCase();
     return (
-      (selectedDept === "All" ||
-        u.department?.toLowerCase() === selectedDept.toLowerCase()) &&
+      (selectedDept === "All" || u.department === selectedDept) &&
       (
-        (u.full_name || "").toLowerCase().includes(searchText) ||
-        (u.username || "").toLowerCase().includes(searchText) ||
-        (u.email || "").toLowerCase().includes(searchText)
+        (u.full_name || "").toLowerCase().includes(s) ||
+        (u.username || "").toLowerCase().includes(s) ||
+        (u.email || "").toLowerCase().includes(s)
       )
     );
   });
-
-  // 🏆 TOP 3
+ 
   const top3 = filteredUsers.slice(0, 3);
-
+  const rest = filteredUsers.slice(3);
+ 
+  // Stats
+  const topScore = users[0]?.points ?? 0;
+  const totalBadges = users.reduce(
+    (acc, u) => acc + (u.fire_badges ?? 0) + (u.star_badges ?? 0) + (u.thumb_badges ?? 0),
+    0
+  );
+ 
   return (
-    <div className="min-h-screen p-6 bg-gradient-to-br from-[#fff7f3] via-white to-[#fdeee7]">
-      {/* HEADER */}
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-orange-500">
-          🏆 Leaderboard
+    <div style={{
+      minHeight: "100vh",
+      background: "#f9fafb",
+      padding: "32px 40px",
+      fontFamily: "'Inter', sans-serif",
+    }}>
+      {/* Page Title */}
+      <div style={{ marginBottom: 4 }}>
+        <h1 style={{ fontSize: 28, fontWeight: 800, color: "#111827", margin: 0 }}>
+          Leaderboard
         </h1>
+        <p style={{ fontSize: 14, color: "#6b7280", marginTop: 4 }}>
+          Top performers this month • Updated daily
+        </p>
       </div>
-
-      {/* LOADING STATE */}
+ 
+      {/* Search + Filter */}
+      <div style={{ display: "flex", gap: 12, margin: "24px 0" }}>
+        <input
+          type="text"
+          placeholder="Search shout-outs, people, badges..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{
+            flex: 1,
+            padding: "10px 16px",
+            borderRadius: 10,
+            border: "1px solid #e5e7eb",
+            background: "#fff",
+            fontSize: 14,
+            color: "#374151",
+            outline: "none",
+            boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
+          }}
+        />
+        <select
+          value={selectedDept}
+          onChange={(e) => setSelectedDept(e.target.value)}
+          style={{
+            padding: "10px 16px",
+            borderRadius: 10,
+            border: "1px solid #e5e7eb",
+            background: "#fff",
+            fontSize: 14,
+            color: "#374151",
+            outline: "none",
+            cursor: "pointer",
+            boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
+          }}
+        >
+          {departments.map((d, i) => (
+            <option key={i} value={d}>{d}</option>
+          ))}
+        </select>
+      </div>
+ 
+      {/* Loading */}
       {loading && (
-        <div className="flex justify-center items-center py-20">
-          <p className="text-orange-400 text-lg font-medium animate-pulse">
-            Loading leaderboard...
-          </p>
+        <div style={{ textAlign: "center", padding: 60, color: "#6b7280", fontSize: 15 }}>
+          Loading leaderboard...
         </div>
       )}
-
-      {/* ERROR STATE */}
+ 
+      {/* Error */}
       {!loading && error && (
-        <div className="flex justify-center items-center py-20">
-          <p className="text-red-500 text-lg font-medium">{error}</p>
+        <div style={{ textAlign: "center", padding: 60, color: "#ef4444", fontSize: 15 }}>
+          {error}
         </div>
       )}
-
-      {/* MAIN CONTENT */}
+ 
       {!loading && !error && (
         <>
-          {/* SEARCH + FILTER */}
-          <div className="flex flex-col sm:flex-row gap-4 mb-10">
-            <input
-              type="text"
-              placeholder="Search..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="flex-1 px-4 py-2 rounded-xl bg-white border shadow-sm"
-            />
-            <select
-              value={selectedDept}
-              onChange={(e) => setSelectedDept(e.target.value)}
-              className="px-4 py-2 rounded-xl bg-white border shadow-sm"
-            >
-              {departments.map((dept, index) => (
-                <option key={index} value={dept}>
-                  {dept}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* EMPTY STATE */}
           {filteredUsers.length === 0 ? (
-            <div className="flex justify-center items-center py-20">
-              <p className="text-gray-400 text-lg">No users found.</p>
+            <div style={{ textAlign: "center", padding: 60, color: "#9ca3af", fontSize: 15 }}>
+              No users found.
             </div>
           ) : (
             <>
-              {/* 🏆 PODIUM */}
-              <div className="flex justify-center items-end gap-8 mb-12">
+              {/* Podium — top 3 */}
+              <div style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "flex-end",
+                gap: 24,
+                marginBottom: 40,
+                paddingBottom: 8,
+              }}>
+                {/* 2nd place */}
                 <PodiumCard user={top3[1]} place={2} />
-                <div className="-mb-6">
+                {/* 1st place — elevated */}
+                <div style={{ marginBottom: 20 }}>
                   <PodiumCard user={top3[0]} place={1} />
                 </div>
+                {/* 3rd place */}
                 <PodiumCard user={top3[2]} place={3} />
               </div>
-
-              {/* 📊 TABLE */}
-              <div className="rounded-2xl p-4 bg-white border shadow-sm">
-                <LeaderboardTable users={filteredUsers} />
+ 
+              {/* Table — all users */}
+              <LeaderboardTable users={filteredUsers} />
+ 
+              {/* Stats footer */}
+              <div style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(3, 1fr)",
+                gap: 16,
+                marginTop: 24,
+              }}>
+                {[
+                  { icon: "🏆", value: topScore.toLocaleString(), label: "Top Score", bg: "#ede9fe", iconBg: "#6366f1" },
+                  { icon: "🎖️", value: totalBadges, label: "Total Badges", bg: "#dcfce7", iconBg: "#10b981" },
+                  { icon: "📈", value: "+23%", label: "From Last Month", bg: "#fef9c3", iconBg: "#f59e0b" },
+                ].map((stat, i) => (
+                  <div key={i} style={{
+                    background: stat.bg,
+                    borderRadius: 14,
+                    padding: "20px 24px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 16,
+                  }}>
+                    <div style={{
+                      width: 44, height: 44, borderRadius: 12,
+                      background: stat.iconBg,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      fontSize: 20,
+                    }}>
+                      {stat.icon}
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 22, fontWeight: 800, color: "#111827" }}>
+                        {stat.value}
+                      </div>
+                      <div style={{ fontSize: 13, color: "#6b7280" }}>{stat.label}</div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </>
           )}
