@@ -2,7 +2,6 @@ import axios from 'axios';
 
 const API = axios.create({
   baseURL: 'https://bragboard-feb-26.onrender.com/api',
-  timeout: 10000,
 });
 
 export const adminAPI = {
