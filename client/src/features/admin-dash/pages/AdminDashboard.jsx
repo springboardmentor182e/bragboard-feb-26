@@ -58,13 +58,13 @@ const AdminDashboard = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="text-gray-500">Loading dashboard...</div>
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div className="flex justify-center items-center h-64">
+  //       <div className="text-gray-500">Loading dashboard...</div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <AdminLayout>
