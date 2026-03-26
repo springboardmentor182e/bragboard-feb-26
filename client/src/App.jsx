@@ -26,7 +26,8 @@ ADMIN PAGES
 import AdminEmployees from "./pages/AdminEmployees";
 import AdminReports from "./pages/AdminReports";
 
-
+// admindashboard
+import Admindashboard from "./features/admin-dash/pages/AdminDashboard";
 /*
 EMPLOYEE LAYOUT
 */
@@ -133,7 +134,12 @@ function App() {
           path="/admin/reports"
           element={<AdminReports />}
         />
-
+        {/* ADMIN DASHBOARD */}
+        {/* ADMIN */}
+        <Route
+          path="/admin/dashboard"
+          element={<Admindashboard />}
+        />
       </Routes>
 
     </BrowserRouter>
