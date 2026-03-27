@@ -1,20 +1,32 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from src.auth.controller import router as auth_router
+from dotenv import load_dotenv
+from src.auth.router import router as auth_router
+from src.database import Base, engine
+import os
+import json
+
+load_dotenv()
+
 
 app = FastAPI(
-    title="PrackBoard API",
-    description="Backend API for PrackBoard application",
+    title="BragBoard API",
+    description="Full-stack authentication API for BragBoard",
     version="1.0.0"
 )
+
+# Create tables
+Base.metadata.create_all(bind=engine)
 
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_origins=os.getenv("FRONTEND_URLS", "http://localhost:3000").split(","),
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["*"],
+
+
 )
 
 # Include routers
@@ -24,7 +36,7 @@ app.include_router(auth_router)
 @app.get("/")
 def read_root():
     return {
-        "message": "Welcome to PrackBoard API",
+        "message": "Welcome to BragBoard API",
         "version": "1.0.0",
         "docs": "/docs"
     }
@@ -35,7 +47,7 @@ def health_check():
     return {"status": "healthy"}
 
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+# if __name__ == "__main__":
+#     import uvicorn
+#     uvicorn.run("src.main:app", host="0.0.0.0", port=8000, reload=True)
 

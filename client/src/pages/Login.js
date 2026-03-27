@@ -1,8 +1,8 @@
 import React from "react";
-import PrackBoardAuth from "../features/authentication/services/PrackBoardAuth";
+import BragBoardAuth from "../features/authentication/services/bragboardauth.jsx";
 
 const Login = () => {
-  return <PrackBoardAuth />;
+  return <BragBoardAuth />;
 };
 
 export default Login;

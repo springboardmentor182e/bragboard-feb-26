@@ -1,37 +1,40 @@
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:8000/api/v1/auth";
+import api from './api.js';
 
 export const loginUser = async (email, password, role = "employee") => {
   try {
-    const response = await fetch(`${API_BASE_URL}/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email,
-        password,
-        role,
-      }),
+    const response = await api.post('/auth/login', {
+      email,
+      password,
+      role
     });
 
-    const data = await response.json();
-
-    if (!response.ok) {
-      return {
-        success: false,
-        error: data.detail || "Login failed",
-      };
-    }
+    // Store tokens
+    localStorage.setItem('access_token', response.data.access_token);
+    localStorage.setItem('refresh_token', response.data.refresh_token);
+    localStorage.setItem('user_email', email);
+    localStorage.setItem('user_role', role);
 
     return {
       success: true,
-      data: data,
+      data: response.data
     };
   } catch (error) {
-    console.error("Login error:", error);
+    let errorMsg = 'Login failed';
+    
+    if (error.response) {
+      const status = error.response.status;
+      if (status === 401) errorMsg = 'Invalid email or password.';
+      else if (status === 403) errorMsg = `Access denied. You don't have permission for this role.`;
+      else if (status === 422) errorMsg = 'Invalid input. Please check your details.';
+      else errorMsg = error.response.data.detail || errorMsg;
+    } else if (error.request) {
+      errorMsg = 'Server is unavailable. Please try again later.';
+    }
+
     return {
       success: false,
-      error: "Network error. Please try again.",
+      error: errorMsg
     };
   }
 };
+

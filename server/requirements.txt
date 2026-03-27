@@ -1,11 +1,12 @@
 fastapi
-uvicorn
-pydantic
-python-multipart
-passlib
-bcrypt
-python-jose
+uvicorn[standard]
+sqlalchemy==2.0.35
+alembic
+psycopg2-binary
+python-jose[cryptography]
+passlib[bcrypt]
 python-dotenv
-pyjwt
-requests
+pydantic[email]
+python-multipart
+redis
 

@@ -1,38 +1,34 @@
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:8000/api/v1/auth";
+import api from './api.js';
 
-export const signupUser = async (email, password, role = "employee") => {
+export const signupUser = async (email, password) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/signup`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email,
-        password,
-        confirm_password: password,
-        role,
-      }),
+    const response = await api.post('/auth/signup', {
+      email,
+      password,
+      role: "employee"  // Hardcoded
     });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      return {
-        success: false,
-        error: data.detail || "Signup failed",
-      };
-    }
 
     return {
       success: true,
-      data: data,
+      data: response.data
     };
   } catch (error) {
-    console.error("Signup error:", error);
+    let errorMsg = 'Signup failed';
+    
+    if (error.response) {
+      const status = error.response.status;
+      if (status === 400) errorMsg = 'An account with this email already exists.';
+      else if (status === 422) errorMsg = 'Invalid input. Please check your details.';
+      else if (status === 404) errorMsg = 'Signup service not available. Check if server is running.';
+      else errorMsg = error.response.data.detail || errorMsg;
+    } else if (error.request) {
+      errorMsg = 'Server is unavailable. Please try again later.';
+    }
+
     return {
       success: false,
-      error: "Network error. Please try again.",
+      error: errorMsg
     };
   }
 };
+
