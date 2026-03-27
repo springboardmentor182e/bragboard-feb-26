@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { loginUser } from "../services/authService";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
@@ -7,6 +6,8 @@ import { Eye, EyeOff } from "lucide-react";
 const Login = () => {
   const [form, setForm] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -14,51 +15,43 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const res = await loginUser(form);
-    await login(res.data.access_token);
+    setLoading(true);
+    setError("");
 
-    navigate("/");
+    try {
+      await login(form);
+      navigate("/");
+    } catch (err) {
+      setError("Invalid email or password");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="min-h-screen flex">
 
-      {/* 🔥 LEFT SIDE (BRANDING) */}
-      <div className="
-        hidden lg:flex flex-1 items-center justify-center
-        bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500
-        text-white p-10
-      ">
-
+      {/* LEFT */}
+      <div className="hidden lg:flex flex-1 items-center justify-center bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 text-white p-10">
         <div className="max-w-md space-y-6">
-
           <h1 className="text-4xl font-bold leading-tight">
             Welcome to <br /> BragBoard 🚀
           </h1>
 
           <p className="text-white/80">
             Recognize, appreciate, and celebrate your team.
-            Build a culture of appreciation that drives performance.
           </p>
 
-          {/* Highlight */}
           <div className="bg-white/10 p-4 rounded-xl backdrop-blur">
-            🌟 “Recognition is the fuel that keeps teams moving forward”
+            🌟 Recognition builds stronger teams
           </div>
-
         </div>
       </div>
 
-      {/* 🔐 RIGHT SIDE (FORM) */}
+      {/* RIGHT */}
       <div className="flex-1 flex items-center justify-center bg-slate-50 p-6">
 
-        <div className="
-          w-full max-w-md
-          bg-white/70 backdrop-blur-xl
-          border border-white/20
-          rounded-2xl p-8
-          shadow-xl
-        ">
+        <div className="w-full max-w-md bg-white/80 backdrop-blur-xl border border-white/20 rounded-2xl p-8 shadow-xl">
 
           {/* HEADER */}
           <div className="text-center mb-6">
@@ -66,9 +59,16 @@ const Login = () => {
               Login to your account
             </h2>
             <p className="text-sm text-slate-500 mt-1">
-              Continue your recognition journey ✨
+              Continue your journey ✨
             </p>
           </div>
+
+          {/* ERROR */}
+          {error && (
+            <div className="mb-4 text-sm text-red-600 bg-red-50 p-2 rounded-lg">
+              {error}
+            </div>
+          )}
 
           {/* FORM */}
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -78,15 +78,12 @@ const Login = () => {
               <label className="text-sm text-slate-600">Email</label>
               <input
                 type="email"
-                placeholder="Enter your email"
-                className="
-                  w-full mt-1 px-4 py-2 rounded-lg
-                  border border-slate-200
-                  focus:ring-2 focus:ring-indigo-500 outline-none
-                "
+                required
+                value={form.email}
                 onChange={(e) =>
                   setForm({ ...form, email: e.target.value })
                 }
+                className="w-full mt-1 px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none"
               />
             </div>
 
@@ -97,18 +94,14 @@ const Login = () => {
               <div className="relative mt-1">
                 <input
                   type={showPassword ? "text" : "password"}
-                  placeholder="Enter your password"
-                  className="
-                    w-full px-4 py-2 rounded-lg
-                    border border-slate-200
-                    focus:ring-2 focus:ring-indigo-500 outline-none
-                  "
+                  required
+                  value={form.password}
                   onChange={(e) =>
                     setForm({ ...form, password: e.target.value })
                   }
+                  className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none"
                 />
 
-                {/* TOGGLE ICON */}
                 <div
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-2.5 cursor-pointer text-slate-400"
@@ -121,14 +114,10 @@ const Login = () => {
             {/* BUTTON */}
             <button
               type="submit"
-              className="
-                w-full py-2.5 rounded-lg text-white font-medium
-                bg-gradient-to-r from-indigo-500 to-purple-600
-                hover:opacity-90 transition
-                shadow-md
-              "
+              disabled={loading}
+              className="w-full py-2.5 rounded-lg text-white font-medium bg-gradient-to-r from-indigo-500 to-purple-600 hover:opacity-90 transition shadow-md disabled:opacity-50"
             >
-              Sign In
+              {loading ? "Signing in..." : "Sign In"}
             </button>
 
           </form>
@@ -145,9 +134,7 @@ const Login = () => {
           </p>
 
         </div>
-
       </div>
-
     </div>
   );
 };
