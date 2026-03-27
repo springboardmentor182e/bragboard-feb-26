@@ -10,7 +10,7 @@ import TopNavbar from "./features/employeeDashboard/components/layout/TopNavbar"
 EMPLOYEE DASHBOARD PAGE
 */
 import EmployeeDashboard from "./features/employeeDashboard/pages/EmployeeDashboard";
-
+import Settings from "./features/employeeSettings/emp-settings.jsx";
 /*
 EMPLOYEE PAGES
 */
@@ -28,7 +28,7 @@ import AdminReports from "./pages/AdminReports";
 
 // admindashboard 
 import AdminDashboard from "./features/admin-dash/pages/AdminDashboard.jsx";
-
+import ShoutOutManagement from "./features/Adminshoutout/Ad-shoutout.jsx";
 /*
 EMPLOYEE LAYOUT
 */
@@ -122,6 +122,12 @@ function App() {
             </EmployeeLayout>
           }
         />
+        {/* SETTINGS */}
+        <Route
+          path="/admin/settings"
+          element={<Settings />}
+        />
+
 
         {/* ADMIN */}
         <Route
@@ -137,7 +143,10 @@ function App() {
         <Route
           path="/admin/dashboard"
           element={<AdminDashboard />}
-
+        />
+        <Route
+          path="/admin/shoutouts"
+          element={<ShoutOutManagement />}
         />
       </Routes>
 
