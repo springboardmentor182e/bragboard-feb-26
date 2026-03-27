@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // import axios from 'axios';
 // import React, { useState, useEffect } from 'react';
 // import { adminAPI } from '../../../services/api';
@@ -136,6 +137,15 @@ import ReportedPosts from '../components/ReportedPosts';
 import { adminAPI } from '../../../services/api';
 import { mockDashboardStats } from '../mockData';
 
+=======
+import React, { useState, useEffect } from 'react';
+import StatCard from '../components/StatCard';
+import TopContributorsChart from "../components/charts/TopContributorsChart";import DepartmentPiechart from '../components/charts/DepartmentPiechart';
+import ReportedPosts from '../components/ReportedPosts';
+import { adminAPI } from '../../../services/api';
+import { mockDashboardStats } from '../mockData';
+import AdminLayout from '../components/layout/AdminLayout';
+>>>>>>> 9def645b3f2547c06c6666b8af8938b41243d563
 const AdminDashboard = () => {
   const [stats, setStats] = useState({
     total_shoutouts: 0,
@@ -188,6 +198,7 @@ const AdminDashboard = () => {
     }
   };
 
+<<<<<<< HEAD
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -198,6 +209,18 @@ const AdminDashboard = () => {
 
   return (
     <>
+=======
+  // if (loading) {
+  //   return (
+  //     <div className="flex justify-center items-center h-64">
+  //       <div className="text-gray-500">Loading dashboard...</div>
+  //     </div>
+  //   );
+  // }
+
+  return (
+    <AdminLayout>
+>>>>>>> 9def645b3f2547c06c6666b8af8938b41243d563
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
         <p className="text-sm text-gray-500">Platform oversight and moderation controls</p>
@@ -233,7 +256,11 @@ const AdminDashboard = () => {
       
       {/* Reported Posts */}
       <ReportedPosts />
+<<<<<<< HEAD
     </>
+=======
+    </AdminLayout>
+>>>>>>> 9def645b3f2547c06c6666b8af8938b41243d563
   );
 };
 
