@@ -1,30 +1,42 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, Header
 from sqlalchemy.orm import Session
 from src.database.core import get_db
-from src.entities.user import User
-from .utils import verify_password, create_access_token
-from .models import LoginRequest, TokenResponse
+from .models import LoginRequest, TokenResponse, SignupRequest
+from .service import login_user, signup_user
+from .dependencies import get_current_user
 
 router = APIRouter()
 
 
+# 🔐 LOGIN
 @router.post("/login", response_model=TokenResponse)
 def login(data: LoginRequest, db: Session = Depends(get_db)):
-
-    user = db.query(User).filter(User.email == data.email).first()
-
-    if not user:
-        raise HTTPException(status_code=401, detail="Invalid credentials")
-
-    if not verify_password(data.password, user.password):
-        raise HTTPException(status_code=401, detail="Invalid credentials")
-
-    token = create_access_token({
-        "user_id": user.id,
-        "role": user.role
-    })
+    token = login_user(data, db)
 
     return {
         "access_token": token,
         "token_type": "bearer"
+    }
+
+
+# 🆕 SIGNUP
+@router.post("/signup", response_model=TokenResponse)
+def signup(data: SignupRequest, db: Session = Depends(get_db)):
+    token = signup_user(data, db)
+
+    return {
+        "access_token": token,
+        "token_type": "bearer"
+    }
+
+
+# 👤 GET CURRENT USER
+@router.get("/me")
+def get_me(user = Depends(get_current_user)):
+    return {
+        "id": user.id,
+        "name": user.name,
+        "email": user.email,
+        "role": user.role,
+        "status": user.status
     }
