@@ -15,3 +15,5 @@ server/.env
 # OS
 .DS_Store
 Thumbs.db
+
+*.db

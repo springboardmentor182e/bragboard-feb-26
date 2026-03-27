@@ -18,8 +18,10 @@ const CreateShoutoutModal = ({ isOpen, onClose }) => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/users/`);
-        setAllUsers(response.data.filter(u => u.id !== currentUserId));
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+        const response = await axios.get(`${apiUrl}/users/`);
+        const users = Array.isArray(response.data) ? response.data : [];
+        setAllUsers(users.filter(u => u.id !== currentUserId));
       } catch (error) {
         console.error("Error fetching users:", error);
       }
@@ -40,7 +42,8 @@ const CreateShoutoutModal = ({ isOpen, onClose }) => {
     if (!isFormValid) return;
     setIsSubmitting(true);
     try {
-      await axios.post(`${import.meta.env.VITE_API_URL}/shoutouts/`, {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+      await axios.post(`${apiUrl}/shoutouts/`, {
         sender_id: currentUserId,
         receiver_id: selectedTeammate.id,
         message: message,

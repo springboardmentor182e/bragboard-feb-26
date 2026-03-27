@@ -16,6 +16,7 @@ import axios from "axios";
 const MyShoutouts = () => {
   const [activeTab, setActiveTab] = useState("received"); // "received" or "given"
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [receivedShoutouts, setReceivedShoutouts] = useState([]);
   const [givenShoutouts, setGivenShoutouts] = useState([]);
 
@@ -25,14 +26,16 @@ const MyShoutouts = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
         const [receivedRes, givenRes] = await Promise.all([
-          axios.get(`${import.meta.env.VITE_API_URL}/shoutouts/received/${currentUserId}`),
-          axios.get(`${import.meta.env.VITE_API_URL}/shoutouts/given/${currentUserId}`)
+          axios.get(`${apiUrl}/shoutouts/received/${currentUserId}`),
+          axios.get(`${apiUrl}/shoutouts/given/${currentUserId}`)
         ]);
-        setReceivedShoutouts(receivedRes.data);
-        setGivenShoutouts(givenRes.data);
+        setReceivedShoutouts(Array.isArray(receivedRes.data) ? receivedRes.data : []);
+        setGivenShoutouts(Array.isArray(givenRes.data) ? givenRes.data : []);
       } catch (error) {
         console.error("Error fetching shoutouts:", error);
+        setError("Could not load your shout-outs. Please check your connection.");
       } finally {
         setLoading(false);
       }
@@ -80,6 +83,18 @@ const MyShoutouts = () => {
       <div className="flex flex-col items-center justify-center py-20">
         <Loader2 className="animate-spin text-[#5B59FF] mb-4" size={40} />
         <p className="text-slate-500 font-medium italic">Loading your journey...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 bg-white rounded-[32px] border border-red-100 shadow-sm">
+        <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mb-6">
+          <Heart className="text-red-300" size={40} />
+        </div>
+        <h2 className="text-2xl font-bold text-slate-800 mb-2">Oops!</h2>
+        <p className="text-slate-500 max-w-md text-center">{error}</p>
       </div>
     );
   }
@@ -149,7 +164,7 @@ const MyShoutouts = () => {
           >
             Received 
             <span className={`px-2 py-0.5 rounded-full text-[10px] ${activeTab === "received" ? "bg-green-100 text-green-600" : "bg-slate-100 text-slate-400"}`}>
-              2
+              {receivedShoutouts.length}
             </span>
           </button>
           <button 
@@ -161,6 +176,9 @@ const MyShoutouts = () => {
             }`}
           >
             Given
+            <span className={`ml-2 px-2 py-0.5 rounded-full text-[10px] ${activeTab === "given" ? "bg-indigo-100 text-indigo-600" : "bg-slate-100 text-slate-400"}`}>
+              {givenShoutouts.length}
+            </span>
           </button>
         </div>
 

@@ -10,8 +10,9 @@ const Leaderboard = () => {
   useEffect(() => {
     const fetchLeaderboard = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/shoutouts/leaderboard`);
-        setLeaderboard(response.data);
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+        const response = await axios.get(`${apiUrl}/shoutouts/leaderboard`);
+        setLeaderboard(Array.isArray(response.data) ? response.data : []);
       } catch (error) {
         console.error("Error fetching leaderboard:", error);
         setError("Could not load leaderboard. Please make sure the backend is running.");
