@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Filter, ChevronDown, Eye, MoreVertical, ThumbsUp, MessageCircle, Flag, Archive, CheckCircle } from 'lucide-react';
-import AdminLayout from '../../layout/AdminLayout';
+import AdminLayout from '../admin-dash/components/layout/AdminLayout';
 
 const ShoutOutManagement = () => {
   const [shoutOuts, setShoutOuts] = useState([]);

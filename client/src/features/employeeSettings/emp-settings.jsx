@@ -22,7 +22,7 @@ import {
   Clock,
   DollarSign
 } from 'lucide-react';
-import AdminLayout from '../../layout/AdminLayout';
+import AdminLayout from '../admin-dash/components/layout/AdminLayout';
 
 const Settings = () => {
   const [activeSection, setActiveSection] = useState('notifications');

@@ -1,4 +1,4 @@
-import { Star } from "lucide-react";
+import { Star, TrendingUp } from "lucide-react";
 
 const LevelProgress = () => {
   const progress = 65;
@@ -6,44 +6,54 @@ const LevelProgress = () => {
   return (
     <div
       className="
-        bg-white rounded-2xl p-6
-        border border-slate-200
-        shadow-sm hover:shadow-md
-        transition-all duration-300
+        relative overflow-hidden
+        rounded-2xl p-6
+        bg-gradient-to-r from-slate-900 via-indigo-900 to-purple-900
+        text-white
+        shadow-[0_20px_60px_rgba(79,70,229,0.35)]
       "
     >
 
+      {/* Glow */}
+      <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
+
       {/* HEADER */}
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center mb-5 z-10 relative">
+
         <div>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-white/70">
             Level Progress
           </p>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-white/70">
             350 points to next level
           </p>
         </div>
 
-        <div className="flex items-center gap-2 bg-indigo-50 text-indigo-600 px-3 py-1 rounded-lg text-sm font-medium">
+        <div className="flex items-center gap-2 bg-white/10 px-3 py-1 rounded-lg text-sm font-medium backdrop-blur">
           <Star size={14} />
           Level 7
         </div>
+
       </div>
 
-      {/* PROGRESS LABEL */}
-      <div className="flex justify-between text-sm text-slate-600 mb-2">
-        <span>Team Champion</span>
-        <span>{progress}%</span>
+      {/* TITLE */}
+      <div className="flex justify-between items-center mb-2">
+        <p className="text-lg font-semibold">
+          Team Champion
+        </p>
+        <p className="text-sm text-white/70">
+          {progress}%
+        </p>
       </div>
 
       {/* PROGRESS BAR */}
-      <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+      <div className="w-full h-3 bg-white/20 rounded-full overflow-hidden">
 
         <div
           className="
             h-full rounded-full
-            bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500
-            transition-all duration-500
+            bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400
+            transition-all duration-700
           "
           style={{ width: `${progress}%` }}
         />
@@ -51,33 +61,45 @@ const LevelProgress = () => {
       </div>
 
       {/* FOOTER */}
-      <div className="flex justify-between text-xs text-slate-400 mt-2">
-        <span>650 points</span>
-        <span>1000 points</span>
+      <div className="flex justify-between text-xs text-white/60 mt-2">
+        <span>650 pts</span>
+        <span>1000 pts</span>
       </div>
 
-      {/* NEXT LEVEL CARD */}
+      {/* NEXT LEVEL */}
       <div
         className="
-          mt-5
-          bg-gradient-to-r from-indigo-50 to-purple-50
-          border border-indigo-100
+          mt-6
+          bg-white/10
+          border border-white/10
           rounded-xl p-4
-          flex items-center gap-3
+          flex items-center justify-between
+          backdrop-blur
         "
       >
-        <div className="w-10 h-10 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-600 text-white flex items-center justify-center shadow">
-          <Star size={18} />
+
+        <div className="flex items-center gap-3">
+
+          <div className="w-10 h-10 rounded-lg bg-gradient-to-r from-indigo-400 to-purple-500 text-white flex items-center justify-center shadow">
+            <TrendingUp size={18} />
+          </div>
+
+          <div>
+            <p className="font-semibold text-sm">
+              Next Level: Recognition Leader
+            </p>
+            <p className="text-xs text-white/60">
+              Unlock badges & rewards
+            </p>
+          </div>
+
         </div>
 
-        <div>
-          <p className="font-semibold text-slate-900 text-sm">
-            Next Level: Recognition Leader
-          </p>
-          <p className="text-xs text-slate-500">
-            Unlock exclusive badges and rewards
-          </p>
-        </div>
+        {/* Optional CTA */}
+        <button className="text-xs bg-white/20 px-3 py-1 rounded-lg hover:bg-white/30 transition">
+          View
+        </button>
+
       </div>
 
     </div>
