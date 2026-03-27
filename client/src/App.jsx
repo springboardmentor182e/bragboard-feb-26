@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 /*
 LAYOUT COMPONENTS
@@ -10,6 +10,7 @@ import TopNavbar from "./features/employeeDashboard/components/layout/TopNavbar"
 AUTH
 */
 import ProtectedRoute from "./components/ProtectedRoute";
+import { useAuth } from "./context/AuthContext";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 
@@ -29,7 +30,7 @@ import AllRecognitions from "./features/employeeDashboard/pages/RecognitionsPage
 /*
 ADMIN PAGES
 */
-import AdminEmployees from "./pages/AdminEmployees";
+import AdminEmployees from "./pages/AdminEmployees.jsx";
 import AdminReports from "./pages/AdminReports";
 import AdminDashboard from "./features/admin-dash/pages/AdminDashboard.jsx";
 
@@ -39,24 +40,32 @@ EMPLOYEE LAYOUT
 function EmployeeLayout({ children }) {
   return (
     <div className="flex h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-
-      {/* SIDEBAR */}
       <Sidebar />
 
-      {/* MAIN AREA */}
       <div className="flex-1 flex flex-col">
-
-        {/* TOP NAVBAR */}
         <TopNavbar />
 
-        {/* PAGE CONTENT */}
         <main className="flex-1 p-6 overflow-y-auto">
           {children}
         </main>
-
       </div>
     </div>
   );
+}
+
+/*
+ADMIN ROUTE (INLINE)
+*/
+function AdminRoute({ children }) {
+  const { user, loading } = useAuth();
+
+  if (loading) return <div className="p-6">Loading...</div>;
+
+  if (!user) return <Navigate to="/login" />;
+
+  if (user.role !== "admin") return <Navigate to="/" />;
+
+  return children;
 }
 
 /*
@@ -65,14 +74,13 @@ APP ROUTES
 function App() {
   return (
     <BrowserRouter>
-
       <Routes>
 
         {/* 🔓 PUBLIC ROUTES */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 
-        {/* 🔐 PROTECTED EMPLOYEE ROUTES */}
+        {/* 🔐 EMPLOYEE ROUTES */}
 
         <Route
           path="/"
@@ -129,13 +137,36 @@ function App() {
           }
         />
 
-        {/* 🔐 ADMIN ROUTES (can add protection later if needed) */}
-        <Route path="/admin/employees" element={<AdminEmployees />} />
-        <Route path="/admin/reports" element={<AdminReports />} />
-        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        {/* 🔐 ADMIN ROUTES */}
+
+        <Route
+          path="/admin/dashboard"
+          element={
+            <AdminRoute>
+              <AdminDashboard />
+            </AdminRoute>
+          }
+        />
+
+        <Route
+          path="/admin/employees"
+          element={
+            <AdminRoute>
+              <AdminEmployees />
+            </AdminRoute>
+          }
+        />
+
+        <Route
+          path="/admin/reports"
+          element={
+            <AdminRoute>
+              <AdminReports />
+            </AdminRoute>
+          }
+        />
 
       </Routes>
-
     </BrowserRouter>
   );
 }

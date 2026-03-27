@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import AdminLayout from "../layout/AdminLayout";
+import AdminLayout from "../features/admin-dash/components/layout/AdminLayout";
 import StatsCards from "../features/employeeManagement/components/StatsCards";
 import SearchFilterBar from "../features/employeeManagement/components/SearchFilterBar";
 import EmployeeTable from "../features/employeeManagement/components/EmployeeTable";
