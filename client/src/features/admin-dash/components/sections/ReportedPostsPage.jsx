@@ -1,5 +1,5 @@
 import React from 'react';
-import ReportedPosts from '../components/ReportedPosts';
+import ReportedPosts from '../ReportedPosts';
 
 const ReportedPostsPage = () => {
   return (

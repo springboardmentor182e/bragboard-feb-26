@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import { adminAPI } from '../../../services/api'; // Adjust this import path based on your project structure
-
+import { adminAPI } from '../../../../services/api';
 const TopContributorsChart = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);

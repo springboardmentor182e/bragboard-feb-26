@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import StatCard from '../components/StatCard';
-import TopContributorsChart from '../components/TopContributorsChart';
-import DepartmentPiechart from '../components/DepartmentPiechart';
+import TopContributorsChart from "../components/charts/TopContributorsChart";import DepartmentPiechart from '../components/charts/DepartmentPiechart';
 import ReportedPosts from '../components/ReportedPosts';
 import { adminAPI } from '../../../services/api';
 import { mockDashboardStats } from '../mockData';
-import AdminLayout from '../../../layout/AdminLayout';
+import AdminLayout from '../components/layout/AdminLayout';
 const AdminDashboard = () => {
   const [stats, setStats] = useState({
     total_shoutouts: 0,
