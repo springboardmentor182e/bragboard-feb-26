@@ -1,9 +1,10 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
-from ..database import get_db
+from src.database.core import get_db
 from .jwt import decode_token
-from ..models import User
+from src.entities.user import User
+from src.auth.config import SECRET_KEY, ALGORITHM
 import uuid
 
 security = HTTPBearer()
@@ -30,14 +31,19 @@ def get_current_user(
             detail="Invalid token payload"
         )
     
-    from sqlalchemy import select
     stmt = select(User).where(User.id == uuid.UUID(user_id), User.email == email)
     result = db.scalars(stmt)
     user = result.first()
-    if not user or not bool(user.is_active):
+    if not user or not user.is_active:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="User not found or inactive"
         )
     
-    return {"id": str(user.id), "email": user.email, "role": user.role.value}
+    return {"id": str(user.id), "email": user.email, "role": user.role}
+
+def require_admin(user = Depends(get_current_user)):
+    if user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    return user
+

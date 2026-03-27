@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, status, Depends
 from sqlalchemy.orm import Session
-from ..database import get_db
+from src.database.core import get_db
+from src.entities.user import User
 from ..schemas import UserCreate as SchemaUserCreate, UserLogin
 from .models import (
     ForgotPasswordRequest, 
@@ -9,15 +10,16 @@ from .models import (
     Token, 
     UserResponse
 )
+from .utils import verify_password, create_access_token
 UserCreate = SchemaUserCreate
 from . import service
 
-router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
+router = APIRouter(tags=["auth"])
 
 
 @router.post("/signup", response_model=dict)
 async def signup(user: UserCreate, db: Session = Depends(get_db)):
-    """Register a new user"""
+    \"\"\"Register a new user\"\"\"
     result = await service.register_user(db, user)
     if not result["success"]:
         raise HTTPException(
@@ -27,9 +29,10 @@ async def signup(user: UserCreate, db: Session = Depends(get_db)):
     return result
 
 
-@router.post("/login", response_model=dict)
+@router.post("/login", response_model=Token)
 async def login(user: UserLogin, db: Session = Depends(get_db)):
-    """Login user and return JWT token"""
+    \"\"\"Login user and return JWT token\"\"\"
+    # Robust service call
     result = await service.authenticate_user(db, user.email, user.password, user.role.value if hasattr(user.role, 'value') else user.role)
     if not result["success"]:
         raise HTTPException(
@@ -38,18 +41,29 @@ async def login(user: UserLogin, db: Session = Depends(get_db)):
         )
     return result
 
+@router.post("/login-simple", response_model=Token)
+def login_simple(data: LoginRequest, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == data.email).first()
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    if not verify_password(data.password, user.hashed_password):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    token = create_access_token({
+        "user_id": str(user.id),
+        "role": user.role
+    })
+    return Token(access_token=token, token_type="bearer")
 
 @router.post("/forgot-password", response_model=dict)
 async def forgot_password(request: ForgotPasswordRequest, db: Session = Depends(get_db)):
-    """Request password reset"""
+    \"\"\"Request password reset\"\"\"
     result = await service.forgot_password(request.email, db)
-    # Always return success to prevent email enumeration
     return {"success": True, "message": result.get("message", "If the email exists, a verification code will be sent")}
 
 
 @router.post("/verify-reset-code", response_model=dict)
 async def verify_reset_code(request: VerifyCodeRequest, db: Session = Depends(get_db)):
-    """Verify the reset code"""
+    \"\"\"Verify the reset code\"\"\"
     result = await service.verify_reset_code(request.email, request.code, db)
     if not result["success"]:
         raise HTTPException(
@@ -61,7 +75,7 @@ async def verify_reset_code(request: VerifyCodeRequest, db: Session = Depends(ge
 
 @router.post("/reset-password", response_model=dict)
 async def reset_password(request: ResetPasswordRequest, db: Session = Depends(get_db)):
-    """Reset password"""
+    \"\"\"Reset password\"\"\"
     result = await service.reset_password(request.email, request.new_password, db)
     if not result["success"]:
         raise HTTPException(
@@ -71,14 +85,11 @@ async def reset_password(request: ResetPasswordRequest, db: Session = Depends(ge
     return result
 
 
-@router.get("/me", response_model=dict)
-async def get_current_user(email: str, db: Session = Depends(get_db)):
-    """Get current user info"""
-    user = await service.get_me({"email": email}, db)
+@router.get("/me")
+async def get_me(current_user: dict = Depends(get_current_user), db: Session = Depends(get_db)):
+    \"\"\"Get current user info\"\"\"
+    user = db.query(User).filter(User.email == current_user["email"]).first()
     if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found"
-        )
-    return user
+        raise HTTPException(status_code=404, detail="User not found")
+    return UserResponse.from_orm(user)
 
