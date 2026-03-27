@@ -7,6 +7,13 @@ import Sidebar from "./features/employeeDashboard/components/layout/Sidebar";
 import TopNavbar from "./features/employeeDashboard/components/layout/TopNavbar";
 
 /*
+AUTH
+*/
+import ProtectedRoute from "./components/ProtectedRoute";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+
+/*
 EMPLOYEE DASHBOARD PAGE
 */
 import EmployeeDashboard from "./features/employeeDashboard/pages/EmployeeDashboard";
@@ -15,9 +22,8 @@ import EmployeeDashboard from "./features/employeeDashboard/pages/EmployeeDashbo
 EMPLOYEE PAGES
 */
 import MyShoutouts from "./features/employeeDashboard/pages/MyShoutouts";
-// import CreateShoutout from "./features/employeeDashboard/pages/CreateShoutout";
 import Leaderboard from "./features/employeeDashboard/pages/Leaderboard";
-import Team from "./features/employeeDashboard/pages/Team"; // ✅ ADDED
+import Team from "./features/employeeDashboard/pages/Team";
 import AllRecognitions from "./features/employeeDashboard/pages/RecognitionsPage";
 
 /*
@@ -25,8 +31,6 @@ ADMIN PAGES
 */
 import AdminEmployees from "./pages/AdminEmployees";
 import AdminReports from "./pages/AdminReports";
-
-// admindashboard 
 import AdminDashboard from "./features/admin-dash/pages/AdminDashboard.jsx";
 
 /*
@@ -34,7 +38,7 @@ EMPLOYEE LAYOUT
 */
 function EmployeeLayout({ children }) {
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-gradient-to-br from-slate-50 to-slate-100">
 
       {/* SIDEBAR */}
       <Sidebar />
@@ -54,6 +58,7 @@ function EmployeeLayout({ children }) {
     </div>
   );
 }
+
 /*
 APP ROUTES
 */
@@ -63,72 +68,72 @@ function App() {
 
       <Routes>
 
-        {/* DASHBOARD */}
+        {/* 🔓 PUBLIC ROUTES */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+
+        {/* 🔐 PROTECTED EMPLOYEE ROUTES */}
+
         <Route
           path="/"
           element={
-            <EmployeeLayout>
-              <EmployeeDashboard />
-            </EmployeeLayout>
+            <ProtectedRoute>
+              <EmployeeLayout>
+                <EmployeeDashboard />
+              </EmployeeLayout>
+            </ProtectedRoute>
           }
         />
 
-        {/* MY SHOUTOUTS */}
         <Route
           path="/my-shoutouts"
           element={
-            <EmployeeLayout>
-              <MyShoutouts />
-            </EmployeeLayout>
+            <ProtectedRoute>
+              <EmployeeLayout>
+                <MyShoutouts />
+              </EmployeeLayout>
+            </ProtectedRoute>
           }
         />
 
-        {/* LEADERBOARD */}
         <Route
           path="/leaderboard"
           element={
-            <EmployeeLayout>
-              <Leaderboard />
-            </EmployeeLayout>
+            <ProtectedRoute>
+              <EmployeeLayout>
+                <Leaderboard />
+              </EmployeeLayout>
+            </ProtectedRoute>
           }
         />
 
-        {/* ✅ TEAM PAGE (IMPORTANT FIX) */}
         <Route
           path="/team"
           element={
-            <EmployeeLayout>
-              <Team />
-            </EmployeeLayout>
+            <ProtectedRoute>
+              <EmployeeLayout>
+                <Team />
+              </EmployeeLayout>
+            </ProtectedRoute>
           }
         />
 
-        {/* ALL RECOGNITIONS */}
         <Route
           path="/recognitions"
           element={
-            <EmployeeLayout>
-              <AllRecognitions />
-            </EmployeeLayout>
+            <ProtectedRoute>
+              <EmployeeLayout>
+                <AllRecognitions />
+              </EmployeeLayout>
+            </ProtectedRoute>
           }
         />
 
-        {/* ADMIN */}
-        <Route
-          path="/admin/employees"
-          element={<AdminEmployees />}
-        />
+        {/* 🔐 ADMIN ROUTES (can add protection later if needed) */}
+        <Route path="/admin/employees" element={<AdminEmployees />} />
+        <Route path="/admin/reports" element={<AdminReports />} />
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
 
-        <Route
-          path="/admin/reports"
-          element={<AdminReports />}
-        />
-        {/* ADMIN DASHBOARD */}
-        <Route
-          path="/admin/dashboard"
-          element={<AdminDashboard />}
-
-        />
       </Routes>
 
     </BrowserRouter>
