@@ -18,10 +18,16 @@ const ReportedPosts = () => {
       setLoading(true);
       setError('');
       const response = await adminAPI.getReports('pending');
+<<<<<<< HEAD
       const reports = Array.isArray(response) ? response : [];
       
       // Transform backend data to match frontend format
       const formattedPosts = reports.map(report => ({
+=======
+      
+      // Transform backend data to match frontend format
+      const formattedPosts = response.data.map(report => ({
+>>>>>>> 9def645b3f2547c06c6666b8af8938b41243d563
         id: report.id,
         author: report.content?.author || report.user_name || 'Unknown User',
         time: new Date(report.created_at).toLocaleString(),
