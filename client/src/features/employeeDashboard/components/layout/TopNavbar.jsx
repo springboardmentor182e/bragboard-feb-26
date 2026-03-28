@@ -1,40 +1,58 @@
 import { Bell, ChevronDown, LogOut } from "lucide-react";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useAuth } from "../../../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+
 const TopNavbar = () => {
   const { user, logout } = useAuth();
-  const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
 
+  const [open, setOpen] = useState(false);
+  const dropdownRef = useRef();
+
+  // 🔤 initials
   const initials = user?.name
     ?.split(" ")
     .map((n) => n[0])
     .join("")
     .toUpperCase();
 
+  // 🚪 logout handler
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
+  // 👇 close on outside click
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (!dropdownRef.current?.contains(e.target)) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () =>
+      document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   return (
-    <div className="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between">
+    <div className="h-16 bg-white border-b border-slate-200 px-6 flex items-center">
 
-      {/* LEFT */}
-      <div>
-        <h1 className="text-lg font-semibold text-slate-800">
-          Dashboard
-        </h1>
-      </div>
+      {/* RIGHT SIDE ONLY (pushed using ml-auto) */}
+      <div className="flex items-center gap-4 ml-auto">
 
-      {/* RIGHT */}
-      <div className="flex items-center gap-4">
-
-        {/* NOTIFICATION */}
-        <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center cursor-pointer">
+        {/* 🔔 NOTIFICATION */}
+        <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center cursor-pointer hover:bg-slate-200 transition">
           <Bell size={18} />
         </div>
 
-        {/* PROFILE */}
-        <div className="relative">
+        {/* 👤 PROFILE */}
+        <div className="relative" ref={dropdownRef}>
 
           <div
             onClick={() => setOpen(!open)}
-            className="flex items-center gap-3 cursor-pointer"
+            className="flex items-center gap-3 cursor-pointer hover:bg-slate-50 px-2 py-1 rounded-lg transition"
           >
 
             {/* AVATAR */}
@@ -52,16 +70,27 @@ const TopNavbar = () => {
               </p>
             </div>
 
-            <ChevronDown size={16} />
+            <ChevronDown size={16} className="text-slate-500" />
           </div>
 
-          {/* DROPDOWN */}
+          {/* 🔽 DROPDOWN */}
           {open && (
-            <div className="absolute right-0 mt-2 w-44 bg-white border border-slate-200 rounded-xl shadow-lg p-2">
+            <div className="absolute right-0 mt-2 w-52 bg-white border border-slate-200 rounded-xl shadow-lg overflow-hidden z-50">
 
+              {/* USER INFO */}
+              <div className="px-4 py-3 border-b">
+                <p className="text-sm font-semibold text-slate-900">
+                  {user?.name}
+                </p>
+                <p className="text-xs text-slate-500">
+                  {user?.email}
+                </p>
+              </div>
+
+              {/* ACTIONS */}
               <button
-                onClick={logout}
-                className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-red-600 hover:bg-red-50"
+                onClick={handleLogout}
+                className="w-full flex items-center gap-2 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition"
               >
                 <LogOut size={16} />
                 Logout
