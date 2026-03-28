@@ -2,7 +2,7 @@ import api from './api.js';
 
 export const signupUser = async (email, password) => {
   try {
-    const response = await api.post('/auth/signup', {
+    const response = await api.post('/api/v1/auth/signup', {
       email,
       password,
       role: "employee"  // Hardcoded
