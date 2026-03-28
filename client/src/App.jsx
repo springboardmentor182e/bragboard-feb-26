@@ -15,12 +15,16 @@ import MyShoutouts from "./features/employeeDashboard/pages/MyShoutouts";
 import Leaderboard from "./features/employeeDashboard/pages/Leaderboard";
 import Team from "./features/employeeDashboard/pages/Team";
 import AllRecognitions from "./features/employeeDashboard/pages/RecognitionsPage";
+import Badges from "./features/employeeDashboard/pages/Badges";
+import Analytics from "./features/employeeDashboard/pages/Analytics";
 
 /* ADMIN */
 import AdminLayout from "./features/admin-dash/components/layout/AdminLayout";
 import AdminDashboard from "./features/admin-dash/pages/AdminDashboard";
 import AdminEmployees from "./features/admin-dash/pages/AdminEmployees";
 import AdminReports from "./features/admin-dash/pages/AdminReports";
+import AdminShoutouts from "./features/admin-dash/pages/AdminShoutouts";
+import AdminSettings from "./features/admin-dash/pages/AdminSettings";
 
 /*
 EMPLOYEE LAYOUT
@@ -49,15 +53,15 @@ function App() {
     <BrowserRouter>
       <Routes>
 
-        {/* 🔓 PUBLIC */}
+        {/* 🔓 PUBLIC ROUTES */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 
-        {/* 🔐 EMPLOYEE */}
+        {/* 🔐 EMPLOYEE ROUTES */}
         <Route
           path="/"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute role="employee">
               <EmployeeLayout>
                 <EmployeeDashboard />
               </EmployeeLayout>
@@ -68,7 +72,7 @@ function App() {
         <Route
           path="/my-shoutouts"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute role="employee">
               <EmployeeLayout>
                 <MyShoutouts />
               </EmployeeLayout>
@@ -79,7 +83,7 @@ function App() {
         <Route
           path="/leaderboard"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute role="employee">
               <EmployeeLayout>
                 <Leaderboard />
               </EmployeeLayout>
@@ -90,7 +94,7 @@ function App() {
         <Route
           path="/team"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute role="employee">
               <EmployeeLayout>
                 <Team />
               </EmployeeLayout>
@@ -101,7 +105,7 @@ function App() {
         <Route
           path="/recognitions"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute role="employee">
               <EmployeeLayout>
                 <AllRecognitions />
               </EmployeeLayout>
@@ -109,7 +113,30 @@ function App() {
           }
         />
 
-        {/* 🔐 ADMIN */}
+        {/* ✅ EMPLOYEE PLACEHOLDERS */}
+        <Route
+          path="/badges"
+          element={
+            <ProtectedRoute role="employee">
+              <EmployeeLayout>
+                <Badges />
+              </EmployeeLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/analytics"
+          element={
+            <ProtectedRoute role="employee">
+              <EmployeeLayout>
+                <Analytics />
+              </EmployeeLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* 🔐 ADMIN ROUTES */}
         <Route
           path="/admin/dashboard"
           element={
@@ -143,7 +170,30 @@ function App() {
           }
         />
 
-        {/* FALLBACK */}
+        {/* 🆕 ADMIN PLACEHOLDERS */}
+        <Route
+          path="/admin/shoutouts"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminLayout>
+                <AdminShoutouts />
+              </AdminLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/settings"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminLayout>
+                <AdminSettings />
+              </AdminLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* 🚫 FALLBACK */}
         <Route path="*" element={<Navigate to="/" />} />
 
       </Routes>
