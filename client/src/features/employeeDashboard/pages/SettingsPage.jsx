@@ -1,5 +1,4 @@
 import { useState } from "react";
-import DashboardLayout from "../components/layout/DashboardLayout";
 import useEmployees from "../hooks/useEmployees";
 import useDarkMode from "../hooks/useDarkMode";
 
@@ -18,11 +17,7 @@ const SettingsPage = () => {
   };
 
   return (
-    <DashboardLayout
-      selectedEmployee={selectedEmployee}
-      dark={dark}
-      onToggleDark={toggleDark}
-    >
+    <>
       {/* Page Header */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
@@ -148,7 +143,7 @@ const SettingsPage = () => {
         </div>
 
       </div>
-    </DashboardLayout>
+    </>
   );
 };
 
