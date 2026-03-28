@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, DateTime
 from src.database.core import Base
 
 
@@ -18,3 +18,8 @@ class User(Base):
     role = Column(String)
 
     status = Column(String)
+
+    # 🔐 PASSWORD RESET FIELDS
+    password_reset_otp = Column(String, nullable=True)
+
+    password_reset_expires = Column(DateTime, nullable=True)
