@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { loginUser, signupUser, getMe } from "../services/authService";
+import { loginUser, getMe } from "../services/authService";
 
 const AuthContext = createContext();
 
@@ -7,7 +7,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // 🔁 Auto login on refresh
+  // 🔁 LOAD USER ON REFRESH
   useEffect(() => {
     const init = async () => {
       const token = localStorage.getItem("token");
@@ -30,24 +30,15 @@ export const AuthProvider = ({ children }) => {
     init();
   }, []);
 
-  // 🔐 LOGIN
-  const login = async (formData) => {
-    const res = await loginUser(formData);
+  // 🔐 LOGIN FUNCTION
+  const login = async (form) => {
+    const res = await loginUser(form);
 
-    localStorage.setItem("token", res.access_token);
+    const token = res.access_token; // ✅ FIXED
 
-    const userData = await getMe(res.access_token);
+    localStorage.setItem("token", token);
 
-    setUser(userData);
-  };
-
-  // 🆕 SIGNUP
-  const signup = async (formData) => {
-    const res = await signupUser(formData);
-
-    localStorage.setItem("token", res.access_token);
-
-    const userData = await getMe(res.access_token);
+    const userData = await getMe(token);
 
     setUser(userData);
   };
@@ -59,15 +50,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        login,
-        signup,
-        logout,
-        loading,
-      }}
-    >
+    <AuthContext.Provider value={{ user, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

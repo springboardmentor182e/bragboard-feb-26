@@ -5,15 +5,19 @@ import {
   Award,
   BarChart3,
   Heart,
+  ShieldCheck,
+  FileText,
 } from "lucide-react";
 
 import { useNavigate, useLocation } from "react-router-dom";
-
+import { useAuth } from "../../../../context/AuthContext";
 const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
 
-  const menu = [
+  // 👤 EMPLOYEE MENU
+  const employeeMenu = [
     { label: "Dashboard", icon: <LayoutDashboard size={18} />, path: "/" },
     { label: "My Shout-Outs", icon: <Heart size={18} />, path: "/my-shoutouts" },
     { label: "Leaderboard", icon: <Trophy size={18} />, path: "/leaderboard" },
@@ -21,6 +25,16 @@ const Sidebar = () => {
     { label: "Badges", icon: <Award size={18} />, path: "/badges" },
     { label: "Analytics", icon: <BarChart3 size={18} />, path: "/analytics" },
   ];
+
+  // 👑 ADMIN MENU
+  const adminMenu = [
+    { label: "Admin Dashboard", icon: <ShieldCheck size={18} />, path: "/admin/dashboard" },
+    { label: "Employees", icon: <Users size={18} />, path: "/admin/employees" },
+    { label: "Reports", icon: <FileText size={18} />, path: "/admin/reports" },
+  ];
+
+  // 🔥 ROLE SWITCH
+  const menu = user?.role === "admin" ? adminMenu : employeeMenu;
 
   return (
     <div className="w-64 h-screen bg-gradient-to-b from-slate-900 via-slate-900 to-slate-800 text-white flex flex-col border-r border-white/5">
@@ -35,8 +49,13 @@ const Sidebar = () => {
         </span>
       </div>
 
+      {/* ROLE LABEL (NEW 🔥) */}
+      <div className="px-6 pt-4 text-xs uppercase text-white/40 tracking-wider">
+        {user?.role === "admin" ? "Admin Panel" : "Employee Panel"}
+      </div>
+
       {/* NAV */}
-      <nav className="flex-1 px-3 py-6 space-y-2">
+      <nav className="flex-1 px-3 py-4 space-y-2">
 
         {menu.map((item, index) => (
           <SidebarItem
@@ -50,20 +69,9 @@ const Sidebar = () => {
 
       </nav>
 
-      {/* ADMIN BUTTON */}
-      <div className="p-4">
-        <button
-          onClick={() => navigate("/admin/employees")}
-          className="
-            w-full flex items-center justify-center gap-2
-            bg-white/10 hover:bg-white/20
-            text-sm py-2.5 rounded-xl
-            transition-all duration-200
-            hover:scale-[1.02]
-          "
-        >
-          Admin View
-        </button>
+      {/* USER INFO FOOTER (NEW 🔥) */}
+      <div className="p-4 border-t border-white/10 text-xs text-white/50">
+        Logged in as <span className="text-white">{user?.name || "User"}</span>
       </div>
 
     </div>
