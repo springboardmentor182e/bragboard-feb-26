@@ -23,3 +23,24 @@ export const getMe = async (token) => {
   });
   return res.data; // ✅ returns user directly
 };
+
+/* 🔐 PASSWORD RESET */
+
+export const forgotPassword = async (email) => {
+  const res = await axios.post(`${API}/auth/forgot-password`, { email });
+  return res.data; // ✅ returns { message, otp_expires }
+};
+
+export const verifyOTP = async (email, otp) => {
+  const res = await axios.post(`${API}/auth/verify-otp`, { email, otp });
+  return res.data; // ✅ returns { message }
+};
+
+export const resetPassword = async (email, otp, newPassword) => {
+  const res = await axios.post(`${API}/auth/reset-password`, {
+    email,
+    otp,
+    new_password: newPassword,
+  });
+  return res.data; // ✅ returns { message }
+};

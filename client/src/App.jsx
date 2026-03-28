@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import ForgotPassword from "./pages/ForgotPassword";
 
 /* EMPLOYEE LAYOUT */
 import Sidebar from "./features/employeeDashboard/components/layout/Sidebar";
@@ -56,6 +57,7 @@ function App() {
         {/* 🔓 PUBLIC ROUTES */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
 
         {/* 🔐 EMPLOYEE ROUTES */}
         <Route
