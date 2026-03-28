@@ -39,22 +39,28 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="space-y-6">
-
-      <h1 className="text-2xl font-bold">Admin Dashboard</h1>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-        <StatCard title="Shout-Outs" value={stats.total_shoutouts} />
-        <StatCard title="Reactions" value={stats.total_reactions} />
-        <StatCard title="Users" value={stats.active_users} />
-        <StatCard title="Reports" value={stats.reports} />
+    <div className="space-y-8 pb-8">
+      {/* Header */}
+      <div className="pt-2">
+        <h1 className="text-4xl font-bold text-gray-900 tracking-tight">Admin Dashboard</h1>
+        <p className="text-lg text-gray-600 mt-2">Platform oversight and moderation controls</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+      {/* Stats Cards Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <StatCard title="Shout-Outs" value={stats.total_shoutouts} icon="chart" />
+        <StatCard title="Reactions" value={stats.total_reactions} icon="heart" />
+        <StatCard title="Users" value={stats.active_users} icon="users" />
+        <StatCard title="Reports" value={stats.reports} icon="alerts" />
+      </div>
+
+      {/* Charts Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <TopContributorsChart />
         <DepartmentPiechart />
       </div>
 
+      {/* Reported Posts Section */}
       <ReportedPosts />
     </div>
   );
