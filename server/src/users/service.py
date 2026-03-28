@@ -32,7 +32,7 @@ def update_user_status(db: Session, user_id: int):
     if not user:
         return None
 
-    user.status = "Suspended" if user.status == "Active" else "Active"
+    setattr(user, 'status', "Suspended" if getattr(user, 'status') == "Active" else "Active")
 
     db.commit()
     db.refresh(user)
@@ -46,7 +46,7 @@ def update_user_role(db: Session, user_id: int, role: str):
     if not user:
         return None
 
-    user.role = role
+    setattr(user, 'role', role)
 
     db.commit()
     db.refresh(user)

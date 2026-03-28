@@ -46,11 +46,11 @@ def update_report_status(db: Session, report_id: int, status: str):
     if not report:
         return None
 
-    report.status = status
+    setattr(report, 'status', status)
 
     # ✅ NEW LOGIC to set resolved_at when status is updated to RESOLVED
     if status == "RESOLVED":
-        report.resolved_at = datetime.utcnow()
+        setattr(report, 'resolved_at', datetime.utcnow())
 
     db.commit()
     db.refresh(report)

@@ -1,5 +1,6 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 from src.database.core import get_db
 from .jwt import decode_token

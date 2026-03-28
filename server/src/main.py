@@ -14,13 +14,13 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Create tables
-Base.metadata.create_all(bind=engine)
+# Create tables (commented to avoid duplicate table error - use alembic upgrade head)
+# Base.metadata.create_all(bind=engine)
 
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "*"],
+    allow_origins=os.getenv('CLIENT_ORIGINS', 'http://localhost:5173').split(','),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -41,8 +41,3 @@ def read_root():
 @app.get("/health")
 def health_check():
     return {"status": "healthy"}
-
-# if __name__ == "__main__":
-#     import uvicorn
-#     uvicorn.run("src.main:app", host="0.0.0.0", port=8000, reload=True)
-

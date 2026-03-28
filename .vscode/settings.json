@@ -5,7 +5,8 @@
     "python.analysis.importAutoCompletion": true,
     "python.analysis.extraPaths": [
         "C:/Python314/Lib/site-packages",
-        "C:/Python314"
+        "C:/Python314",
+        "c:/Users/PIOUS AP/Desktop/bragboard-feb-26/server/src"
     ],
     "python.defaultInterpreterPath": "C:/Python314/python.exe",
     "files.associations": {
@@ -18,4 +19,3 @@
     "python.analysis.useLibraryCodeForTypes": true,
     "python-envs.defaultEnvManager": "ms-python.python:system"
 }
-

@@ -15,7 +15,7 @@ Session = sessionmaker(bind=engine)
 
 def seed_admin():
     # Create tables if not exist
-    Base.metadata.create_all(bind=engine)
+    # Base.metadata.create_all(bind=engine) # DB already created
     
     with Session() as db:
         # Check if admin exists
