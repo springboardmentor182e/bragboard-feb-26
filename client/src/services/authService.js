@@ -5,7 +5,7 @@ const API = import.meta.env.VITE_API_URL || "http://localhost:8000";
 /* LOGIN */
 export const loginUser = async (data) => {
   const res = await axios.post(`${API}/auth/login`, data);
-  return res.data; // ✅ already returning data
+  return res.data; // ✅ returns { access_token }
 };
 
 /* SIGNUP */
@@ -21,5 +21,5 @@ export const getMe = async (token) => {
       Authorization: `Bearer ${token}`,
     },
   });
-  return res.data;
+  return res.data; // ✅ returns user directly
 };

@@ -9,7 +9,7 @@ import {
 import {
   deleteReport,
   updateReportStatus,
-} from "../../services/reportService";
+} from "../../../services/reportService";
 
 const ReviewReportModal = ({ report, onClose, refreshReports }) => {
   if (!report) return null;
