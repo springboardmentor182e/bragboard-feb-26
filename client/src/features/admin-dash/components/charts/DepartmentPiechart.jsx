@@ -50,25 +50,27 @@ const options = {
 };
 
   return (
-    <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-md transition-all">
-      <h2 className="text-xl font-bold text-gray-900 mb-1">Department Engagement</h2>
-      <p className="text-sm text-gray-600 mb-8">Shout-outs by department</p>
+    <div className="bg-gradient-to-br from-white to-slate-50 rounded-2xl p-8 shadow-sm border-2 border-gray-100 hover:shadow-xl hover:border-gray-200 transition-all duration-300">
+      <div className="mb-8 pb-6 border-b-2 border-gray-100">
+        <h2 className="text-2xl font-black text-gray-950 mb-1">Department Engagement</h2>
+        <p className="text-sm text-gray-600 font-medium">Shout-outs by department</p>
+      </div>
       
-      <div className="flex items-center justify-center gap-8">
-        <div className="w-40 h-40 flex-shrink-0">
+      <div className="flex items-center justify-center gap-12">
+        <div className="w-48 h-48 flex-shrink-0">
           <Pie data={chartData} options={options} />
         </div>
-        <div className="flex-1 grid grid-cols-2 gap-y-3 gap-x-6 text-sm">
+        <div className="flex-1 grid grid-cols-2 gap-y-4 gap-x-8 text-sm">
           {departments.map((dept, i) => (
-            <div key={i} className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition-colors">
+            <div key={i} className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 transition-colors duration-200">
               <div 
-                className="w-3 h-3 rounded-full flex-shrink-0 shadow-sm" 
+                className="w-4 h-4 rounded-full flex-shrink-0 shadow-md" 
                 style={{ backgroundColor: dept.color }}
               ></div>
               <div className="flex-1">
-                <p className="text-gray-700 font-medium">{dept.name}</p>
+                <p className="text-gray-800 font-semibold">{dept.name}</p>
               </div>
-              <p className="text-gray-600 font-semibold">{dept.value}%</p>
+              <p className="text-gray-700 font-bold">{dept.value}%</p>
             </div>
           ))}
         </div>
