@@ -8,6 +8,12 @@ from src.users.controller import router as user_router
 from src.achievements import router as achievement_router
 from src.leaderboard.router import router as leaderboard_router
 
+# DATABASE
+from src.database import Base, engine
+
+# Auto-create all tables on startup
+Base.metadata.create_all(bind=engine)
+
 app = FastAPI(title="BragBoard API")
 
 # CORS
@@ -15,7 +21,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
-        "https://bragboard-leaderboard.onrender.com",  # ✅ update this after frontend is deployed
+        "https://bragboard-leaderboard.onrender.com",
     ],
     allow_credentials=True,
     allow_methods=["*"],
