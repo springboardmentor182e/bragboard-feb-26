@@ -1,5 +1,5 @@
 import { AlertTriangle, Eye, CheckCircle, Clock } from "lucide-react";
-import Card from "../../components/ui/Card";
+import Card from "../../../components/ui/Card";
 
 const ReportsStatsCards = ({ stats }) => {
   const statsData = [

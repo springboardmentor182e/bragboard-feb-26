@@ -1,15 +1,15 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-
-/* LAYOUT */
-import Sidebar from "./features/employeeDashboard/components/layout/Sidebar";
-import TopNavbar from "./features/employeeDashboard/components/layout/TopNavbar";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 /* AUTH */
 import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 
-/* EMPLOYEE */
+/* EMPLOYEE LAYOUT */
+import Sidebar from "./features/employeeDashboard/components/layout/Sidebar";
+import TopNavbar from "./features/employeeDashboard/components/layout/TopNavbar";
+
+/* EMPLOYEE PAGES */
 import EmployeeDashboard from "./features/employeeDashboard/pages/EmployeeDashboard";
 import MyShoutouts from "./features/employeeDashboard/pages/MyShoutouts";
 import Leaderboard from "./features/employeeDashboard/pages/Leaderboard";
@@ -17,17 +17,22 @@ import Team from "./features/employeeDashboard/pages/Team";
 import AllRecognitions from "./features/employeeDashboard/pages/RecognitionsPage";
 
 /* ADMIN */
-import AdminEmployees from "./pages/AdminEmployees";
-import AdminReports from "./pages/AdminReports";
+import AdminLayout from "./features/admin-dash/components/layout/AdminLayout";
 import AdminDashboard from "./features/admin-dash/pages/AdminDashboard";
+import AdminEmployees from "./features/admin-dash/pages/AdminEmployees";
+import AdminReports from "./features/admin-dash/pages/AdminReports";
 
-/* LAYOUT */
+/*
+EMPLOYEE LAYOUT
+*/
 function EmployeeLayout({ children }) {
   return (
     <div className="flex h-screen bg-gradient-to-br from-slate-50 to-slate-100">
       <Sidebar />
+
       <div className="flex-1 flex flex-col">
         <TopNavbar />
+
         <main className="flex-1 p-6 overflow-y-auto">
           {children}
         </main>
@@ -36,17 +41,19 @@ function EmployeeLayout({ children }) {
   );
 }
 
-/* APP */
+/*
+APP ROUTES
+*/
 function App() {
   return (
     <BrowserRouter>
       <Routes>
 
-        {/* PUBLIC */}
+        {/* 🔓 PUBLIC */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 
-        {/* EMPLOYEE */}
+        {/* 🔐 EMPLOYEE */}
         <Route
           path="/"
           element={
@@ -102,12 +109,14 @@ function App() {
           }
         />
 
-        {/* ADMIN 🔥 */}
+        {/* 🔐 ADMIN */}
         <Route
           path="/admin/dashboard"
           element={
             <ProtectedRoute role="admin">
-              <AdminDashboard />
+              <AdminLayout>
+                <AdminDashboard />
+              </AdminLayout>
             </ProtectedRoute>
           }
         />
@@ -116,7 +125,9 @@ function App() {
           path="/admin/employees"
           element={
             <ProtectedRoute role="admin">
-              <AdminEmployees />
+              <AdminLayout>
+                <AdminEmployees />
+              </AdminLayout>
             </ProtectedRoute>
           }
         />
@@ -125,10 +136,15 @@ function App() {
           path="/admin/reports"
           element={
             <ProtectedRoute role="admin">
-              <AdminReports />
+              <AdminLayout>
+                <AdminReports />
+              </AdminLayout>
             </ProtectedRoute>
           }
         />
+
+        {/* FALLBACK */}
+        <Route path="*" element={<Navigate to="/" />} />
 
       </Routes>
     </BrowserRouter>

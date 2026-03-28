@@ -21,8 +21,15 @@ const Login = () => {
     setError("");
 
     try {
-      await login(form); // ✅ clean flow
-      navigate("/");
+      const user = await login(form); // ✅ get user directly
+
+      // 🔥 ROLE BASED REDIRECT
+      if (user.role?.toLowerCase() === "admin") {
+        navigate("/admin/dashboard");
+      } else {
+        navigate("/");
+      }
+
     } catch (err) {
       console.log(err?.response?.data);
       setError(err?.response?.data?.detail || "Login failed");

@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { createEmployee } from "../../../services/employeeService";
+
+/* ✅ USE ALIAS */
+import { createEmployee } from "@/services/employeeService";
 
 function AddEmployeeModal({ setShowModal, reloadEmployees }) {
   const [formData, setFormData] = useState({
@@ -9,6 +11,9 @@ function AddEmployeeModal({ setShowModal, reloadEmployees }) {
     department: "",
     role: "Employee",
   });
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     setFormData({
@@ -20,42 +25,48 @@ function AddEmployeeModal({ setShowModal, reloadEmployees }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const newEmployee = {
-      id: Date.now(), // temporary id
-      name: formData.name,
-      email: formData.email,
-      department: formData.department,
-      role: formData.role,
-      status: "Active",
-    };
+    setLoading(true);
+    setError("");
 
     try {
-      await createEmployee(newEmployee);
+      /* ❗ REMOVE fake ID (backend will handle it) */
+      await createEmployee({
+        name: formData.name,
+        email: formData.email,
+        department: formData.department,
+        role: formData.role,
+      });
 
-      // reload table
       reloadEmployees();
-
-      // close modal
       setShowModal(false);
     } catch (error) {
       console.error("Error creating employee:", error);
+      setError("Failed to create employee");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         className="bg-white rounded-2xl p-8 w-[420px] shadow-xl"
       >
+        <h2 className="text-xl font-semibold mb-6">
+          Add New Employee
+        </h2>
 
-        <h2 className="text-xl font-semibold mb-6">Add New Employee</h2>
+        {/* ERROR */}
+        {error && (
+          <div className="mb-3 text-sm text-red-600 bg-red-50 p-2 rounded-lg">
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
 
-          {/* NAME */}
           <input
             type="text"
             name="name"
@@ -65,7 +76,6 @@ function AddEmployeeModal({ setShowModal, reloadEmployees }) {
             className="w-full border border-slate-200 rounded-lg px-4 py-2"
           />
 
-          {/* EMAIL */}
           <input
             type="email"
             name="email"
@@ -75,7 +85,6 @@ function AddEmployeeModal({ setShowModal, reloadEmployees }) {
             className="w-full border border-slate-200 rounded-lg px-4 py-2"
           />
 
-          {/* DEPARTMENT */}
           <input
             type="text"
             name="department"
@@ -85,7 +94,6 @@ function AddEmployeeModal({ setShowModal, reloadEmployees }) {
             className="w-full border border-slate-200 rounded-lg px-4 py-2"
           />
 
-          {/* ROLE */}
           <select
             name="role"
             value={formData.role}
@@ -97,7 +105,6 @@ function AddEmployeeModal({ setShowModal, reloadEmployees }) {
             <option value="Admin">Admin</option>
           </select>
 
-          {/* BUTTONS */}
           <div className="flex justify-end gap-3 pt-4">
 
             <button
@@ -110,14 +117,14 @@ function AddEmployeeModal({ setShowModal, reloadEmployees }) {
 
             <button
               type="submit"
-              className="px-4 py-2 rounded-lg bg-indigo-600 text-white"
+              disabled={loading}
+              className="px-4 py-2 rounded-lg bg-indigo-600 text-white disabled:opacity-50"
             >
-              Add Employee
+              {loading ? "Adding..." : "Add Employee"}
             </button>
 
           </div>
         </form>
-
       </motion.div>
     </div>
   );
