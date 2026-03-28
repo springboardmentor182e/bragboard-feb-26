@@ -99,19 +99,19 @@ const ReportedPosts = () => {
 
   if (loading) {
     return (
-      <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-        <p className="text-gray-500 text-center">Loading reports...</p>
+      <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
+        <p className="text-gray-500 text-center py-12">Loading reports...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-        <p className="text-red-500 text-center">{error}</p>
+      <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
+        <p className="text-red-500 text-center py-12">{error}</p>
         <button 
           onClick={fetchReports}
-          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 mx-auto block"
+          className="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors mx-auto block font-medium"
         >
           Retry
         </button>
@@ -122,29 +122,30 @@ const ReportedPosts = () => {
   const pendingPosts = posts.filter(p => p.status !== 'resolved');
 
   return (
-    <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+    <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-md transition-all">
       {/* Success message */}
       {message && (
-        <div className="mb-4 p-2 bg-green-100 text-green-800 rounded text-sm">
+        <div className="mb-6 p-4 bg-emerald-50 text-emerald-700 rounded-xl text-sm font-medium border border-emerald-200 flex items-center gap-2">
+          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+          </svg>
           {message}
         </div>
       )}
       
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-gray-900">Reported Posts</h2>
-        <div className="flex items-center gap-2">
-          <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-            Total: {posts.length}
-          </span>
-          <span className="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-            Pending: {pendingPosts.length}
-          </span>
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900">Reported Posts</h2>
+          <p className="text-sm text-gray-600 mt-1">{pendingPosts.length} pending moderation</p>
         </div>
-      </div>
-      
-      {/* Connection status indicator */}
-      <div className="mb-3 text-xs">
-        <span className="text-green-600">✅ Live data from database</span>
+        <div className="flex items-center gap-3">
+          <div className="px-4 py-2 bg-indigo-50 text-indigo-700 text-sm font-semibold rounded-lg border border-indigo-100">
+            Total: {posts.length}
+          </div>
+          <div className="px-4 py-2 bg-rose-50 text-rose-700 text-sm font-semibold rounded-lg border border-rose-100">
+            Pending: {pendingPosts.length}
+          </div>
+        </div>
       </div>
       
       <div className="space-y-4">
