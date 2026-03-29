@@ -1,21 +1,39 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
-import Sidebar from "./features/employeeDashboard/components/Sidebar";
-import TopNavbar from "./features/employeeDashboard/components/TopNavbar";
-import SummaryCards from "./features/employeeDashboard/components/SummaryCards";
-import AchievementTable from "./features/employeeDashboard/components/AchievementTable";
-import Leaderboard from "./features/employeeDashboard/components/Leaderboard";
-import AdminDashboard from "./features/admin-dash/pages/AdminDashboard.jsx";
+/* AUTH */
+import ProtectedRoute from "./components/ProtectedRoute";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import ForgotPassword from "./pages/ForgotPassword";
 
-import AdminEmployees from "./pages/AdminEmployees";
-import AdminReports from "./pages/AdminReports";
-import AdminDashboard from "./features/Adminshoutout/AdminDashboard";
-import AdminSidebar from "./layout/AdminSidebar.jsx";
-import AdminTopbar from "./layout/AdminTopbar.jsx";
+/* EMPLOYEE LAYOUT */
+import Sidebar from "./features/employeeDashboard/components/layout/Sidebar";
+import TopNavbar from "./features/employeeDashboard/components/layout/TopNavbar";
 
+/* EMPLOYEE PAGES */
+import EmployeeDashboard from "./features/employeeDashboard/pages/EmployeeDashboard";
+import MyShoutouts from "./features/employeeDashboard/pages/MyShoutouts";
+import Leaderboard from "./features/employeeDashboard/pages/Leaderboard";
+import Team from "./features/employeeDashboard/pages/Team";
+import AllRecognitions from "./features/employeeDashboard/pages/RecognitionsPage";
+import Badges from "./features/employeeDashboard/pages/Badges";
+import Analytics from "./features/employeeDashboard/pages/Analytics";
+import EmployeeSettings from "./features/employeeDashboard/pages/EmployeeSettings";
+
+/* ADMIN */
+import AdminLayout from "./features/admin-dash/components/layout/AdminLayout";
+import AdminDashboard from "./features/admin-dash/pages/AdminDashboard";
+import AdminEmployees from "./features/admin-dash/pages/AdminEmployees";
+import AdminReports from "./features/admin-dash/pages/AdminReports";
+import AdminShoutouts from "./features/admin-dash/pages/AdminShoutouts";
+import AdminSettings from "./features/admin-dash/pages/AdminSettings";
+
+/*
+EMPLOYEE LAYOUT
+*/
 function EmployeeLayout({ children }) {
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-gradient-to-br from-slate-50 to-slate-100">
       <Sidebar />
 
       <div className="flex-1 flex flex-col">
@@ -29,70 +47,168 @@ function EmployeeLayout({ children }) {
   );
 }
 
-function EmployeeDashboard() {
-  return (
-    <>
-      <SummaryCards />
-      <AchievementTable />
-      <Leaderboard />
-    </>
-  );
-}
-function AdminLayout({ children }) {
-  return (
-    <div className="bg-[#EEF2F7] min-h-screen">
-      <div className="fixed top-0 left-0 h-full w-72 z-50">
-        <AdminSidebar />
-      </div>
-      <div className="ml-72 min-h-screen">
-        <AdminTopbar />
-        <main className="p-6">
-          {children}
-        </main>
-      </div>
-    </div>
-  );
-}
+/*
+APP ROUTES
+*/
 function App() {
   return (
     <BrowserRouter>
       <Routes>
 
-        {/* Employee Dashboard */}
+        {/* 🔓 PUBLIC ROUTES */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+
+        {/* 🔐 EMPLOYEE ROUTES */}
         <Route
           path="/"
           element={
-            <EmployeeLayout>
-              <EmployeeDashboard />
-            </EmployeeLayout>
+            <ProtectedRoute role="employee">
+              <EmployeeLayout>
+                <EmployeeDashboard />
+              </EmployeeLayout>
+            </ProtectedRoute>
           }
         />
-{/* Admin Routes - Flat */}
-          <Route path="/admin" element={
-            <AdminLayout>
-              <AdminDashboard />
-            </AdminLayout>
-          } />
-        {/* Admin Employee Management */}
+
+        <Route
+          path="/my-shoutouts"
+          element={
+            <ProtectedRoute role="employee">
+              <EmployeeLayout>
+                <MyShoutouts />
+              </EmployeeLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/leaderboard"
+          element={
+            <ProtectedRoute role="employee">
+              <EmployeeLayout>
+                <Leaderboard />
+              </EmployeeLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/team"
+          element={
+            <ProtectedRoute role="employee">
+              <EmployeeLayout>
+                <Team />
+              </EmployeeLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/recognitions"
+          element={
+            <ProtectedRoute role="employee">
+              <EmployeeLayout>
+                <AllRecognitions />
+              </EmployeeLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* ✅ EMPLOYEE PLACEHOLDERS */}
+        <Route
+          path="/badges"
+          element={
+            <ProtectedRoute role="employee">
+              <EmployeeLayout>
+                <Badges />
+              </EmployeeLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/analytics"
+          element={
+            <ProtectedRoute role="employee">
+              <EmployeeLayout>
+                <Analytics />
+              </EmployeeLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute role="employee">
+              <EmployeeLayout>
+                <EmployeeSettings />
+              </EmployeeLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* 🔐 ADMIN ROUTES */}
+        <Route
+          path="/admin/dashboard"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminLayout>
+                <AdminDashboard />
+              </AdminLayout>
+            </ProtectedRoute>
+          }
+        />
+
         <Route
           path="/admin/employees"
-          element={<AdminEmployees />}
-        />
-
-        {/* Admin Reports */}
-        <Route
-          path="/admin/reports"
-          element={<AdminReports />}
-        />
-
-        <Route
-          path="/admin-dashboard"
           element={
-            <EmployeeLayout>
-              <AdminDashboard />
-            </EmployeeLayout>
+            <ProtectedRoute role="admin">
+              <AdminLayout>
+                <AdminEmployees />
+              </AdminLayout>
+            </ProtectedRoute>
           }
         />
+
+        <Route
+          path="/admin/reports"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminLayout>
+                <AdminReports />
+              </AdminLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* 🆕 ADMIN PLACEHOLDERS */}
+        <Route
+          path="/admin/shoutouts"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminLayout>
+                <AdminShoutouts />
+              </AdminLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/settings"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminLayout>
+                <AdminSettings />
+              </AdminLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* 🚫 FALLBACK */}
+        <Route path="*" element={<Navigate to="/" />} />
 
       </Routes>
     </BrowserRouter>

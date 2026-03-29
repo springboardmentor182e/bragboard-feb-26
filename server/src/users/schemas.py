@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, ConfigDict, EmailStr
 from datetime import datetime
 from typing import Literal, Optional
 
@@ -17,9 +17,7 @@ class UserCreate(UserBase):
 
 class UserResponse(UserBase):
     id: int
-
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 # src/users/schemas.py mein ye class add karo
 class ReportResponse(BaseModel):
     id: int
@@ -28,9 +26,7 @@ class ReportResponse(BaseModel):
     reason: str
     status: str
     created_at: datetime
-    
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ActivityLogResponse(BaseModel):
@@ -39,6 +35,4 @@ class ActivityLogResponse(BaseModel):
     action: str
     details: Optional[str] = None
     created_at: datetime
-    
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

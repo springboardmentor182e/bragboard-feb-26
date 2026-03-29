@@ -1,10 +1,10 @@
-import axios from 'axios';
-import React, { useState, useEffect } from 'react';
-import { adminAPI } from '../../../services/api';
-import StatCard from '../components/StatCard';
-import TopContributorsChart from '../components/TopContributorsChart';
-import DepartmentPiechart from '../components/DepartmentPiechart';
-import ReportedPosts from '../components/ReportedPosts';
+import React, { useState, useEffect } from "react";
+import StatCard from "../components/StatCard";
+import TopContributorsChart from "../components/charts/TopContributorsChart";
+import DepartmentPiechart from "../components/charts/DepartmentPiechart";
+import ReportedPosts from "../components/ReportedPosts";
+import { adminAPI } from "../../../services/api";
+import { mockDashboardStats } from "../mockData";
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState({
@@ -12,12 +12,9 @@ const AdminDashboard = () => {
     total_reactions: 0,
     active_users: 0,
     reports: 0,
-    // Add trend data if needed
-    shoutout_trend: '+0%',
-    reaction_trend: '+0%'
+    shoutout_trend: "+0%",
+    reaction_trend: "+0%",
   });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchDashboardData();
@@ -25,86 +22,66 @@ const AdminDashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
-      setLoading(true);
-      // Fetch dashboard stats from backend
-      const data = await adminAPI.getDashboardStats();
-      
-      // Calculate trends (you can implement this logic based on your backend)
-      // For now, we'll set them dynamically or fetch from backend if available
+      const res = await adminAPI.getDashboardStats();
+      const data = res.data;
+
       setStats({
-        total_shoutouts: data.total_posts || data.total_shoutouts || 0,
+        total_shoutouts: data.total_posts || 0,
         total_reactions: data.total_reactions || 0,
-        active_users: data.active_users_today || data.active_users || 0,
+        active_users: data.active_users || 0,
         reports: data.total_reports || 0,
-        // You can calculate trends based on previous period data
-        // or fetch from backend if available
-        shoutout_trend: data.shoutout_trend || '+0%',
-        reaction_trend: data.reaction_trend || '+0%'
+        shoutout_trend: "+0%",
+        reaction_trend: "+0%",
       });
-      
-      setError(null);
-    } catch (err) {
-      console.error('Error fetching dashboard data:', err);
-      setError('Failed to load dashboard data');
-    } finally {
-      setLoading(false);
+    } catch {
+      setStats(mockDashboardStats);
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="text-gray-500">Loading dashboard...</div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-        {error}
-      </div>
-    );
-  }
-
   return (
-    <>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-        <p className="text-sm text-gray-500">Platform oversight and moderation controls</p>
+    <div className="space-y-10 pb-12">
+      {/* Premium Header Section */}
+      <div className="pt-4 pb-8 border-b border-gray-200">
+        <div className="flex items-end justify-between mb-4">
+          <div>
+            <p className="text-sm font-semibold text-indigo-600 uppercase tracking-widest mb-2">Platform</p>
+            <h1 className="text-5xl font-black text-gray-950 tracking-tight">Admin Dashboard</h1>
+          </div>
+          <div className="hidden md:block px-4 py-2 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl border border-indigo-100">
+            <p className="text-xs font-semibold text-indigo-700">LIVE</p>
+          </div>
+        </div>
+        <p className="text-base text-gray-600 leading-relaxed max-w-2xl mt-3">
+          Comprehensive platform oversight with real-time analytics and moderation controls
+        </p>
       </div>
-      
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
-        <StatCard 
-          title="Total Shout-Outs" 
-          value={stats.total_shoutouts.toLocaleString()} 
-          trend={stats.shoutout_trend}
-        />
-        <StatCard 
-          title="Total Reactions" 
-          value={stats.total_reactions.toLocaleString()} 
-          trend={stats.reaction_trend}
-        />
-        <StatCard 
-          title="Active Users" 
-          value={stats.active_users.toLocaleString()} 
-        />
-        <StatCard 
-          title="Reports" 
-          value={stats.reports.toLocaleString()} 
-        />
+
+      {/* Key Metrics Section */}
+      <div>
+        <h2 className="text-sm font-bold text-gray-600 uppercase tracking-widest mb-6">Performance Metrics</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <StatCard title="Shout-Outs" value={stats.total_shoutouts} icon="chart" />
+          <StatCard title="Reactions" value={stats.total_reactions} icon="heart" />
+          <StatCard title="Users" value={stats.active_users} icon="users" />
+          <StatCard title="Reports" value={stats.reports} icon="alerts" />
+        </div>
       </div>
-      
-      {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6">
-        <TopContributorsChart />
-        <DepartmentPiechart />
+
+      {/* Analytics Section */}
+      <div className="pt-4">
+        <h2 className="text-sm font-bold text-gray-600 uppercase tracking-widest mb-6">Engagement Analytics</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <TopContributorsChart />
+          <DepartmentPiechart />
+        </div>
       </div>
-      
-      {/* Reported Posts */}
-      <ReportedPosts />
-    </>
+
+      {/* Moderation Section */}
+      <div className="pt-4">
+        <h2 className="text-sm font-bold text-gray-600 uppercase tracking-widest mb-6">Moderation Queue</h2>
+        <ReportedPosts />
+      </div>
+    </div>
   );
 };
 
