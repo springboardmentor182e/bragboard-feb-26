@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, DateTime
 from datetime import datetime
-from src.database.core import Base
+from ..database.core import Base
 
 
 class Report(Base):

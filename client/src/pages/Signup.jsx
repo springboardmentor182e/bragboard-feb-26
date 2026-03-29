@@ -20,14 +20,24 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (loading) return;
+
     setLoading(true);
     setError("");
 
     try {
-      await signup(form);
-      navigate("/");
+      const user = await signup(form); // ✅ get user
+
+      // 🔥 ROLE BASED REDIRECT
+      if (user.role?.toLowerCase() === "admin") {
+        navigate("/admin/dashboard");
+      } else {
+        navigate("/");
+      }
+
     } catch (err) {
-      setError("Signup failed. Try again.");
+      console.log(err?.response?.data);
+      setError(err?.response?.data?.detail || "Signup failed");
     } finally {
       setLoading(false);
     }
@@ -54,7 +64,7 @@ const Signup = () => {
       {/* RIGHT */}
       <div className="flex-1 flex items-center justify-center bg-slate-50 p-6">
 
-        <div className="w-full max-w-md bg-white/80 backdrop-blur-xl border border-white/20 rounded-2xl p-8 shadow-xl">
+        <div className="w-full max-w-md bg-white rounded-2xl p-8 shadow-xl">
 
           {/* HEADER */}
           <div className="text-center mb-6">
@@ -76,6 +86,7 @@ const Signup = () => {
           {/* FORM */}
           <form onSubmit={handleSubmit} className="space-y-4">
 
+            {/* NAME */}
             <input
               type="text"
               required
@@ -87,6 +98,7 @@ const Signup = () => {
               className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-indigo-500"
             />
 
+            {/* EMAIL */}
             <input
               type="email"
               required
@@ -98,6 +110,7 @@ const Signup = () => {
               className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-indigo-500"
             />
 
+            {/* PASSWORD */}
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
@@ -118,6 +131,7 @@ const Signup = () => {
               </div>
             </div>
 
+            {/* BUTTON */}
             <button
               type="submit"
               disabled={loading}
@@ -128,6 +142,7 @@ const Signup = () => {
 
           </form>
 
+          {/* FOOTER */}
           <p className="text-sm text-center text-slate-500 mt-5">
             Already have an account?{" "}
             <span

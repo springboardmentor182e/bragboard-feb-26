@@ -1,8 +1,8 @@
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text, JSON, Boolean
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
-from src.database.core import Base
-from src.entities.user import User 
+from ..database.core import Base
+from ..entities.user import User 
 class AdminReport(Base):
     __tablename__ = "admin_reports"
     
