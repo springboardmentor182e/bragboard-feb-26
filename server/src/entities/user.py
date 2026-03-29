@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, DateTime
-from src.database.core import Base
+from sqlalchemy.orm import relationship
+from ..database.core import Base
 
 
 class User(Base):
@@ -23,3 +24,6 @@ class User(Base):
     password_reset_otp = Column(String, nullable=True)
 
     password_reset_expires = Column(DateTime, nullable=True)
+
+    # 📊 RELATIONSHIPS
+    contributions = relationship("UserContribution", back_populates="user")

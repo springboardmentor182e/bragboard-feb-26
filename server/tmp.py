@@ -1,0 +1,1 @@
+paths=[\" "/api/admin/dashboard/stats\,\/admin/dashboard/stats\,\/api/admin/api/admin/dashboard/stats\,\/auth/users\]> ; echo for p in paths:> ; echo     try:> ; echo         r=requests.get(\http://127.0.0.1:8000\+p,timeout=5)> ; echo         print(p,r.status_code,r.text[:100])> ; echo     except Exception as e:> ; echo         print(p,\error\,e)> ; python tmp.py ; del tmp.py

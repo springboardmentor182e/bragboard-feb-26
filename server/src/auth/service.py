@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
-from src.entities.user import User
+from ..entities.user import User
 from .utils import verify_password, hash_password, create_access_token
-from src.services.email import email_service
+from ..services.email import email_service
 from datetime import datetime, timedelta
 import random
 import logging

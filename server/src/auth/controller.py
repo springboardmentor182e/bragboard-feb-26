@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Header
 from sqlalchemy.orm import Session
-from src.database.core import get_db
+from ..database.core import get_db
 from .models import (
     LoginRequest, TokenResponse, SignupRequest,
     ForgotPasswordRequest, VerifyOTPRequest, ResetPasswordRequest, OTPResponse
