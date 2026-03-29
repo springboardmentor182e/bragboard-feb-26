@@ -7,6 +7,7 @@ import {
   Heart,
   ShieldCheck,
   FileText,
+  Settings,
 } from "lucide-react";
 
 import { useNavigate, useLocation } from "react-router-dom";
@@ -24,6 +25,7 @@ const Sidebar = () => {
     { label: "Team", icon: <Users size={18} />, path: "/team" },
     { label: "Badges", icon: <Award size={18} />, path: "/badges" },
     { label: "Analytics", icon: <BarChart3 size={18} />, path: "/analytics" },
+    { label: "Settings", icon: <Settings size={18} />, path: "/settings" },
   ];
 
   // 👑 ADMIN MENU

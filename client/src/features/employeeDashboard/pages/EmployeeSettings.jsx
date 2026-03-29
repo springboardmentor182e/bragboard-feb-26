@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import { Bell, Lock, Palette, Globe, Mail, Smartphone, Shield, Clock } from "lucide-react";
 
-const AdminSettings = () => {
+const EmployeeSettings = () => {
   const [activeTab, setActiveTab] = useState("notifications");
   const [settings, setSettings] = useState({
     emailNotifications: true,
     pushNotifications: true,
+    shoutoutAlerts: true,
+    commentAlerts: true,
+    mentionAlerts: true,
     passwordLastChanged: "2024-01-15",
     twoFactorEnabled: false,
     theme: "dark",
@@ -45,7 +48,7 @@ const AdminSettings = () => {
       {/* Header */}
       <div className="pb-6 border-b-2 border-slate-100">
         <h1 className="text-3xl font-black text-slate-950">Settings</h1>
-        <p className="text-slate-600 text-sm mt-1 font-medium">Manage application settings and preferences</p>
+        <p className="text-slate-600 text-sm mt-1 font-medium">Manage your preferences and account settings</p>
       </div>
 
       {/* Layout: Sidebar + Content */}
@@ -72,7 +75,7 @@ const AdminSettings = () => {
                     <p className="text-sm">{tab.label}</p>
                     <p className={`text-xs ${isActive ? "text-indigo-600" : "text-slate-600"}`}>
                       {tab.id === "notifications" && "Configure notification preferences"}
-                      {tab.id === "security" && "Manage security settings"}
+                      {tab.id === "security" && "Manage your security"}
                       {tab.id === "appearance" && "Customize theme and display"}
                       {tab.id === "language" && "Set language and regional preferences"}
                     </p>
@@ -143,26 +146,41 @@ const AdminSettings = () => {
                 
                 <div className="flex items-center justify-between p-4 border-2 border-slate-200 rounded-lg">
                   <div>
-                    <p className="font-semibold text-slate-950">Employee Alerts</p>
-                    <p className="text-sm text-slate-600">Get notified on employee-related actions</p>
+                    <p className="font-semibold text-slate-950">Shout-out Alerts</p>
+                    <p className="text-sm text-slate-600">Get notified when someone mentions you in a shout-out</p>
                   </div>
-                  <input type="checkbox" defaultChecked className="w-5 h-5 accent-blue-500" />
+                  <input
+                    type="checkbox"
+                    checked={settings.shoutoutAlerts}
+                    onChange={() => handleToggle("shoutoutAlerts")}
+                    className="w-5 h-5 accent-blue-500"
+                  />
                 </div>
 
                 <div className="flex items-center justify-between p-4 border-2 border-slate-200 rounded-lg">
                   <div>
-                    <p className="font-semibold text-slate-950">Report Alerts</p>
-                    <p className="text-sm text-slate-600">Get notified when reports are submitted</p>
+                    <p className="font-semibold text-slate-950">Comment Alerts</p>
+                    <p className="text-sm text-slate-600">Get notified when someone comments on your shout-outs</p>
                   </div>
-                  <input type="checkbox" defaultChecked className="w-5 h-5 accent-blue-500" />
+                  <input
+                    type="checkbox"
+                    checked={settings.commentAlerts}
+                    onChange={() => handleToggle("commentAlerts")}
+                    className="w-5 h-5 accent-blue-500"
+                  />
                 </div>
 
                 <div className="flex items-center justify-between p-4 border-2 border-slate-200 rounded-lg">
                   <div>
-                    <p className="font-semibold text-slate-950">System Alerts</p>
-                    <p className="text-sm text-slate-600">Get notified of system updates and maintenance</p>
+                    <p className="font-semibold text-slate-950">Mention Alerts</p>
+                    <p className="text-sm text-slate-600">Get notified when someone @mentions you</p>
                   </div>
-                  <input type="checkbox" defaultChecked className="w-5 h-5 accent-blue-500" />
+                  <input
+                    type="checkbox"
+                    checked={settings.mentionAlerts}
+                    onChange={() => handleToggle("mentionAlerts")}
+                    className="w-5 h-5 accent-blue-500"
+                  />
                 </div>
               </div>
             </div>
@@ -223,7 +241,11 @@ const AdminSettings = () => {
                 <div className="space-y-3">
                   <label className="block">
                     <span className="font-semibold text-slate-700 mb-2 block">Session Timeout (minutes)</span>
-                    <select value={settings.sessionTimeout || "30"} onChange={(e) => handleSelectChange("sessionTimeout", e.target.value)} className="w-full border-2 border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <select
+                      value={settings.sessionTimeout || "30"}
+                      onChange={(e) => handleSelectChange("sessionTimeout", e.target.value)}
+                      className="w-full border-2 border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    >
                       <option>15 minutes</option>
                       <option>30 minutes</option>
                       <option>60 minutes</option>
@@ -343,8 +365,8 @@ const AdminSettings = () => {
               <div className="space-y-6">
                 {/* Language */}
                 <div>
-                  <label className="flex flex-col">
-                    <span className="font-bold text-slate-700 mb-3 flex items-center gap-2">
+                  <label className="block">
+                    <span className="font-bold text-slate-700 mb-2 flex items-center gap-2">
                       <Globe size={18} />
                       Interface Language
                     </span>
@@ -369,8 +391,8 @@ const AdminSettings = () => {
 
                   {/* Timezone */}
                   <div>
-                    <label className="flex flex-col">
-                      <span className="font-bold text-slate-700 mb-3 flex items-center gap-2">
+                    <label className="block">
+                      <span className="font-bold text-slate-700 mb-2 flex items-center gap-2">
                         <Clock size={18} />
                         Timezone
                       </span>
@@ -473,4 +495,4 @@ const AdminSettings = () => {
   );
 };
 
-export default AdminSettings;
+export default EmployeeSettings;

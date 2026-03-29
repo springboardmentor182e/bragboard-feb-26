@@ -18,6 +18,7 @@ import Team from "./features/employeeDashboard/pages/Team";
 import AllRecognitions from "./features/employeeDashboard/pages/RecognitionsPage";
 import Badges from "./features/employeeDashboard/pages/Badges";
 import Analytics from "./features/employeeDashboard/pages/Analytics";
+import EmployeeSettings from "./features/employeeDashboard/pages/EmployeeSettings";
 
 /* ADMIN */
 import AdminLayout from "./features/admin-dash/components/layout/AdminLayout";
@@ -133,6 +134,17 @@ function App() {
             <ProtectedRoute role="employee">
               <EmployeeLayout>
                 <Analytics />
+              </EmployeeLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute role="employee">
+              <EmployeeLayout>
+                <EmployeeSettings />
               </EmployeeLayout>
             </ProtectedRoute>
           }
