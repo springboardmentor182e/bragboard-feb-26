@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-import React, { useState, useEffect } from 'react';
-import StatCard from '../components/StatCard';
-import TopContributorsChart from "../components/charts/TopContributorsChart";import DepartmentPiechart from '../components/charts/DepartmentPiechart';
-import ReportedPosts from '../components/ReportedPosts';
-import { adminAPI } from '../../../services/api';
-import { mockDashboardStats } from '../mockData';
-import AdminLayout from '../components/layout/AdminLayout';
-=======
 import React, { useState, useEffect } from "react";
 import StatCard from "../components/StatCard";
 import TopContributorsChart from "../components/charts/TopContributorsChart";
@@ -15,7 +6,6 @@ import ReportedPosts from "../components/ReportedPosts";
 import { adminAPI } from "../../../services/api";
 import { mockDashboardStats } from "../mockData";
 
->>>>>>> bba1c762fb140dcc679f4701f3ede2e34ec0a542
 const AdminDashboard = () => {
   const [stats, setStats] = useState({
     total_shoutouts: 0,
@@ -25,10 +15,6 @@ const AdminDashboard = () => {
     shoutout_trend: "+0%",
     reaction_trend: "+0%",
   });
-<<<<<<< HEAD
-  const [loading, setLoading] = useState(true);
-=======
->>>>>>> bba1c762fb140dcc679f4701f3ede2e34ec0a542
 
   useEffect(() => {
     fetchDashboardData();
@@ -36,19 +22,9 @@ const AdminDashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
-<<<<<<< HEAD
-      setLoading(true);
-      // Fetch dashboard stats from backend
-      const response = await adminAPI.getDashboardStats();
-      const data = response.data;
-      
-      // Calculate trends (you can implement this logic based on your backend)
-      // For now, we'll set them dynamically or fetch from backend if available
-=======
       const res = await adminAPI.getDashboardStats();
       const data = res.data;
 
->>>>>>> bba1c762fb140dcc679f4701f3ede2e34ec0a542
       setStats({
         total_shoutouts: data.total_posts || 0,
         total_reactions: data.total_reactions || 0,
@@ -57,38 +33,6 @@ const AdminDashboard = () => {
         shoutout_trend: "+0%",
         reaction_trend: "+0%",
       });
-<<<<<<< HEAD
-    } catch (err) {
-      console.error('Error fetching dashboard data:', err);
-      console.log('Using mock data instead...');
-      // Use mock data when server is not available
-      setStats({
-        total_shoutouts: mockDashboardStats.total_shoutouts,
-        total_reactions: mockDashboardStats.total_reactions,
-        active_users: mockDashboardStats.active_users,
-        reports: mockDashboardStats.total_reports,
-        shoutout_trend: mockDashboardStats.shoutout_trend,
-        reaction_trend: mockDashboardStats.reaction_trend
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // if (loading) {
-  //   return (
-  //     <div className="flex justify-center items-center h-64">
-  //       <div className="text-gray-500">Loading dashboard...</div>
-  //     </div>
-  //   );
-  // }
-
-  return (
-    <AdminLayout>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-        <p className="text-sm text-gray-500">Platform oversight and moderation controls</p>
-=======
     } catch {
       setStats(mockDashboardStats);
     }
@@ -121,7 +65,6 @@ const AdminDashboard = () => {
           <StatCard title="Users" value={stats.active_users} icon="users" />
           <StatCard title="Reports" value={stats.reports} icon="alerts" />
         </div>
->>>>>>> bba1c762fb140dcc679f4701f3ede2e34ec0a542
       </div>
 
       {/* Analytics Section */}
@@ -138,14 +81,7 @@ const AdminDashboard = () => {
         <h2 className="text-sm font-bold text-gray-600 uppercase tracking-widest mb-6">Moderation Queue</h2>
         <ReportedPosts />
       </div>
-<<<<<<< HEAD
-      
-      {/* Reported Posts */}
-      <ReportedPosts />
-    </AdminLayout>
-=======
     </div>
->>>>>>> bba1c762fb140dcc679f4701f3ede2e34ec0a542
   );
 };
 

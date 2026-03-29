@@ -160,13 +160,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-        {/* SETTINGS */}
-        <Route
-          path="/admin/settings"
-          element={<Settings />}
-        />
-
-
+        
         <Route
           path="/admin/employees"
           element={
@@ -200,15 +194,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-        {/* ADMIN DASHBOARD */}
-        <Route
-          path="/admin/dashboard"
-          element={<AdminDashboard />}
-        />
-        <Route
-          path="/admin/shoutouts"
-          element={<ShoutOutManagement />}
-        />
+
 
         <Route
           path="/admin/settings"
