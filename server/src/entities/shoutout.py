@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 from datetime import datetime
-from src.database.core import Base
+from ..database.core import Base
 
 
 class Shoutout(Base):

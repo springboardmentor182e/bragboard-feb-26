@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
 from datetime import datetime
-from src.entities.report import Report
+from ..entities.report import Report
 
 
 def get_reports(db: Session, status=None, priority=None, search=None):

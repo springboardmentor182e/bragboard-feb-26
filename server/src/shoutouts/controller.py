@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from src.database.core import get_db
-from src.shoutouts.service import get_all_shoutouts, delete_shoutout
+from ..database.core import get_db
+from .service import get_all_shoutouts, delete_shoutout
 
 router = APIRouter(prefix="/admin/shoutouts", tags=["Admin Shoutouts"])
 

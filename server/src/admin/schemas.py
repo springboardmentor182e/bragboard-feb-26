@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, ConfigDict, EmailStr
 from typing import Optional, List, Dict, Any
 from datetime import datetime
 
@@ -28,9 +28,7 @@ class UserResponse(UserBase):
     id: int
     created_at: datetime
     avatar_url: Optional[str] = None
-    
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 # Dashboard stats schemas
 class StatsResponse(BaseModel):
@@ -54,9 +52,7 @@ class ReportResponse(ReportBase):
     id: int
     created_by: int
     created_at: datetime
-    
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 # Activity log schemas
 class ActivityLogResponse(BaseModel):
@@ -66,9 +62,7 @@ class ActivityLogResponse(BaseModel):
     action: str
     details: Dict[str, Any]
     timestamp: datetime
-   
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # Add this to your schemas.py if needed
@@ -83,6 +77,4 @@ class DashboardStatsCreate(DashboardStatsBase):
 class DashboardStatsResponse(DashboardStatsBase):
     id: int
     updated_at: datetime
-    
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

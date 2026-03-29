@@ -1,182 +1,74 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, Header
 from sqlalchemy.orm import Session
-from typing import List, Optional
-from sqlalchemy import func
-from src.database.core import get_db
-from src.entities.user import User
-from src.entities.shoutout import Shoutout
-from src.admin.models import AdminReport, UserContribution, ActivityLog
-from src.admin import schemas, service
-from src.auth.service import get_password_hash
+from ..database.core import get_db
+from .models import (
+    LoginRequest, TokenResponse, SignupRequest,
+    ForgotPasswordRequest, VerifyOTPRequest, ResetPasswordRequest, OTPResponse
+)
+from .service import (
+    login_user, signup_user,
+    send_otp_email, verify_otp, reset_password_with_otp
+)
+from .dependencies import get_current_user
 
-router = APIRouter(prefix="/auth", tags=["Auth"])
-
-
-# NOTE: The admin endpoints are now handled via src.admin.controller /api/admin.
-# Keeping this router for any future auth-specific endpoints.
-
-@router.get("/users", response_model=List[schemas.UserResponse])
-def get_all_users(
-    skip: int = 0,
-    limit: int = 100,
-    db: Session = Depends(get_db)
-):
-    admin_service = service.AdminService(db)
-    return admin_service.get_all_users(skip, limit)
+router = APIRouter()
 
 
-@router.get("/users/{user_id}", response_model=schemas.UserResponse)
-def get_user(
-    user_id: int,
-    db: Session = Depends(get_db)
-):
-    admin_service = service.AdminService(db)
-    user = admin_service.get_user_by_id(user_id)
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return user
+# 🔐 LOGIN
+@router.post("/login", response_model=TokenResponse)
+def login(data: LoginRequest, db: Session = Depends(get_db)):
+    token = login_user(data, db)
+
+    return {
+        "access_token": token,
+        "token_type": "bearer"
+    }
 
 
-@router.post("/users", response_model=schemas.UserResponse, status_code=status.HTTP_201_CREATED)
-def create_user(
-    user: schemas.UserCreate,
-    db: Session = Depends(get_db)
-):
-    user_dict = user.dict()
-    user_dict["hashed_password"] = get_password_hash(user.password)
-    del user_dict["password"]
-    
-    db_user = User(**user_dict)
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
-    return db_user
+# 🆕 SIGNUP
+@router.post("/signup", response_model=TokenResponse)
+def signup(data: SignupRequest, db: Session = Depends(get_db)):
+    token = signup_user(data, db)
+
+    return {
+        "access_token": token,
+        "token_type": "bearer"
+    }
 
 
-@router.get("/activities", response_model=List[schemas.ActivityLogResponse])
-def get_activity_logs(
-    skip: int = 0,
-    limit: int = 100,
-    db: Session = Depends(get_db)
-):
-    admin_service = service.AdminService(db)
-    return admin_service.get_activity_logs(skip, limit)
+# 👤 GET CURRENT USER
+@router.get("/me")
+def get_me(user = Depends(get_current_user)):
+    return {
+        "id": user.id,
+        "name": user.name,
+        "email": user.email,
+        "role": user.role,
+        "status": user.status
+    }
 
 
-@router.get("/reports", response_model=List[schemas.ReportResponse])
-def get_reports(
-    skip: int = 0,
-    limit: int = 100,
-    status: Optional[str] = None,
-    db: Session = Depends(get_db)
-):
-    admin_service = service.AdminService(db)
-    return admin_service.get_reports(skip, limit, status)
+# 🔐 PASSWORD RESET ROUTES
+
+@router.post("/forgot-password", response_model=OTPResponse)
+def forgot_password(data: ForgotPasswordRequest, db: Session = Depends(get_db)):
+    """
+    Request password reset by sending OTP to email
+    """
+    return send_otp_email(data.email, db)
 
 
-@router.post("/reports/{report_id}/resolve")
-def resolve_report(
-    report_id: int,
-    db: Session = Depends(get_db)
-):
-    try:
-        admin_service = service.AdminService(db)
-        result = admin_service.resolve_report(report_id)
-        
-        if not result:
-            return {"message": "Report not found", "success": False}
-            
-        return {"message": "Report resolved successfully", "success": True}
-        
-    except Exception as e:
-        return {"message": str(e), "success": False}
+@router.post("/verify-otp")
+def verify_otp_endpoint(data: VerifyOTPRequest, db: Session = Depends(get_db)):
+    """
+    Verify OTP is correct
+    """
+    return verify_otp(data.email, data.otp, db)
 
 
-@router.delete("/posts/{post_id}")
-def delete_post(
-    post_id: int,
-    db: Session = Depends(get_db)
-):
-    try:
-        post = db.query(AdminReport).filter(AdminReport.id == post_id).first()
-        
-        if not post:
-            return {"error": "Post not found"}
-            
-        db.delete(post)
-        db.commit()
-        return {"message": "Post deleted successfully"}
-        
-    except Exception as e:
-        db.rollback()
-        return {"error": str(e)}
-
-
-@router.get("/contributors/top")
-def get_top_contributors(
-    db: Session = Depends(get_db),
-    limit: int = 10
-):
-    try:
-        contributors = db.query(
-            UserContribution.user_name,
-            UserContribution.total_interactions
-        ).order_by(
-            UserContribution.total_interactions.desc()
-        ).limit(limit).all()
-
-        colors = ['#3882F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6']
-        result = []
-        
-        for idx, (name, value) in enumerate(contributors):
-            result.append({
-                "name": name,
-                "value": value or 0,
-                "fill": colors[idx % len(colors)]
-            })
-
-        return result
-
-    except Exception as e:
-        return []
-
-
-@router.get("/dashboard/stats")
-def get_dashboard_stats(db: Session = Depends(get_db)):
-    try:
-        from sqlalchemy import text
-        
-        total_users = db.execute(text("SELECT COUNT(*) FROM users")).scalar() or 0
-        total_reports = db.execute(text("SELECT COUNT(*) FROM reports")).scalar() or 0
-        pending_reports = db.execute(text("SELECT COUNT(*) FROM reports WHERE status='pending'")).scalar() or 0
-        
-        total_posts = 0
-        total_reactions = 0
-        
-        try:
-            total_posts = db.query(func.count(Shoutout.id)).scalar() or 0
-        except:
-            pass
-        
-        return {
-            "total_users": total_users,
-            "total_posts": total_posts,
-            "total_reactions": total_reactions,
-            "total_reports": total_reports,
-            "active_users_today": 0,
-            "reports": pending_reports,
-            "shoutout_trend": "+0%",
-            "reaction_trend": "+0%"
-        }
-        
-    except Exception as e:
-        return {
-            "total_users": 0,
-            "total_posts": 0,
-            "total_reactions": 0,
-            "total_reports": 0,
-            "active_users_today": 0,
-            "reports": 0,
-            "shoutout_trend": "+0%",
-            "reaction_trend": "+0%"
-        }
+@router.post("/reset-password")
+def reset_password(data: ResetPasswordRequest, db: Session = Depends(get_db)):
+    """
+    Reset password using OTP
+    """
+    return reset_password_with_otp(data.email, data.otp, data.new_password, db)

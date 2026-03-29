@@ -1,8 +1,8 @@
 from typing import List
-from src.auth.dependencies import require_admin
+from ..auth.dependencies import require_admin
 from fastapi import APIRouter, HTTPException, Depends,status
 from sqlalchemy.orm import Session
-from src.database.core import get_db
+from ..database.core import get_db
 from .models import UserCreate
 from . import service
 from . import schemas
@@ -13,6 +13,10 @@ from .service import (
     update_user_role,
     delete_user,
 )
+from ..auth.utils import hash_password
+from ..entities.user import User
+from ..admin.models import UserContribution
+from ..entities.report import Report
 
 router = APIRouter()
 
@@ -231,18 +235,23 @@ async def get_activity_logs(
 
 
 @router.post("/users", response_model=schemas.UserResponse, status_code=status.HTTP_201_CREATED)
-async def create_user(
+async def create_new_user(
     user: schemas.UserCreate,
     db: Session = Depends(get_db)
 ):
     """Create new user"""
     # Hash the password before saving
-    user_dict = user.dict()
-    user_dict["hashed_password"] = get_password_hash(user.password)
-    del user_dict["password"]
+    hashed_pwd = hash_password(user.password)
     
     # Create user in database
-    db_user = User(**user_dict)
+    db_user = User(
+        name=user.name,
+        email=user.email,
+        department=user.department,
+        role=user.role,
+        status=user.status,
+        password=hashed_pwd
+    )
     db.add(db_user)
     db.commit()
     db.refresh(db_user)

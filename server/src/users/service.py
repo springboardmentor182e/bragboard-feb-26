@@ -1,10 +1,34 @@
 from sqlalchemy.orm import Session
-from src.entities.user import User
-from src.auth.utils import hash_password
+from ..entities.user import User
+from ..auth.utils import hash_password
+from pydantic import BaseModel, ConfigDict
+from typing import List
 
 
-def get_users(db: Session):
-    return db.query(User).all()
+class UserPublicResponse(BaseModel):
+    id: int
+    name: str
+    email: str
+    department: str | None = None
+    role: str | None = None
+    status: str | None = None
+    model_config = ConfigDict(from_attributes=True)
+
+
+def get_users(db: Session) -> List[dict]:
+    users = db.query(User).all()
+    # Convert to dict with only safe fields
+    return [
+        {
+            "id": user.id,
+            "name": user.name,
+            "email": user.email,
+            "department": user.department,
+            "role": user.role,
+            "status": user.status,
+        }
+        for user in users
+    ]
 
 
 def add_user(db: Session, user_data):
@@ -23,7 +47,15 @@ def add_user(db: Session, user_data):
     db.commit()
     db.refresh(user)
 
-    return user
+    # Return safe fields only
+    return {
+        "id": user.id,
+        "name": user.name,
+        "email": user.email,
+        "department": user.department,
+        "role": user.role,
+        "status": user.status,
+    }
 
 
 def update_user_status(db: Session, user_id: int):
@@ -37,7 +69,15 @@ def update_user_status(db: Session, user_id: int):
     db.commit()
     db.refresh(user)
 
-    return user
+    # Return safe fields only
+    return {
+        "id": user.id,
+        "name": user.name,
+        "email": user.email,
+        "department": user.department,
+        "role": user.role,
+        "status": user.status,
+    }
 
 
 def update_user_role(db: Session, user_id: int, role: str):
@@ -51,7 +91,15 @@ def update_user_role(db: Session, user_id: int, role: str):
     db.commit()
     db.refresh(user)
 
-    return user
+    # Return safe fields only
+    return {
+        "id": user.id,
+        "name": user.name,
+        "email": user.email,
+        "department": user.department,
+        "role": user.role,
+        "status": user.status,
+    }
 
 
 def delete_user(db: Session, user_id: int):
