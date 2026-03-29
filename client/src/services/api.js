@@ -1,30 +1,43 @@
-import axios from 'axios';
+import axios from "axios";
 
 const API = axios.create({
-  baseURL: 'http://localhost:8000/api',
+  baseURL: import.meta.env.VITE_API_URL, // ✅ from .env
   timeout: 10000,
 });
 
+// 🔥 Debug (important)
+console.log("🔥 API BASE URL:", import.meta.env.VITE_API_URL);
+
+// =========================
+// EMPLOYEE APIs
+// =========================
+export const employeeAPI = {
+  getLeaderboard: () => API.get("/employees/leaderboard"),
+  getEmployees: () => API.get("/employees"),
+};
+
+// =========================
+// ADMIN APIs
+// =========================
 export const adminAPI = {
-  // Existing functions
-  getDashboardStats: () => API.get('/admin/dashboard/stats'),
-  getAllUsers: () => API.get('/admin/users'),
-  getActivityLogs: () => API.get('/admin/activities'),
-getReports: (status = null) => {
-  const url = status ? `/admin/reports?status=${status}` : '/admin/reports';
-  return API.get(url);
-},  getTopContributors: () => {
-    return API.get('/admin/contributors/top');
+  getDashboardStats: () => API.get("/admin/dashboard/stats"),
+  getAllUsers: () => API.get("/admin/users"),
+  getActivityLogs: () => API.get("/admin/activities"),
+
+  getReports: (status = null) => {
+    const url = status
+      ? `/admin/reports?status=${status}`
+      : "/admin/reports";
+    return API.get(url);
   },
-  // Report/Post functions
-  resolveReport: (reportId) => API.post(`/admin/reports/${reportId}/resolve`),
-  
-  // FIXED: Use backticks ` ` for template literals, not single quotes ' '
-  deletePost: (postId) => {
-    const url = `/admin/posts/${postId}`;  // ✅ Fixed: backticks with variable
-    console.log('Calling delete URL:', 'http://localhost:8000/api' + url);
-    return API.delete(url);
-  }
+
+  getTopContributors: () => API.get("/admin/contributors/top"),
+
+  resolveReport: (reportId) =>
+    API.post(`/admin/reports/${reportId}/resolve`),
+
+  deletePost: (postId) =>
+    API.delete(`/admin/posts/${postId}`),
 };
 
 export default API;

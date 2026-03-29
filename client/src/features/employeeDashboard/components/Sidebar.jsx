@@ -3,10 +3,16 @@ import { NavLink } from "react-router-dom";
 import { motion } from "framer-motion";
 
 const NAV_ITEMS = [
-  { icon: <LayoutDashboard size={18} />, label: "Dashboard",   to: "/" },
-  { icon: <Trophy size={18} />,          label: "Achievements", to: "/achievements" },
-  { icon: <User size={18} />,            label: "Profile",      to: "/profile" },
-  { icon: <Settings size={18} />,        label: "Settings",     to: "/settings" },
+  { icon: <LayoutDashboard size={18} />, label: "Dashboard", to: "/" },
+
+  // Achievements
+  { icon: <Trophy size={18} />, label: "Achievements", to: "/achievements" },
+
+  // ✅ ADD THIS (Leaderboard)
+  { icon: <Trophy size={18} />, label: "Leaderboard", to: "/leaderboard" },
+
+  { icon: <User size={18} />, label: "Profile", to: "/profile" },
+  { icon: <Settings size={18} />, label: "Settings", to: "/settings" },
 ];
 
 const Sidebar = ({ selectedEmployee }) => {
@@ -22,22 +28,24 @@ const Sidebar = ({ selectedEmployee }) => {
         "border border-gray-200 dark:border-gray-800",
         "shadow-xl dark:shadow-black/40",
         "h-[calc(100vh-2rem)]",
-        // FIXED: removed bare "flex" — was conflicting with "hidden md:flex"
         "hidden md:flex flex-col",
       ].join(" ")}
     >
+      {/* Header */}
       <div className="px-6 py-6 border-b border-gray-200 dark:border-gray-800">
         <h1 className="text-xl font-semibold bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">
           BragBoard
         </h1>
       </div>
 
+      {/* Navigation */}
       <nav className="flex-1 px-4 py-6 space-y-2">
         {NAV_ITEMS.map((item) => (
           <SidebarItem key={item.to} {...item} />
         ))}
       </nav>
 
+      {/* Selected Employee */}
       {selectedEmployee && (
         <div className="px-4 py-4 border-t border-gray-200 dark:border-gray-800">
           <div className="flex items-center gap-3">

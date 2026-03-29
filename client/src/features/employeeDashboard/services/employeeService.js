@@ -1,6 +1,7 @@
 import api from "./api";
 
-export const getEmployees   = () => api.get("/employees");
+export const getEmployees = () => api.get("/employees");
 
-// ADDED: was missing — useLeaderboard.js imports this and crashed without it
-export const getLeaderboard = () => api.get("/employees/leaderboard");
+// ✅ FIXED
+export const getLeaderboard = () =>
+  api.get("/api/v1/leaderboard/leaderboard/");

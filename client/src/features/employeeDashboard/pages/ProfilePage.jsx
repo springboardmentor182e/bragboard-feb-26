@@ -1,13 +1,10 @@
-import DashboardLayout from "../components/layout/DashboardLayout";
 import useEmployees from "../hooks/useEmployees";
-import useDarkMode from "../hooks/useDarkMode";
 
 const ProfilePage = () => {
   const { selectedEmployee, setSelectedEmployee, employees } = useEmployees();
-  const { dark, toggleDark } = useDarkMode();
 
   return (
-    <DashboardLayout selectedEmployee={selectedEmployee} dark={dark} onToggleDark={toggleDark}>
+    <>
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-800 dark:text-white">👤 Profile</h1>
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Your personal details</p>
@@ -61,7 +58,7 @@ const ProfilePage = () => {
       ) : (
         <p className="text-gray-400 text-sm">Loading profile…</p>
       )}
-    </DashboardLayout>
+    </>
   );
 };
 
