@@ -1,14 +1,17 @@
 from sqlalchemy.orm import Session
-from src.entities.user import User
+from sqlalchemy import text
 
 
 def get_leaderboard_users(db: Session):
     try:
-        users = db.query(User)\
-            .filter(User.is_active == True)\
-            .order_by(User.points.desc())\
-            .all()
-        return users
+        result = db.execute(text("""
+            SELECT id, full_name, username, email, department,
+                   photo_url, points, fire_badges, star_badges, thumb_badges
+            FROM users
+            WHERE is_active = true
+            ORDER BY points DESC
+        """))
+        return result.fetchall()
     except Exception as e:
         print("❌ Leaderboard Repository Error:", e)
         return []
@@ -16,10 +19,13 @@ def get_leaderboard_users(db: Session):
 
 def get_leaderboard_user_by_id(db: Session, user_id: int):
     try:
-        user = db.query(User)\
-            .filter(User.id == user_id)\
-            .first()
-        return user
+        result = db.execute(text("""
+            SELECT id, full_name, username, email, department,
+                   photo_url, points, fire_badges, star_badges, thumb_badges
+            FROM users
+            WHERE id = :user_id
+        """), {"user_id": user_id})
+        return result.fetchone()
     except Exception as e:
         print("❌ Leaderboard Repository Error:", e)
         return None
@@ -27,23 +33,30 @@ def get_leaderboard_user_by_id(db: Session, user_id: int):
 
 def update_user_badges(db: Session, user_id: int, badge_type: str):
     try:
-        user = db.query(User)\
-            .filter(User.id == user_id)\
-            .first()
-
-        if not user:
-            return None
-
         if badge_type == "fire":
-            user.fire_badges = (user.fire_badges or 0) + 1
+            db.execute(text("""
+                UPDATE users SET fire_badges = fire_badges + 1
+                WHERE id = :user_id
+            """), {"user_id": user_id})
         elif badge_type == "star":
-            user.star_badges = (user.star_badges or 0) + 1
+            db.execute(text("""
+                UPDATE users SET star_badges = star_badges + 1
+                WHERE id = :user_id
+            """), {"user_id": user_id})
         elif badge_type == "thumb":
-            user.thumb_badges = (user.thumb_badges or 0) + 1
+            db.execute(text("""
+                UPDATE users SET thumb_badges = thumb_badges + 1
+                WHERE id = :user_id
+            """), {"user_id": user_id})
 
         db.commit()
-        db.refresh(user)
-        return user
+
+        result = db.execute(text("""
+            SELECT id, full_name, username, email, department,
+                   photo_url, points, fire_badges, star_badges, thumb_badges
+            FROM users WHERE id = :user_id
+        """), {"user_id": user_id})
+        return result.fetchone()
 
     except Exception as e:
         print("❌ Update Badge Error:", e)

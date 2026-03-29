@@ -1,7 +1,6 @@
 from sqlalchemy.orm import Session
-from .repository import get_leaderboard_users
+from .repository import get_leaderboard_users, update_user_badges
 from .schemas import LeaderboardUser
-from src.entities.user import User
 
 
 def get_leaderboard_service(db: Session):
@@ -25,9 +24,9 @@ def get_leaderboard_service(db: Session):
                     department=user.department,
                     photo_url=user.photo_url,
                     points=user.points,
-                    fire_badges=user.fire_badges or 0,    # ✅ ADDED
-                    star_badges=user.star_badges or 0,    # ✅ ADDED
-                    thumb_badges=user.thumb_badges or 0   # ✅ ADDED
+                    fire_badges=user.fire_badges or 0,
+                    star_badges=user.star_badges or 0,
+                    thumb_badges=user.thumb_badges or 0,
                 )
             )
             rank += 1
@@ -41,24 +40,11 @@ def get_leaderboard_service(db: Session):
 
 def award_badge_service(db: Session, user_id: int, badge_type: str):
     try:
-        user = db.query(User).filter(User.id == user_id).first()
-
+        user = update_user_badges(db, user_id, badge_type)
         if not user:
             return None
-
-        if badge_type == "fire":
-            user.fire_badges += 1
-        elif badge_type == "star":
-            user.star_badges += 1
-        elif badge_type == "thumb":
-            user.thumb_badges += 1
-
-        db.commit()
-        db.refresh(user)
-
         return user
 
     except Exception as e:
         print("❌ Award Badge Service Error:", e)
-        db.rollback()
         return None
