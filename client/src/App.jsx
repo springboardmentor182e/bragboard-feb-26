@@ -1,39 +1,33 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
-/*
-LAYOUT COMPONENTS
-*/
+/* AUTH */
+import ProtectedRoute from "./components/ProtectedRoute";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import ForgotPassword from "./pages/ForgotPassword";
+
+/* EMPLOYEE LAYOUT */
 import Sidebar from "./features/employeeDashboard/components/layout/Sidebar";
 import TopNavbar from "./features/employeeDashboard/components/layout/TopNavbar";
 
-/*
-AUTH
-*/
-import ProtectedRoute from "./components/ProtectedRoute";
-import { useAuth } from "./context/AuthContext";
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
-
-/*
-EMPLOYEE DASHBOARD PAGE
-*/
+/* EMPLOYEE PAGES */
 import EmployeeDashboard from "./features/employeeDashboard/pages/EmployeeDashboard";
-import Settings from "./features/employeeSettings/emp-settings.jsx";
-/*
-EMPLOYEE PAGES
-*/
 import MyShoutouts from "./features/employeeDashboard/pages/MyShoutouts";
 import Leaderboard from "./features/employeeDashboard/pages/Leaderboard";
 import Team from "./features/employeeDashboard/pages/Team";
 import AllRecognitions from "./features/employeeDashboard/pages/RecognitionsPage";
+import Badges from "./features/employeeDashboard/pages/Badges";
+import Analytics from "./features/employeeDashboard/pages/Analytics";
+import EmployeeSettings from "./features/employeeDashboard/pages/EmployeeSettings";
 
-/*
-ADMIN PAGES
-*/
-import AdminEmployees from "./pages/AdminEmployees.jsx";
-import AdminReports from "./pages/AdminReports";
-import AdminDashboard from "./features/admin-dash/pages/AdminDashboard.jsx";
-import ShoutOutManagement from "./features/Adminshoutout/Ad-shoutout.jsx";
+/* ADMIN */
+import AdminLayout from "./features/admin-dash/components/layout/AdminLayout";
+import AdminDashboard from "./features/admin-dash/pages/AdminDashboard";
+import AdminEmployees from "./features/admin-dash/pages/AdminEmployees";
+import AdminReports from "./features/admin-dash/pages/AdminReports";
+import AdminShoutouts from "./features/admin-dash/pages/AdminShoutouts";
+import AdminSettings from "./features/admin-dash/pages/AdminSettings";
+
 /*
 EMPLOYEE LAYOUT
 */
@@ -54,21 +48,6 @@ function EmployeeLayout({ children }) {
 }
 
 /*
-ADMIN ROUTE (INLINE)
-*/
-function AdminRoute({ children }) {
-  const { user, loading } = useAuth();
-
-  if (loading) return <div className="p-6">Loading...</div>;
-
-  if (!user) return <Navigate to="/login" />;
-
-  if (user.role !== "admin") return <Navigate to="/" />;
-
-  return children;
-}
-
-/*
 APP ROUTES
 */
 function App() {
@@ -79,13 +58,13 @@ function App() {
         {/* 🔓 PUBLIC ROUTES */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
 
         {/* 🔐 EMPLOYEE ROUTES */}
-
         <Route
           path="/"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute role="employee">
               <EmployeeLayout>
                 <EmployeeDashboard />
               </EmployeeLayout>
@@ -95,7 +74,7 @@ function App() {
         <Route
           path="/my-shoutouts"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute role="employee">
               <EmployeeLayout>
                 <MyShoutouts />
               </EmployeeLayout>
@@ -106,7 +85,7 @@ function App() {
         <Route
           path="/leaderboard"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute role="employee">
               <EmployeeLayout>
                 <Leaderboard />
               </EmployeeLayout>
@@ -117,7 +96,7 @@ function App() {
         <Route
           path="/team"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute role="employee">
               <EmployeeLayout>
                 <Team />
               </EmployeeLayout>
@@ -128,7 +107,7 @@ function App() {
         <Route
           path="/recognitions"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute role="employee">
               <EmployeeLayout>
                 <AllRecognitions />
               </EmployeeLayout>
@@ -136,14 +115,49 @@ function App() {
           }
         />
 
-        {/* 🔐 ADMIN ROUTES */}
+        {/* ✅ EMPLOYEE PLACEHOLDERS */}
+        <Route
+          path="/badges"
+          element={
+            <ProtectedRoute role="employee">
+              <EmployeeLayout>
+                <Badges />
+              </EmployeeLayout>
+            </ProtectedRoute>
+          }
+        />
 
+        <Route
+          path="/analytics"
+          element={
+            <ProtectedRoute role="employee">
+              <EmployeeLayout>
+                <Analytics />
+              </EmployeeLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute role="employee">
+              <EmployeeLayout>
+                <EmployeeSettings />
+              </EmployeeLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* 🔐 ADMIN ROUTES */}
         <Route
           path="/admin/dashboard"
           element={
-            <AdminRoute>
-              <AdminDashboard />
-            </AdminRoute>
+            <ProtectedRoute role="admin">
+              <AdminLayout>
+                <AdminDashboard />
+              </AdminLayout>
+            </ProtectedRoute>
           }
         />
         {/* SETTINGS */}
@@ -156,18 +170,34 @@ function App() {
         <Route
           path="/admin/employees"
           element={
-            <AdminRoute>
-              <AdminEmployees />
-            </AdminRoute>
+            <ProtectedRoute role="admin">
+              <AdminLayout>
+                <AdminEmployees />
+              </AdminLayout>
+            </ProtectedRoute>
           }
         />
 
         <Route
           path="/admin/reports"
           element={
-            <AdminRoute>
-              <AdminReports />
-            </AdminRoute>
+            <ProtectedRoute role="admin">
+              <AdminLayout>
+                <AdminReports />
+              </AdminLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* 🆕 ADMIN PLACEHOLDERS */}
+        <Route
+          path="/admin/shoutouts"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminLayout>
+                <AdminShoutouts />
+              </AdminLayout>
+            </ProtectedRoute>
           }
         />
         {/* ADMIN DASHBOARD */}
@@ -181,13 +211,18 @@ function App() {
         />
 
         <Route
-          path="/admin-dashboard"
+          path="/admin/settings"
           element={
-            <EmployeeLayout>
-              <AdminDashboard />
-            </EmployeeLayout>
+            <ProtectedRoute role="admin">
+              <AdminLayout>
+                <AdminSettings />
+              </AdminLayout>
+            </ProtectedRoute>
           }
         />
+
+        {/* 🚫 FALLBACK */}
+        <Route path="*" element={<Navigate to="/" />} />
 
       </Routes>
     </BrowserRouter>

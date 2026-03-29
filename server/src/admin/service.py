@@ -3,15 +3,15 @@ from sqlalchemy import func,text
 from datetime import datetime, timedelta
 from typing import List, Optional, Dict, Any
 
-from src.entities.user import User
-from src.admin.models import AdminReport, ActivityLog, DashboardStats,UserContribution
-from src.admin import schemas
-# from src.auth.service import *
-from src.admin.models import UserContribution
+from ..entities.user import User
+from .models import AdminReport, ActivityLog, DashboardStats,UserContribution
+from . import schemas
+# from ..auth.service import *
+from .models import UserContribution
 
 # Try to import Shoutout model
 try:
-    from src.entities.shoutout import Shoutout  # type: ignore
+    from ..entities.shoutout import Shoutout  # type: ignore
     SHOUTOUT_AVAILABLE = True
 except (ImportError, ModuleNotFoundError):
     SHOUTOUT_AVAILABLE = False

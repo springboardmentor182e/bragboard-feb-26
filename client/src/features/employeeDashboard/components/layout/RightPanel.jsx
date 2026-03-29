@@ -14,9 +14,6 @@ const RightPanel = () => {
     <>
       <div className="space-y-4">
 
-        {/* 🔥 CAMPAIGN (REPLACED WITH REUSABLE COMPONENT) */}
-        <CampaignCard />
-
         {/* CREATE SHOUTOUT */}
         <div
           onClick={() => setOpenModal(true)}
@@ -43,6 +40,9 @@ const RightPanel = () => {
             </div>
           </div>
         </div>
+
+        {/* 🔥 CAMPAIGN (NOW MOVED BELOW CREATE SHOUTOUT) */}
+        <CampaignCard />
 
         {/* MY SHOUTOUTS */}
         <div

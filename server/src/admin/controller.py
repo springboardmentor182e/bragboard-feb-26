@@ -2,13 +2,13 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from sqlalchemy import func
-from src.admin.models import AdminReport, UserContribution, ActivityLog
-from src.database.core import get_db
-from src.admin import schemas, service
-from src.auth.service import get_password_hash
-from src.entities.user import User
+from .models import AdminReport, UserContribution, ActivityLog
+from ..database.core import get_db
+from . import schemas, service
+from ..auth.utils import hash_password
+from ..entities.user import User
 
-from src.entities.shoutout import Shoutout
+from ..entities.shoutout import Shoutout
 
 # Define this variable
 SHOUTOUT_AVAILABLE = True
@@ -45,12 +45,17 @@ async def create_user(
 ):
     """Create new user"""
     # Hash the password before saving
-    user_dict = user.dict()
-    user_dict["hashed_password"] = get_password_hash(user.password)
-    del user_dict["password"]
+    hashed_pwd = hash_password(user.password)
     
     # Create user in database
-    db_user = User(**user_dict)
+    db_user = User(
+        name=user.name,
+        email=user.email,
+        department=user.department,
+        role=user.role,
+        status=user.status,
+        password=hashed_pwd
+    )
     db.add(db_user)
     db.commit()
     db.refresh(db_user)

@@ -7,8 +7,8 @@ import {
   Eye,
 } from "lucide-react";
 
-import Card from "../../components/ui/Card";
-import PrimaryButton from "../../components/ui/PrimaryButton";
+import Card from "../../../components/ui/Card";
+import PrimaryButton from "../../../components/ui/PrimaryButton";
 import ReviewReportModal from "./ReviewReportModal";
 
 const priorityStyle = {

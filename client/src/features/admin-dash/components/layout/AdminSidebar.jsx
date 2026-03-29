@@ -5,9 +5,6 @@ import {
   MessageSquare,
   FileText,
   Settings,
-  BarChart2,
-  Award,
-  Home,
 } from "lucide-react";
 
 const AdminSidebar = () => {
@@ -33,33 +30,30 @@ const AdminSidebar = () => {
         <span className="text-xl font-bold">BragBoard</span>
       </div>
 
-      {/* Scrollable Navigation */}
-      <nav className="flex-1 overflow-y-auto p-6 space-y-6">
+      {/* Admin Navigation ONLY */}
+      <nav className="flex-1 overflow-y-auto p-6 space-y-2">
 
-        {/* Main Navigation */}
-        <div className="space-y-2">
-          <NavLink to="/" className={linkClass}>
-            <Home size={18} />
-            Feed
-          </NavLink>
+        <NavLink to="/admin/dashboard" className={linkClass}>
+          <LayoutDashboard size={18} />
+          Dashboard
+        </NavLink>
 
-          <NavLink to="/leaderboard" className={linkClass}>
-            <Award size={18} />
-            Leaderboard
-          </NavLink>
+        <NavLink to="/admin/employees" className={linkClass}>
+          <Users size={18} />
+          User Management
+        </NavLink>
 
-          <NavLink to="/analytics" className={linkClass}>
-            <BarChart2 size={18} />
-            Analytics
-          </NavLink>
-        </div>
+        <NavLink to="/admin/shoutouts" className={linkClass}>
+          <MessageSquare size={18} />
+          Shout-Outs
+        </NavLink>
 
-        {/* Admin Section */}
-        <div className="border-t border-white/10 pt-6">
-          <p className="text-xs text-slate-400 mb-3 uppercase tracking-wider">
-            Admin
-          </p>
+        <NavLink to="/admin/reports" className={linkClass}>
+          <FileText size={18} />
+          Reports
+        </NavLink>
 
+<<<<<<< HEAD
           <div className="space-y-2">
             <NavLink to="/admin" className={linkClass}>
               <LayoutDashboard size={18} />
@@ -87,12 +81,18 @@ const AdminSidebar = () => {
             </NavLink>
           </div>
         </div>
+=======
+        <NavLink to="/admin/settings" className={linkClass}>
+          <Settings size={18} />
+          Settings
+        </NavLink>
+>>>>>>> bba1c762fb140dcc679f4701f3ede2e34ec0a542
 
       </nav>
 
       {/* Footer */}
       <div className="p-6 border-t border-white/10 text-sm text-slate-400">
-        Employee View
+        Admin Panel
       </div>
     </aside>
   );

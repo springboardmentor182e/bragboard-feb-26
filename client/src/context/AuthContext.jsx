@@ -7,7 +7,9 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // 🔁 Auto login on refresh
+  /*
+  🔁 LOAD USER ON REFRESH
+  */
   useEffect(() => {
     const init = async () => {
       const token = localStorage.getItem("token");
@@ -18,10 +20,19 @@ export const AuthProvider = ({ children }) => {
       }
 
       try {
-        const userData = await getMe(token);
+        const userData = await getMe(token); // ✅ already data
+
         setUser(userData);
-      } catch {
+
+        localStorage.setItem("role", userData.role?.toLowerCase());
+
+      } catch (err) {
+        console.error("Auth init error:", err);
+
         localStorage.removeItem("token");
+        localStorage.removeItem("role");
+
+        setUser(null);
       } finally {
         setLoading(false);
       }
@@ -30,44 +41,73 @@ export const AuthProvider = ({ children }) => {
     init();
   }, []);
 
-  // 🔐 LOGIN
-  const login = async (formData) => {
-    const res = await loginUser(formData);
+  /*
+  🔐 LOGIN
+  */
+  const login = async (form) => {
+    try {
+      const res = await loginUser(form);
 
-    localStorage.setItem("token", res.access_token);
+      const token = res.access_token; // ✅ FIX
 
-    const userData = await getMe(res.access_token);
+      if (!token) throw new Error("No token received");
 
-    setUser(userData);
+      localStorage.setItem("token", token);
+
+      const userData = await getMe(token); // ✅ already data
+
+      setUser(userData);
+
+      localStorage.setItem("role", userData.role?.toLowerCase());
+
+      return userData;
+
+    } catch (err) {
+      console.error("Login error:", err);
+
+      localStorage.removeItem("token");
+      localStorage.removeItem("role");
+
+      throw err;
+    }
   };
 
-  // 🆕 SIGNUP
-  const signup = async (formData) => {
-    const res = await signupUser(formData);
+  /*
+  🆕 SIGNUP
+  */
+  const signup = async (form) => {
+    try {
+      const res = await signupUser(form);
 
-    localStorage.setItem("token", res.access_token);
+      const token = res.access_token;
 
-    const userData = await getMe(res.access_token);
+      localStorage.setItem("token", token);
 
-    setUser(userData);
+      const userData = await getMe(token);
+
+      setUser(userData);
+
+      localStorage.setItem("role", userData.role?.toLowerCase());
+
+      return userData;
+
+    } catch (err) {
+      console.error("Signup error:", err);
+      throw err;
+    }
   };
 
-  // 🚪 LOGOUT
+  /*
+  🚪 LOGOUT
+  */
   const logout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("role");
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        login,
-        signup,
-        logout,
-        loading,
-      }}
-    >
+    <AuthContext.Provider value={{ user, login, signup, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );
