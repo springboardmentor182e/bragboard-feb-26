@@ -30,7 +30,6 @@ const ForgotPassword = () => {
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
-          setOtpSent(false);
           return 0;
         }
         return prev - 1;
@@ -124,6 +123,7 @@ const ForgotPassword = () => {
       const response = await forgotPassword(email);
       setSuccess("OTP resent to your email!");
       setTimeLeft(response.otp_expires || 900);
+      setOtpSent(true);
       setOtp("");
     } catch (err) {
       setError(err?.response?.data?.detail || "Failed to resend OTP");
@@ -315,16 +315,16 @@ const ForgotPassword = () => {
               </button>
 
               {/* Resend OTP */}
-              {otpSent && timeLeft > 0 && (
+              {otpSent && (
                 <p className="text-center text-sm text-slate-600">
                   Didn't receive the OTP?{" "}
                   <button
                     type="button"
                     onClick={handleResendOTP}
-                    disabled={loading}
-                    className="text-indigo-600 hover:underline font-semibold disabled:opacity-50"
+                    disabled={loading || timeLeft > 0}
+                    className="text-indigo-600 hover:underline font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Resend
+                    {timeLeft > 0 ? `Resend (${formatTime(timeLeft)})` : "Resend OTP"}
                   </button>
                 </p>
               )}

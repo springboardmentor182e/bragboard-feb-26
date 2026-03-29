@@ -3,7 +3,6 @@ from ..auth.dependencies import require_admin
 from fastapi import APIRouter, HTTPException, Depends,status
 from sqlalchemy.orm import Session
 from ..database.core import get_db
-from .models import UserCreate
 from . import service
 from . import schemas
 from .service import (
@@ -27,7 +26,7 @@ def fetch_users(db: Session = Depends(get_db)):
 
 
 @router.post("/")
-def create_user(user: UserCreate, db: Session = Depends(get_db)):
+def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     return add_user(db, user)
 
 
