@@ -53,40 +53,10 @@ const AdminSidebar = () => {
           Reports
         </NavLink>
 
-<<<<<<< HEAD
-          <div className="space-y-2">
-            <NavLink to="/admin" className={linkClass}>
-              <LayoutDashboard size={18} />
-              Admin Dashboard
-            </NavLink>
-
-            <NavLink to="/admin/employees" className={linkClass}>
-              <Users size={18} />
-              User Management
-            </NavLink>
-
-            <NavLink to="/admin/shoutouts" className={linkClass}>
-              <MessageSquare size={18} />
-              Shout-Outs
-            </NavLink>
-
-            <NavLink to="/admin/reports" className={linkClass}>
-              <FileText size={18} />
-              Reports
-            </NavLink>
-
-            <NavLink to="/admin/settings" className={linkClass}>
-              <Settings size={18} />
-              Settings
-            </NavLink>
-          </div>
-        </div>
-=======
         <NavLink to="/admin/settings" className={linkClass}>
           <Settings size={18} />
           Settings
         </NavLink>
->>>>>>> bba1c762fb140dcc679f4701f3ede2e34ec0a542
 
       </nav>
 
