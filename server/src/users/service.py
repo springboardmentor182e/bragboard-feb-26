@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
-from src.entities.user import User
-from src.auth.utils import hash_password
+from ..entities.user import User
+from ..auth.utils import hash_password
 
 
 def get_users(db: Session):
