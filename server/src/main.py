@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .api import router
 from .database.core import Base, engine
-from .entities import user, shoutout, report
+from .entities import user, shoutout, report, reaction, comment
 from .admin.models import AdminReport, ActivityLog, DashboardStats, UserContribution
 app = FastAPI(title="BragBoard API")
 

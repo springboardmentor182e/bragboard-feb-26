@@ -2,12 +2,12 @@ import { Plus, MessageSquare, Trophy, ArrowRight } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CreateShoutoutModal from "../modals/CreateShoutoutModal";
-
-// ✅ IMPORT YOUR EXISTING CAMPAIGN CARD
 import CampaignCard from "../cards/campaignCard";
+import { useUserStats } from "../../hooks/useUserStats";
 
 const RightPanel = () => {
   const navigate = useNavigate();
+  const { stats } = useUserStats();
   const [openModal, setOpenModal] = useState(false);
 
   return (
@@ -66,7 +66,7 @@ const RightPanel = () => {
                   My Shout-Outs
                 </p>
                 <p className="text-xs text-slate-500">
-                  5 given · 3 received
+                  {stats?.shoutouts_sent || 0} given · {stats?.shoutouts_received || 0} received
                 </p>
               </div>
             </div>
@@ -97,7 +97,7 @@ const RightPanel = () => {
                   Leaderboard
                 </p>
                 <p className="text-xs text-slate-500">
-                  You're rank #12
+                  You're rank #{stats?.rank || "N/A"}
                 </p>
               </div>
             </div>

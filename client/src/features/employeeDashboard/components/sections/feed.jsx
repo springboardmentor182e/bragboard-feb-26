@@ -1,37 +1,24 @@
 import { useNavigate } from "react-router-dom";
 import FeedCard from "../cards/FeedCard";
-
-const data = [
-  {
-    id: 1,
-    name: "Sarah Chen",
-    role: "Senior Engineer",
-    time: "2 hours ago",
-    badge: "Innovation Star",
-    badgeColor: "bg-orange-100 text-orange-600 border-orange-200",
-    message:
-      "Alex has been an incredible mentor this quarter. Their guidance on the new architecture design helped our entire team level up.",
-    likes: 24,
-    comments: 5,
-    initials: "SC",
-  },
-  {
-    id: 2,
-    name: "Emma Watson",
-    role: "Marketing Manager",
-    time: "1 day ago",
-    badge: "Going Above & Beyond",
-    badgeColor: "bg-indigo-100 text-indigo-600 border-indigo-200",
-    message:
-      "Alex went the extra mile to ensure our campaign launch was perfect. The late nights and attention to every detail made a huge impact.",
-    likes: 32,
-    comments: 3,
-    initials: "EW",
-  },
-];
+import { useFeed } from "../../hooks/useFeed";
 
 const Feed = () => {
   const navigate = useNavigate();
+  const { shoutouts, loading, error, refetch } = useFeed();
+
+  if (error) {
+    return (
+      <div className="p-6 bg-red-50 border border-red-200 rounded-lg">
+        <p className="text-red-700">Error loading feed: {error}</p>
+        <button
+          onClick={refetch}
+          className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+        >
+          Try Again
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -61,12 +48,30 @@ const Feed = () => {
 
       </div>
 
+      {/* LOADING STATE */}
+      {loading && (
+        <div className="space-y-4">
+          {[...Array(2)].map((_, i) => (
+            <div key={i} className="h-40 bg-slate-200 rounded-lg animate-pulse" />
+          ))}
+        </div>
+      )}
+
+      {/* EMPTY STATE */}
+      {!loading && shoutouts.length === 0 && (
+        <div className="text-center py-10">
+          <p className="text-slate-500">No shoutouts yet. Be the first to recognize someone!</p>
+        </div>
+      )}
+
       {/* LIST */}
-      <div className="space-y-6">
-        {data.map((item) => (
-          <FeedCard key={item.id} item={item} />
-        ))}
-      </div>
+      {!loading && shoutouts.length > 0 && (
+        <div className="space-y-6">
+          {shoutouts.map((item) => (
+            <FeedCard key={item.id} item={item} />
+          ))}
+        </div>
+      )}
 
     </div>
   );
