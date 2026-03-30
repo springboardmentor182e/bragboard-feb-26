@@ -313,3 +313,85 @@ def create_shoutout_with_recipients(db: Session, sender_id: int, message: str, c
         "reactions_count": get_reaction_counts(db, shoutout.id),
         "comments_count": 0
     }
+
+
+# ============ USER'S GIVEN SHOUTOUTS ============
+
+def get_user_given_shoutouts(db: Session, user_id: int, limit: int = 20, offset: int = 0):
+    """Get shoutouts given (sent) by a user with engagement counts"""
+    
+    shoutouts = db.query(Shoutout).filter(
+        Shoutout.sender_id == user_id
+    ).order_by(Shoutout.created_at.desc()).limit(limit).offset(offset).all()
+    
+    feed = []
+    for shoutout in shoutouts:
+        # Get recipient names for display
+        recipient_names = []
+        for recipient in shoutout.recipients:
+            if recipient.user:
+                recipient_names.append(recipient.user.name)
+        
+        # For FeedCard compatibility - show first recipient or all if multiple
+        receiver_name = ", ".join(recipient_names) if recipient_names else "Unknown"
+        
+        feed.append({
+            "id": shoutout.id,
+            "sender_id": shoutout.sender_id,
+            "sender_name": shoutout.sender.name if shoutout.sender else "Unknown",
+            "receiver_name": receiver_name,  # For FeedCard compatibility
+            "recipients": [{"id": r.user_id, "name": r.user.name if r.user else "Unknown"} for r in shoutout.recipients],
+            "recipients_count": len(shoutout.recipients),
+            "message": shoutout.message,
+            "category": shoutout.category,
+            "points": shoutout.points,
+            "status": shoutout.status,
+            "created_at": shoutout.created_at.isoformat(),
+            "reactions_count": get_reaction_counts(db, shoutout.id),
+            "comments_count": db.query(Comment).filter(Comment.shoutout_id == shoutout.id).count(),
+        })
+    
+    return feed
+
+
+# ============ USER'S RECEIVED SHOUTOUTS ============
+
+def get_user_received_shoutouts(db: Session, user_id: int, limit: int = 20, offset: int = 0):
+    """Get shoutouts received by a user with engagement counts"""
+    from ..entities.shoutout_recipient import ShoutOutRecipient
+    
+    # Query shoutouts where user is a recipient
+    shoutouts = db.query(Shoutout).join(
+        ShoutOutRecipient
+    ).filter(
+        ShoutOutRecipient.user_id == user_id
+    ).order_by(Shoutout.created_at.desc()).limit(limit).offset(offset).all()
+    
+    feed = []
+    for shoutout in shoutouts:
+        # Get recipient names for display
+        recipient_names = []
+        for recipient in shoutout.recipients:
+            if recipient.user:
+                recipient_names.append(recipient.user.name)
+        
+        # For FeedCard compatibility - show first recipient or all if multiple
+        receiver_name = ", ".join(recipient_names) if recipient_names else "Unknown"
+        
+        feed.append({
+            "id": shoutout.id,
+            "sender_id": shoutout.sender_id,
+            "sender_name": shoutout.sender.name if shoutout.sender else "Unknown",
+            "receiver_name": receiver_name,  # For FeedCard compatibility
+            "recipients": [{"id": r.user_id, "name": r.user.name if r.user else "Unknown"} for r in shoutout.recipients],
+            "recipients_count": len(shoutout.recipients),
+            "message": shoutout.message,
+            "category": shoutout.category,
+            "points": shoutout.points,
+            "status": shoutout.status,
+            "created_at": shoutout.created_at.isoformat(),
+            "reactions_count": get_reaction_counts(db, shoutout.id),
+            "comments_count": db.query(Comment).filter(Comment.shoutout_id == shoutout.id).count(),
+        })
+    
+    return feed

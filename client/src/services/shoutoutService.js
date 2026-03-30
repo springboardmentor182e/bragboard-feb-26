@@ -71,6 +71,44 @@ export const getUserFeed = async (limit = 20, offset = 0) => {
 };
 
 /**
+ * Get shoutouts given (sent) by current user
+ */
+export const getUserGivenShoutouts = async (limit = 20, offset = 0) => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await API.get('/api/shoutouts/user/given', {
+      params: { limit, offset },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching given shoutouts:', error);
+    throw error;
+  }
+};
+
+/**
+ * Get shoutouts received by current user
+ */
+export const getUserReceivedShoutouts = async (limit = 20, offset = 0) => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await API.get('/api/shoutouts/user/received', {
+      params: { limit, offset },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching received shoutouts:', error);
+    throw error;
+  }
+};
+
+/**
  * Get user statistics
  */
 export const getUserStats = async (userId) => {

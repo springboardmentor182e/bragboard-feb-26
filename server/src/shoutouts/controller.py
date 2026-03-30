@@ -13,6 +13,8 @@ from .service import (
     get_comments,
     delete_comment,
     create_shoutout_with_recipients,
+    get_user_given_shoutouts,
+    get_user_received_shoutouts,
 )
 from .schemas import ShoutOutCreate, ShoutOutResponse
 from ..auth.dependencies import get_current_user
@@ -47,6 +49,28 @@ def fetch_user_feed(
 def fetch_user_stats(user_id: int, db: Session = Depends(get_db)):
     """Get user stats: points, level, shoutouts count, rank"""
     return get_user_stats(db, user_id)
+
+
+@router.get("/user/given")
+def fetch_user_given_shoutouts(
+    limit: int = Query(20, ge=1, le=100),
+    offset: int = Query(0, ge=0),
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """Get shoutouts given (sent) by the current user"""
+    return get_user_given_shoutouts(db, current_user.id, limit, offset)
+
+
+@router.get("/user/received")
+def fetch_user_received_shoutouts(
+    limit: int = Query(20, ge=1, le=100),
+    offset: int = Query(0, ge=0),
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """Get shoutouts received by the current user"""
+    return get_user_received_shoutouts(db, current_user.id, limit, offset)
 
 
 @router.post("", response_model=ShoutOutResponse, status_code=201)
