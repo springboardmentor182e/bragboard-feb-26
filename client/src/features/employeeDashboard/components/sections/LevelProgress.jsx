@@ -1,7 +1,28 @@
 import { Star, TrendingUp } from "lucide-react";
+import { useUserStats } from "../../hooks/useUserStats";
 
 const LevelProgress = () => {
-  const progress = 65;
+  const { stats } = useUserStats();
+
+  // Calculate progress percentage
+  const totalPointsPerLevel = 500;
+  const currentLevelProgress = (stats?.total_points || 0) % totalPointsPerLevel;
+  const progress = Math.min((currentLevelProgress / totalPointsPerLevel) * 100, 100);
+
+  // Get next level title
+  const getLevelTitle = (level) => {
+    const titles = {
+      1: "Rising Star",
+      2: "Team Player",
+      3: "Recognition Leader",
+      4: "Champion",
+      5: "Legend",
+    };
+    return titles[level] || `Champion Level ${level}`;
+  };
+
+  const nextLevel = (stats?.current_level || 1) + 1;
+  const nextLevelTitle = getLevelTitle(nextLevel);
 
   return (
     <div
@@ -25,13 +46,13 @@ const LevelProgress = () => {
             Level Progress
           </p>
           <p className="text-sm text-white/70">
-            350 points to next level
+            {stats?.points_to_next_level || 500} points to next level
           </p>
         </div>
 
         <div className="flex items-center gap-2 bg-white/10 px-3 py-1 rounded-lg text-sm font-medium backdrop-blur">
           <Star size={14} />
-          Level 7
+          Level {stats?.current_level || 1}
         </div>
 
       </div>
@@ -39,10 +60,10 @@ const LevelProgress = () => {
       {/* TITLE */}
       <div className="flex justify-between items-center mb-2">
         <p className="text-lg font-semibold">
-          Team Champion
+          {getLevelTitle(stats?.current_level || 1)}
         </p>
         <p className="text-sm text-white/70">
-          {progress}%
+          {Math.min(Math.round(progress), 100)}%
         </p>
       </div>
 
@@ -62,8 +83,8 @@ const LevelProgress = () => {
 
       {/* FOOTER */}
       <div className="flex justify-between text-xs text-white/60 mt-2">
-        <span>650 pts</span>
-        <span>1000 pts</span>
+        <span>{currentLevelProgress} pts</span>
+        <span>{totalPointsPerLevel} pts</span>
       </div>
 
       {/* NEXT LEVEL */}
@@ -86,10 +107,10 @@ const LevelProgress = () => {
 
           <div>
             <p className="font-semibold text-sm">
-              Next Level: Recognition Leader
+              Next Level: {nextLevelTitle}
             </p>
             <p className="text-xs text-white/60">
-              Unlock badges & rewards
+              Keep recognizing to advance
             </p>
           </div>
 

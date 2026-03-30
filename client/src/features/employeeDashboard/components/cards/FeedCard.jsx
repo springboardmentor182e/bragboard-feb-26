@@ -1,15 +1,93 @@
-import { Heart, MessageCircle } from "lucide-react";
+import { Heart, MessageCircle, ThumbsUp } from "lucide-react";
 import { useState } from "react";
+import { useReactions } from "../../hooks/useReactions";
+import useToast from "../../hooks/useToast";
 
 const FeedCard = ({ item }) => {
-  const [liked, setLiked] = useState(false);
-  const [likes, setLikes] = useState(item.likes);
   const [expanded, setExpanded] = useState(false);
+  const [showComments, setShowComments] = useState(false);
+  const [commentText, setCommentText] = useState("");
+  const [showReactionPicker, setShowReactionPicker] = useState(false);
+  const { showToast } = useToast();
 
-  const handleLike = () => {
-    setLiked(!liked);
-    setLikes(liked ? likes - 1 : likes + 1);
+  const { 
+    toggleReaction, 
+    addCommentOptimistic, 
+    deleteCommentOptimistic,
+    optimisticReactions,
+    optimisticComments,
+    reactingLoading,
+    commentLoading,
+    error
+  } = useReactions(item.id);
+
+  // Get sender initials
+  const senderInitials = (item.sender_name || "?")
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase();
+
+  // Parse created_at for display
+  const formatTime = (dateString) => {
+    if (!dateString) return "now";
+    try {
+      const date = new Date(dateString);
+      const now = new Date();
+      const diffMs = now - date;
+      const diffMins = Math.floor(diffMs / 60000);
+      const diffHours = Math.floor(diffMs / 3600000);
+      const diffDays = Math.floor(diffMs / 86400000);
+
+      if (diffMins < 1) return "now";
+      if (diffMins < 60) return `${diffMins}m ago`;
+      if (diffHours < 24) return `${diffHours}h ago`;
+      return `${diffDays}d ago`;
+    } catch {
+      return "recently";
+    }
   };
+
+  const handleReactionClick = async (reactionType) => {
+    try {
+      await toggleReaction(reactionType, optimisticReactions.user_reaction);
+      setShowReactionPicker(false);
+      showToast(
+        optimisticReactions.user_reaction === reactionType
+          ? "Reaction removed"
+          : `You reacted with ${reactionType === "like" ? "❤️" : reactionType === "clap" ? "👏" : "⭐"}`,
+        "success"
+      );
+    } catch (err) {
+      showToast(err.message || "Failed to update reaction", "error");
+    }
+  };
+
+  const handleAddComment = async (e) => {
+    e.preventDefault();
+    if (!commentText.trim()) return;
+
+    try {
+      await addCommentOptimistic(commentText);
+      setCommentText("");
+      showToast("Comment added!", "success");
+    } catch (err) {
+      showToast(err.message || "Failed to add comment", "error");
+    }
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    try {
+      await deleteCommentOptimistic(commentId);
+      showToast("Comment deleted", "success");
+    } catch (err) {
+      showToast(err.message || "Failed to delete comment", "error");
+    }
+  };
+
+  const reactionCounts = item.reactions_count || { like: 0, clap: 0, star: 0 };
+  const totalReactions = Object.values(reactionCounts).reduce((a, b) => a + b, 0);
+  const commentCount = item.comments_count || 0;
 
   return (
     <div
@@ -35,75 +113,179 @@ const FeedCard = ({ item }) => {
 
           {/* AVATAR */}
           <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-indigo-500 to-pink-500 text-white flex items-center justify-center font-semibold shadow group-hover:scale-105 transition">
-            {item.initials}
+            {senderInitials}
           </div>
 
           <div>
             <p className="font-semibold text-slate-900">
-              {item.name}
+              {item.sender_name || "Unknown"}
             </p>
             <p className="text-sm text-slate-500">
-              {item.role}
+              recognized {item.receiver_name || "someone"}
             </p>
           </div>
 
         </div>
 
         <p className="text-xs text-slate-400">
-          {item.time}
+          {formatTime(item.created_at)}
         </p>
 
       </div>
 
-      {/* BADGE */}
-      <div
-        className={`
-          inline-block mt-4 text-xs px-3 py-1 rounded-lg border font-medium
-          ${item.badgeColor}
-        `}
-      >
-        {item.badge}
-      </div>
+      {/* CATEGORY BADGE */}
+      {item.category && (
+        <div className="inline-block mt-4 text-xs px-3 py-1 rounded-lg border bg-indigo-100 text-indigo-600 border-indigo-200 font-medium">
+          {item.category}
+        </div>
+      )}
 
       {/* MESSAGE */}
       <p className="text-sm text-slate-700 mt-4 leading-relaxed">
-        {expanded ? item.message : item.message.slice(0, 120) + "..."}
-        <span
-          onClick={() => setExpanded(!expanded)}
-          className="ml-2 text-indigo-600 cursor-pointer text-xs font-medium hover:underline"
-        >
-          {expanded ? "Show less" : "Read more"}
-        </span>
+        {expanded ? item.message : item.message?.slice(0, 120) + "..."}
+        {item.message?.length > 120 && (
+          <span
+            onClick={() => setExpanded(!expanded)}
+            className="ml-2 text-indigo-600 cursor-pointer text-xs font-medium hover:underline"
+          >
+            {expanded ? "Show less" : "Read more"}
+          </span>
+        )}
       </p>
 
-      {/* FOOTER */}
-      <div className="mt-5 flex items-center gap-4">
+      {/* REACTIONS & COMMENTS SECTION */}
+      <div className="mt-5 space-y-3">
 
-        {/* LIKE */}
-        <button
-          onClick={handleLike}
-          className={`
-            flex items-center gap-2 px-3 py-1.5 rounded-full text-sm transition-all duration-200
-            ${liked 
-              ? "bg-red-50 text-red-600 scale-105" 
-              : "bg-slate-100 text-slate-600 hover:bg-slate-200"}
-          `}
-        >
-          <Heart
-            size={14}
-            className={`
-              transition-all
-              ${liked ? "fill-red-500 scale-110" : ""}
-            `}
-          />
-          {likes}
-        </button>
+        {/* REACTION BUTTONS */}
+        <div className="flex items-center gap-3 relative">
 
-        {/* COMMENT */}
-        <button className="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-full text-sm text-slate-600 hover:bg-slate-200 hover:scale-105 transition">
-          <MessageCircle size={14} />
-          {item.comments}
-        </button>
+          {/* REACTION PICKER BUTTON */}
+          <div className="relative">
+            <button
+              onClick={() => setShowReactionPicker(!showReactionPicker)}
+              disabled={reactingLoading}
+              className="
+                flex items-center gap-2 px-3 py-1.5 rounded-full text-sm 
+                transition-all duration-200
+                bg-slate-100 text-slate-600 hover:bg-slate-200
+              "
+            >
+              {optimisticReactions.user_reaction ? (
+                <span className="text-lg">
+                  {optimisticReactions.user_reaction === "like" && "❤️"}
+                  {optimisticReactions.user_reaction === "clap" && "👏"}
+                  {optimisticReactions.user_reaction === "star" && "⭐"}
+                </span>
+              ) : (
+                <Heart size={14} />
+              )}
+              {totalReactions || "React"}
+            </button>
+
+            {/* REACTION PICKER */}
+            {showReactionPicker && (
+              <div className="absolute bottom-12 left-0 bg-white rounded-lg border border-slate-200 shadow-lg p-2 flex gap-2 z-50">
+                <button
+                  onClick={() => handleReactionClick("like")}
+                  className="text-2xl hover:scale-125 transition p-1"
+                  title="Like"
+                >
+                  ❤️
+                </button>
+                <button
+                  onClick={() => handleReactionClick("clap")}
+                  className="text-2xl hover:scale-125 transition p-1"
+                  title="Clap"
+                >
+                  👏
+                </button>
+                <button
+                  onClick={() => handleReactionClick("star")}
+                  className="text-2xl hover:scale-125 transition p-1"
+                  title="Star"
+                >
+                  ⭐
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* REACTION COUNTS */}
+          <div className="flex gap-2 text-xs text-slate-600">
+            {reactionCounts.like > 0 && (
+              <span className="flex items-center gap-1">❤️ {reactionCounts.like}</span>
+            )}
+            {reactionCounts.clap > 0 && (
+              <span className="flex items-center gap-1">👏 {reactionCounts.clap}</span>
+            )}
+            {reactionCounts.star > 0 && (
+              <span className="flex items-center gap-1">⭐ {reactionCounts.star}</span>
+            )}
+          </div>
+
+          {/* COMMENT BUTTON */}
+          <button
+            onClick={() => setShowComments(!showComments)}
+            className="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-full text-sm text-slate-600 hover:bg-slate-200 transition"
+          >
+            <MessageCircle size={14} />
+            {commentCount || 0}
+          </button>
+
+        </div>
+
+        {/* COMMENTS SECTION */}
+        {showComments && (
+          <div className="mt-4 space-y-3 border-t border-slate-200 pt-3">
+
+            {/* COMMENTS LIST */}
+            {optimisticComments.length > 0 && (
+              <div className="space-y-2 max-h-40 overflow-y-auto">
+                {optimisticComments.map((comment) => (
+                  <div key={comment.id} className="bg-slate-50 p-2 rounded text-xs">
+                    <div className="flex justify-between items-start">
+                      <p className="font-semibold text-slate-900">{comment.user_name}</p>
+                      {!comment.isOptimistic && (
+                        <button
+                          onClick={() => handleDeleteComment(comment.id)}
+                          className="text-slate-400 hover:text-red-500 transition"
+                        >
+                          ✕
+                        </button>
+                      )}
+                    </div>
+                    <p className="text-slate-700 mt-1">{comment.text}</p>
+                    <p className="text-slate-400 mt-1">{formatTime(comment.created_at)}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* ADD COMMENT INPUT */}
+            <form onSubmit={handleAddComment} className="flex gap-2">
+              <input
+                type="text"
+                placeholder="Add a comment..."
+                value={commentText}
+                onChange={(e) => setCommentText(e.target.value)}
+                disabled={commentLoading}
+                className="flex-1 text-xs px-3 py-1.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+              <button
+                type="submit"
+                disabled={commentLoading || !commentText.trim()}
+                className="px-3 py-1.5 bg-indigo-500 text-white text-xs rounded-lg hover:bg-indigo-600 disabled:opacity-50 transition"
+              >
+                {commentLoading ? "..." : "Post"}
+              </button>
+            </form>
+
+            {error && (
+              <p className="text-xs text-red-500">{error}</p>
+            )}
+
+          </div>
+        )}
 
       </div>
 
