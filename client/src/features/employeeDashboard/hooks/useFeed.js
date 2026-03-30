@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { getShoutoutFeed } from "../../../services/shoutoutService";
+import { getUserFeed } from "../../../services/shoutoutService";
 
 /**
  * useFeed Hook - Manages feed state and fetching
@@ -16,7 +16,7 @@ export const useFeed = () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await getShoutoutFeed(newLimit, newOffset);
+      const data = await getUserFeed(newLimit, newOffset);
       setShoutouts(data);
       setLimit(newLimit);
       setOffset(newOffset);

@@ -60,31 +60,6 @@ def remove_user(user_id: int, db: Session = Depends(get_db)):
     return {"message": "User deleted successfully"}
 
 
-# User management endpoints
-@router.get("/users", response_model=List[schemas.UserResponse])
-async def get_all_users(
-    skip: int = 0,
-    limit: int = 100,
-    db: Session = Depends(get_db)
-):
-    """Get all users"""
-    admin_service = service.AdminService(db)
-    users = admin_service.get_all_users(skip, limit)
-    return users
-
-@router.get("/users/{user_id}", response_model=schemas.UserResponse)
-async def get_user(
-    user_id: int,
-    db: Session = Depends(get_db)
-):
-    """Get user by ID"""
-    admin_service = service.AdminService(db)
-    user = admin_service.get_user_by_id(user_id)
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return user
-
-
 
 @router.get("/dashboard/stats")
 async def get_dashboard_stats(db: Session = Depends(get_db)):

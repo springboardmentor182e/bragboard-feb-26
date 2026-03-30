@@ -23,5 +23,6 @@ class Shoutout(Base):
     # Relationships
     sender = relationship("User", foreign_keys=[sender_id])
     receiver = relationship("User", foreign_keys=[receiver_id])
+    recipients = relationship("ShoutOutRecipient", back_populates="shoutout", cascade="all, delete-orphan")
     reactions = relationship("Reaction", back_populates="shoutout", cascade="all, delete-orphan")
     comments = relationship("Comment", back_populates="shoutout", cascade="all, delete-orphan")

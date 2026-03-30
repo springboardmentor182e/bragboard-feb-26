@@ -7,8 +7,15 @@ import { useUserStats } from "../../hooks/useUserStats";
 
 const RightPanel = () => {
   const navigate = useNavigate();
-  const { stats } = useUserStats();
+  const { stats, refetch } = useUserStats();
   const [openModal, setOpenModal] = useState(false);
+
+  const handleShoutoutSuccess = (createdShoutout) => {
+    // Refetch stats to update the counters
+    if (refetch) {
+      refetch();
+    }
+  };
 
   return (
     <>
@@ -112,6 +119,7 @@ const RightPanel = () => {
       <CreateShoutoutModal
         isOpen={openModal}
         onClose={() => setOpenModal(false)}
+        onSuccess={handleShoutoutSuccess}
       />
     </>
   );

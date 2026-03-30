@@ -45,7 +45,7 @@ const AdminSidebar = () => {
 
         <NavLink to="/admin/shoutouts" className={linkClass}>
           <MessageSquare size={18} />
-          Shout-Outs
+          Shout-Outs Management
         </NavLink>
 
         <NavLink to="/admin/reports" className={linkClass}>

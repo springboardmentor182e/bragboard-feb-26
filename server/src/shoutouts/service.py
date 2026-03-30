@@ -222,3 +222,94 @@ def delete_comment(db: Session, comment_id: int):
     db.commit()
     
     return {"message": "Comment deleted"}
+
+
+# ============ SHOUTOUT CREATION WITH MULTI-USER TAGGING ============
+
+def create_shoutout_with_recipients(db: Session, sender_id: int, message: str, category: str, recipient_ids: list, points: int):
+    """
+    Create a new shoutout and tag multiple recipients.
+    
+    Args:
+        db: Database session
+        sender_id: ID of the user creating the shoutout
+        message: Shoutout message
+        category: Category of recognition
+        recipient_ids: List of user IDs to tag as recipients
+        points: Points to award
+    
+    Returns:
+        Dictionary with created shoutout details including recipients
+    
+    Raises:
+        ValueError if any recipient ID is invalid or empty list
+        Exception if database operations fail
+    """
+    from ..entities.shoutout_recipient import ShoutOutRecipient
+    
+    # Validate recipient IDs are not empty
+    if not recipient_ids or len(recipient_ids) == 0:
+        raise ValueError("At least one recipient must be tagged")
+    
+    # Validate all recipient IDs exist and are different from sender
+    invalid_users = []
+    for user_id in recipient_ids:
+        if user_id == sender_id:
+            raise ValueError(f"Cannot tag yourself as a recipient")
+        
+        user = db.query(User).filter(User.id == user_id).first()
+        if not user:
+            invalid_users.append(user_id)
+    
+    if invalid_users:
+        raise ValueError(f"Invalid user IDs: {invalid_users}")
+    
+    # Create the shoutout (using first recipient as receiver_id for backward compatibility)
+    shoutout = Shoutout(
+        sender_id=sender_id,
+        receiver_id=recipient_ids[0],  # Backward compatibility
+        message=message,
+        category=category,
+        points=points,
+        status="PENDING"
+    )
+    
+    db.add(shoutout)
+    db.flush()  # Flush to get the shoutout ID without committing
+    
+    # Create recipient entries for all tagged users
+    for user_id in recipient_ids:
+        recipient = ShoutOutRecipient(
+            shoutout_id=shoutout.id,
+            user_id=user_id
+        )
+        db.add(recipient)
+    
+    db.commit()
+    db.refresh(shoutout)
+    
+    # Build response with all recipient details
+    recipients_data = [
+        {
+            "id": r.user_id,
+            "name": r.user.name,
+            "email": r.user.email,
+            "department": r.user.department
+        }
+        for r in shoutout.recipients
+    ]
+    
+    return {
+        "id": shoutout.id,
+        "sender_id": shoutout.sender_id,
+        "sender_name": shoutout.sender.name if shoutout.sender else "Unknown",
+        "message": shoutout.message,
+        "category": shoutout.category,
+        "points": shoutout.points,
+        "status": shoutout.status,
+        "created_at": shoutout.created_at.isoformat(),
+        "recipients": recipients_data,
+        "recipients_count": len(recipients_data),
+        "reactions_count": get_reaction_counts(db, shoutout.id),
+        "comments_count": 0
+    }

@@ -4,7 +4,7 @@ import { getUserStats } from "../../../services/userStatsService";
 
 /**
  * useUserStats Hook - Auto-fetches user stats on mount
- * @returns {Object} { stats, loading, error }
+ * @returns {Object} { stats, loading, error, refetch }
  */
 export const useUserStats = () => {
   const { user } = useAuth();
@@ -12,23 +12,23 @@ export const useUserStats = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
+  const fetchStats = async () => {
     if (!user?.id) return;
 
-    const fetchStats = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const data = await getUserStats(user.id);
-        setStats(data);
-      } catch (err) {
-        setError(err.message || "Failed to fetch stats");
-        console.error("Stats fetch error:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await getUserStats(user.id);
+      setStats(data);
+    } catch (err) {
+      setError(err.message || "Failed to fetch stats");
+      console.error("Stats fetch error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchStats();
   }, [user?.id]);
 
@@ -44,6 +44,7 @@ export const useUserStats = () => {
     },
     loading,
     error,
+    refetch: fetchStats,
   };
 };
 

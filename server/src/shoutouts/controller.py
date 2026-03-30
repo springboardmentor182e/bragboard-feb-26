@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query, HTTPException
+from fastapi import APIRouter, Depends, Query, HTTPException, Body
 from sqlalchemy.orm import Session
 from ..database.core import get_db
 from .service import (
@@ -12,7 +12,9 @@ from .service import (
     add_comment,
     get_comments,
     delete_comment,
+    create_shoutout_with_recipients,
 )
+from .schemas import ShoutOutCreate, ShoutOutResponse
 from ..auth.dependencies import get_current_user
 
 # Admin routes
@@ -45,6 +47,42 @@ def fetch_user_feed(
 def fetch_user_stats(user_id: int, db: Session = Depends(get_db)):
     """Get user stats: points, level, shoutouts count, rank"""
     return get_user_stats(db, user_id)
+
+
+@router.post("", response_model=ShoutOutResponse, status_code=201)
+def create_shoutout(
+    shoutout_data: ShoutOutCreate,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """
+    Create a new shoutout with multiple user tagging.
+    
+    Args:
+        shoutout_data: Shoutout creation data with message, category, recipient_ids, and points
+        db: Database session
+        current_user: Current authenticated user
+    
+    Returns:
+        Created shoutout with all recipient details
+    
+    Raises:
+        HTTPException 400: If validation fails (invalid users, empty recipients, self-tagging)
+    """
+    try:
+        result = create_shoutout_with_recipients(
+            db=db,
+            sender_id=current_user.id,
+            message=shoutout_data.message,
+            category=shoutout_data.category,
+            recipient_ids=shoutout_data.recipient_ids,
+            points=shoutout_data.points
+        )
+        return result
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to create shoutout: {str(e)}")
 
 
 @router.post("/{shoutout_id}/reactions")
