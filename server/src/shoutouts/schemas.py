@@ -15,6 +15,40 @@ class RecipientResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class UserInfoResponse(BaseModel):
+    """User information (sender/recipient)"""
+    id: int
+    name: str
+    email: Optional[str] = None
+    department: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class ReactionCountResponse(BaseModel):
+    """Reaction counts by type"""
+    like: int = 0
+    clap: int = 0
+    star: int = 0
+
+
+class FeedItemResponse(BaseModel):
+    """Shoutout feed item response"""
+    id: int
+    message: str
+    category: CategoryType
+    points: int
+    status: ShoutoutStatusType
+    created_at: datetime
+    sender: UserInfoResponse
+    recipients: List[UserInfoResponse]
+    recipients_count: int
+    reactions_count: ReactionCountResponse
+    comments_count: int
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 class ShoutOutCreate(BaseModel):
     message: str = Field(..., min_length=1, max_length=1000)
     category: CategoryType

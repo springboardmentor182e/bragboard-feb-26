@@ -47,4 +47,4 @@ class UserContribution(Base):
     last_updated = Column(DateTime(timezone=True), onupdate=func.now())
 
     # Relationship to get user details if needed
-    user = relationship("User", back_populates="contributions")
+    user = relationship("User")

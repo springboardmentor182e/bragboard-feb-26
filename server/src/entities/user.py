@@ -24,6 +24,3 @@ class User(Base):
     password_reset_otp = Column(String, nullable=True)
 
     password_reset_expires = Column(DateTime, nullable=True)
-
-    # 📊 RELATIONSHIPS
-    contributions = relationship("UserContribution", back_populates="user")

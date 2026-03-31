@@ -1,9 +1,11 @@
-from fastapi import APIRouter, Depends, Query, HTTPException, Body
+from fastapi import APIRouter, Depends, Query, HTTPException, Body, Request
 from sqlalchemy.orm import Session
+from datetime import date, datetime
 from ..database.core import get_db
 from .service import (
     get_all_shoutouts, 
     delete_shoutout,
+    get_all_shoutouts_feed,
     get_user_feed,
     get_user_stats,
     add_reaction,
@@ -16,7 +18,7 @@ from .service import (
     get_user_given_shoutouts,
     get_user_received_shoutouts,
 )
-from .schemas import ShoutOutCreate, ShoutOutResponse
+from .schemas import ShoutOutCreate, ShoutOutResponse, FeedItemResponse
 from ..auth.dependencies import get_current_user
 
 # Admin routes
@@ -43,6 +45,72 @@ def fetch_user_feed(
 ):
     """Get user's feed with shoutouts they received + team shoutouts"""
     return get_user_feed(db, current_user.id, limit, offset)
+
+
+@router.get("/feed/all")
+def fetch_all_shoutouts_feed(
+    limit: int = Query(20, ge=1, le=100),
+    offset: int = Query(0, ge=0),
+    sender_id: int = Query(None, description="Filter by sender user ID"),
+    department: str = Query(None, description="Filter by sender's department"),
+    date_from: date = Query(None, description="Filter shoutouts from this date (YYYY-MM-DD)"),
+    date_to: date = Query(None, description="Filter shoutouts until this date (YYYY-MM-DD)"),
+    after: datetime = Query(None, description="Get shoutouts created after this timestamp (ISO format)"),
+    db: Session = Depends(get_db),
+    request: Request = None
+):
+    """
+    Get all approved shoutouts with filters, pagination, and optional user engagement.
+    
+    Query Parameters:
+    - sender_id: Filter by sender user ID
+    - department: Filter by sender's department
+    - date_from: Filter from date (YYYY-MM-DD)
+    - date_to: Filter until date (YYYY-MM-DD)
+    - after: Get shoutouts created after this timestamp (ISO 8601 format)
+    - limit: Results per page (1-100, default 20)
+    - offset: Results to skip (default 0)
+    
+    Returns list of approved shoutouts with sender info, recipients, engagement counts,
+    and current user's reaction (if authenticated).
+    """
+    # Try to authenticate user (optional) - extract from Authorization header
+    user_id = None
+    try:
+        from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+        from jose import jwt
+        from ..auth.config import SECRET_KEY, ALGORITHM
+        from ..entities.user import User
+        
+        auth_header = request.headers.get("Authorization") if request else None
+        if auth_header and auth_header.startswith("Bearer "):
+            token = auth_header.replace("Bearer ", "")
+            try:
+                payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+                user = db.query(User).filter(User.id == payload.get("user_id")).first()
+                if user:
+                    user_id = user.id
+            except:
+                # Invalid token, proceed as anonymous
+                pass
+    except:
+        # No token or error parsing - proceed as public user
+        pass
+    
+    try:
+        return get_all_shoutouts_feed(
+            db=db,
+            limit=limit,
+            offset=offset,
+            sender_id=sender_id,
+            department=department,
+            date_from=date_from,
+            date_to=date_to,
+            after_datetime=after,
+            current_user_id=user_id
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch feed: {str(e)}")
 
 
 @router.get("/stats/{user_id}")

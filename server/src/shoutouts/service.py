@@ -1,6 +1,8 @@
-from sqlalchemy import text, func
-from sqlalchemy.orm import Session
+from sqlalchemy import text, func, and_
+from sqlalchemy.orm import Session, selectinload
+from datetime import datetime, date
 from ..entities.shoutout import Shoutout
+from ..entities.shoutout_recipient import ShoutOutRecipient
 from ..entities.reaction import Reaction, ReactionType
 from ..entities.comment import Comment
 from ..entities.user import User
@@ -24,6 +26,135 @@ def get_all_shoutouts(db: Session):
         }
         for row in rows
     ]
+
+
+# ============ PUBLIC SHOUTOUT FEED (NEW) ============
+
+def get_all_shoutouts_feed(
+    db: Session,
+    limit: int = 20,
+    offset: int = 0,
+    sender_id: int = None,
+    department: str = None,
+    date_from: date = None,
+    date_to: date = None,
+    after_datetime: datetime = None,
+    current_user_id: int = None
+):
+    """
+    Get all approved shoutouts with optional filters and user engagement data.
+    
+    Args:
+        db: Database session
+        limit: Number of results to return (1-100)
+        offset: Number of results to skip
+        sender_id: Filter by sender ID
+        department: Filter by sender's department
+        date_from: Filter shoutouts from this date (YYYY-MM-DD)
+        date_to: Filter shoutouts until this date (YYYY-MM-DD)
+        after_datetime: Return shoutouts created after this timestamp (for "new posts")
+        current_user_id: Current user ID for including their reaction in response
+    
+    Returns:
+        List of shoutouts with sender info, recipients, and engagement metrics
+    """
+    
+    # Start with base query - filter for APPROVED shoutouts only
+    query = db.query(Shoutout).filter(
+        Shoutout.status == "APPROVED"
+    ).options(
+        selectinload(Shoutout.sender),
+        selectinload(Shoutout.recipients).selectinload(ShoutOutRecipient.user),
+        selectinload(Shoutout.reactions)
+    )
+    
+    # Apply filters
+    if sender_id:
+        query = query.filter(Shoutout.sender_id == sender_id)
+    
+    if department:
+        query = query.filter(Shoutout.sender.has(User.department == department))
+    
+    if date_from:
+        # Convert date to datetime for comparison (start of day)
+        start_dt = datetime.combine(date_from, datetime.min.time())
+        query = query.filter(Shoutout.created_at >= start_dt)
+    
+    if date_to:
+        # Convert date to datetime for comparison (end of day)
+        end_dt = datetime.combine(date_to, datetime.max.time())
+        query = query.filter(Shoutout.created_at <= end_dt)
+    
+    # Filter for posts after specific timestamp (new posts only)
+    if after_datetime:
+        query = query.filter(Shoutout.created_at > after_datetime)
+    
+    # Sort by latest first and apply pagination
+    shoutouts = query.order_by(
+        Shoutout.created_at.desc()
+    ).limit(limit).offset(offset).all()
+    
+    # Build response with all details
+    feed = []
+    for shoutout in shoutouts:
+        # Get reaction counts using aggregation (optimized)
+        reactions_count = get_reaction_counts(db, shoutout.id)
+        
+        # Get comments count efficiently (aggregation, not loading full objects)
+        comments_count = db.query(func.count(Comment.id)).filter(
+            Comment.shoutout_id == shoutout.id
+        ).scalar() or 0
+        
+        # Get current user's reaction (if authenticated)
+        my_reaction = None
+        if current_user_id:
+            user_reaction = db.query(Reaction).filter(
+                Reaction.shoutout_id == shoutout.id,
+                Reaction.user_id == current_user_id
+            ).first()
+            if user_reaction:
+                my_reaction = user_reaction.reaction_type.value if user_reaction.reaction_type else None
+        
+        # Build recipients list
+        recipients_list = [
+            {
+                "id": recipient.user_id,
+                "name": recipient.user.name if recipient.user else "Unknown",
+                "email": recipient.user.email if recipient.user else None,
+                "department": recipient.user.department if recipient.user else None
+            }
+            for recipient in shoutout.recipients
+        ]
+        
+        # Build sender info
+        sender_info = {
+            "id": shoutout.sender_id,
+            "name": shoutout.sender.name if shoutout.sender else "Unknown",
+            "email": shoutout.sender.email if shoutout.sender else None,
+            "department": shoutout.sender.department if shoutout.sender else None
+        }
+        
+        feed_item = {
+            "id": shoutout.id,
+            "message": shoutout.message,
+            "category": shoutout.category,
+            "points": shoutout.points,
+            "status": shoutout.status,
+            "created_at": shoutout.created_at.isoformat(),
+            "sender": sender_info,
+            "recipients": recipients_list,
+            "recipients_count": len(recipients_list),
+            "reactions_count": reactions_count,
+            "comments_count": comments_count
+        }
+        
+        # Include user's reaction only if authenticated
+        if current_user_id:
+            feed_item["my_reaction"] = my_reaction
+        
+        feed.append(feed_item)
+    
+    return feed
 
 
 def delete_shoutout(db: Session, shoutout_id: int):
