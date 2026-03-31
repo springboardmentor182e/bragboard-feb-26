@@ -1,7 +1,6 @@
 from contextlib import asynccontextmanager
 import importlib.util, sys, os
 
-# --- Direct file imports to avoid folder/file name conflicts ---
 def load(name, filepath):
     spec = importlib.util.spec_from_file_location(name, filepath)
     mod  = importlib.util.module_from_spec(spec)
@@ -26,7 +25,7 @@ Employee     = models.Employee
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.database.core import Base, engine
+from src.database.core import Base as CoreBase, engine as core_engine
 from src.shoutouts.controller import router as shoutout_router
 from src.api import router
 from src.entities import user
@@ -56,8 +55,9 @@ def seed_employees():
 async def lifespan(app: FastAPI):
     try:
         Base.metadata.create_all(bind=engine, checkfirst=True)
+        CoreBase.metadata.create_all(bind=core_engine, checkfirst=True)
     except Exception as e:
-        print(f"[DB Init Warning] {e} - tables may already exist, continuing...")
+        print(f"[DB Init Warning] {e} - continuing...")
     try:
         seed_employees()
     except Exception as e:
@@ -75,7 +75,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include routers
 app.include_router(shoutout_router)
 app.include_router(router)
 app.include_router(admin_router)
@@ -86,9 +85,7 @@ app.include_router(comments.router)
 
 @app.get("/")
 def root():
-    return {
-        "message": "BragBoard API is running"
-    }
+    return {"message": "BragBoard API is running"}
 
 @app.get("/health")
 def health():
