@@ -54,7 +54,7 @@ def seed_employees():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    Base.metadata.create_all(bind=engine)
+    Base.metadata.create_all(bind=engine, checkfirst=True)
     seed_employees()
     yield
 
