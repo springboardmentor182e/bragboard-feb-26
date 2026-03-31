@@ -10,6 +10,7 @@ function AddEmployeeModal({ setShowModal, reloadEmployees }) {
     email: "",
     department: "",
     role: "Employee",
+    status: "Active",
   });
 
   const [loading, setLoading] = useState(false);
@@ -29,12 +30,14 @@ function AddEmployeeModal({ setShowModal, reloadEmployees }) {
     setError("");
 
     try {
-      /* ❗ REMOVE fake ID (backend will handle it) */
+      /* ✅ Include all required fields and default password */
       await createEmployee({
         name: formData.name,
         email: formData.email,
         department: formData.department,
         role: formData.role,
+        status: formData.status,
+        password: "123456", // Default password
       });
 
       reloadEmployees();

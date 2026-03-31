@@ -1,27 +1,30 @@
 import { Heart, Users, Gift } from "lucide-react";
-
-const statsConfig = [
-  {
-    title: "Received",
-    value: 3,
-    icon: Heart,
-    gradient: "from-emerald-400 to-green-500",
-  },
-  {
-    title: "Recognized",
-    value: 5,
-    icon: Users,
-    gradient: "from-indigo-400 to-purple-500",
-  },
-  {
-    title: "Points",
-    value: "+250",
-    icon: Gift,
-    gradient: "from-amber-400 to-orange-500",
-  },
-];
+import { useUserStats } from "../../hooks/useUserStats";
 
 const StatsCards = () => {
+  const { stats, loading } = useUserStats();
+
+  const statsConfig = [
+    {
+      title: "Received",
+      value: stats?.shoutouts_received || 0,
+      icon: Heart,
+      gradient: "from-emerald-400 to-green-500",
+    },
+    {
+      title: "Recognized",
+      value: stats?.shoutouts_sent || 0,
+      icon: Users,
+      gradient: "from-indigo-400 to-purple-500",
+    },
+    {
+      title: "Points",
+      value: `+${stats?.total_points || 0}`,
+      icon: Gift,
+      gradient: "from-amber-400 to-orange-500",
+    },
+  ];
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
 
@@ -59,7 +62,7 @@ const StatsCards = () => {
                 </p>
 
                 <p className="text-3xl font-bold text-slate-900 mt-1 tracking-tight">
-                  {stat.value}
+                  {loading ? "-" : stat.value}
                 </p>
               </div>
 

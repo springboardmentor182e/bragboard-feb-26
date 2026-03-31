@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Heart,
   MessageCircle,
@@ -6,36 +6,71 @@ import {
   ArrowRight,
   Star,
 } from "lucide-react";
+import { useAuth } from "../../../context/AuthContext";
+import {
+  getUserGivenShoutouts,
+  getUserReceivedShoutouts,
+  getUserStats,
+} from "../../../services/shoutoutService";
+import FeedCard from "../components/cards/FeedCard";
 
 const MyShoutouts = () => {
   const [activeTab, setActiveTab] = useState("received");
+  const [stats, setStats] = useState({
+    shoutouts_sent: 0,
+    shoutouts_received: 0,
+    total_points: 0,
+  });
+  const [shoutouts, setShoutouts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const data = [
-    {
-      from: "Sarah Chen",
-      to: "You",
-      role: "Senior Engineer",
-      message:
-        "Alex has been an incredible mentor this quarter. Their guidance on architecture helped the whole team grow.",
-      date: "5 hours ago",
-      likes: 24,
-      comments: 3,
-      badge: "Innovation Star",
-      campaign: "Q1 Excellence Drive",
-    },
-    {
-      from: "You",
-      to: "Emma Watson",
-      role: "Marketing Manager",
-      message:
-        "Amazing campaign execution! Your leadership made this launch successful.",
-      date: "2 days ago",
-      likes: 32,
-      comments: 5,
-      badge: "Going Above & Beyond",
-      campaign: "Innovation Week",
-    },
-  ];
+  const { user } = useAuth();
+  const userId = user?.id;
+
+  // Fetch stats
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        if (userId) {
+          const statsData = await getUserStats(userId);
+          setStats(statsData);
+        }
+      } catch (err) {
+        console.error("Error fetching stats:", err);
+      }
+    };
+
+    if (userId) {
+      fetchStats();
+    }
+  }, [userId]);
+
+  // Fetch shoutouts based on active tab
+  useEffect(() => {
+    const fetchShoutouts = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        let data;
+        if (activeTab === "received") {
+          data = await getUserReceivedShoutouts(20, 0);
+        } else {
+          data = await getUserGivenShoutouts(20, 0);
+        }
+        setShoutouts(data);
+      } catch (err) {
+        setError(err.message || "Failed to fetch shoutouts");
+        console.error("Error fetching shoutouts:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (userId) {
+      fetchShoutouts();
+    }
+  }, [activeTab, userId]);
 
   return (
     <div className="space-y-8">
@@ -43,7 +78,7 @@ const MyShoutouts = () => {
       {/* 🔥 HEADER */}
       <div className="flex items-center gap-4">
         <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-pink-500 text-white flex items-center justify-center text-xl font-bold shadow-lg">
-          A
+          {user?.name?.charAt(0) || "A"}
         </div>
 
         <div>
@@ -58,11 +93,21 @@ const MyShoutouts = () => {
 
       {/* 📊 STATS */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-        <StatCard title="Given" value="3" color="indigo" />
-        <StatCard title="Received" value="2" color="green" />
-        <StatCard title="Points" value="200" color="amber" />
-
+        <StatCard
+          title="Given"
+          value={stats.shoutouts_sent || 0}
+          color="indigo"
+        />
+        <StatCard
+          title="Received"
+          value={stats.shoutouts_received || 0}
+          color="green"
+        />
+        <StatCard
+          title="Points"
+          value={stats.total_points || 0}
+          color="amber"
+        />
       </div>
 
       {/* 🎯 FILTER BAR */}
@@ -92,24 +137,53 @@ const MyShoutouts = () => {
 
       </div>
 
+      {/* ERROR STATE */}
+      {error && (
+        <div className="p-6 bg-red-50 border border-red-200 rounded-lg">
+          <p className="text-red-700">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+          >
+            Retry
+          </button>
+        </div>
+      )}
+
+      {/* LOADING STATE */}
+      {loading && (
+        <div className="space-y-4">
+          {[...Array(2)].map((_, i) => (
+            <div key={i} className="h-40 bg-slate-200 rounded-lg animate-pulse" />
+          ))}
+        </div>
+      )}
+
+      {/* EMPTY STATE */}
+      {!loading && shoutouts.length === 0 && !error && (
+        <div className="text-center py-10">
+          <p className="text-slate-500">
+            {activeTab === "received"
+              ? "No shoutouts received yet. Keep up the great work!"
+              : "No shoutouts given yet. Recognize someone's contributions!"}
+          </p>
+        </div>
+      )}
+
       {/* 📄 SHOUTOUT LIST */}
-      <div className="space-y-6">
-
-        {data.map((item, index) => (
-          <ShoutoutCard key={index} item={item} />
-        ))}
-
-      </div>
+      {!loading && shoutouts.length > 0 && (
+        <div className="space-y-6">
+          {shoutouts.map((item) => (
+            <FeedCard key={item.id} item={item} />
+          ))}
+        </div>
+      )}
 
     </div>
   );
 };
 
 export default MyShoutouts;
-
-
-
-
 
 // 🔹 COMPONENT: STAT CARD
 const StatCard = ({ title, value, color }) => {
@@ -134,97 +208,6 @@ const StatCard = ({ title, value, color }) => {
 
       <p className="text-sm text-slate-500">{title}</p>
       <p className="text-3xl font-bold text-slate-900 mt-1">{value}</p>
-
-    </div>
-  );
-};
-
-
-
-
-// 🔹 COMPONENT: SHOUTOUT CARD
-const ShoutoutCard = ({ item }) => {
-  const [liked, setLiked] = useState(false);
-  const [likes, setLikes] = useState(item.likes);
-
-  const handleLike = () => {
-    setLiked(!liked);
-    setLikes(liked ? likes - 1 : likes + 1);
-  };
-
-  return (
-    <div
-      className="
-        group relative overflow-hidden
-        rounded-2xl p-6
-        bg-gradient-to-br from-white to-slate-50
-        border border-slate-200
-        shadow-sm hover:shadow-xl hover:-translate-y-1
-        hover:border-indigo-200
-        transition-all duration-300
-      "
-    >
-
-      {/* Glow */}
-      <div className="absolute -top-6 -right-6 w-24 h-24 bg-indigo-400/10 blur-2xl opacity-0 group-hover:opacity-100 transition" />
-
-      {/* 👤 WHO → WHOM */}
-      <div className="flex items-center gap-2 text-sm mb-3">
-
-        <span className="font-semibold text-slate-900">
-          {item.from}
-        </span>
-
-        <ArrowRight size={14} className="text-slate-400" />
-
-        <span className="font-semibold text-indigo-600">
-          {item.to}
-        </span>
-
-        <span className="ml-auto text-xs text-slate-400">
-          {item.date}
-        </span>
-
-      </div>
-
-      {/* 🏅 BADGE */}
-      <div className="inline-flex items-center gap-2 text-xs px-3 py-1 rounded-lg bg-yellow-50 text-yellow-700 border border-yellow-200 font-medium">
-        <Star size={12} className="text-yellow-500 fill-yellow-500" />
-        {item.badge}
-      </div>
-
-      {/* 💬 MESSAGE */}
-      <p className="text-sm text-slate-700 mt-4 leading-relaxed">
-        {item.message}
-      </p>
-
-      {/* 📌 CAMPAIGN */}
-      <div className="mt-4 inline-block text-xs px-3 py-1 rounded-lg bg-indigo-50 text-indigo-600 border border-indigo-200">
-        {item.campaign}
-      </div>
-
-      {/* ❤️ FOOTER */}
-      <div className="mt-5 flex items-center gap-4">
-
-        <button
-          onClick={handleLike}
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm transition-all
-            ${
-              liked
-                ? "bg-red-50 text-red-600 scale-105"
-                : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-            }`}
-        >
-          <Heart size={14} className={liked ? "fill-red-500" : ""} />
-          {likes}
-        </button>
-
-        <button className="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-full text-sm text-slate-600 hover:bg-slate-200">
-          <MessageCircle size={14} />
-          {item.comments}
-        </button>
-
-      </div>
 
     </div>
   );

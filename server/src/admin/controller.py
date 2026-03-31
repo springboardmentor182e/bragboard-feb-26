@@ -7,6 +7,9 @@ from ..database.core import get_db
 from . import schemas, service
 from ..auth.utils import hash_password
 from ..entities.user import User
+from ..users.schemas import UserResponse
+from ..reports.models import ReportResponse
+from ..reports import service as reports_service
 
 from ..entities.shoutout import Shoutout
 
@@ -15,7 +18,7 @@ SHOUTOUT_AVAILABLE = True
 router = APIRouter(tags=["Admin"])
 
 # User management endpoints
-@router.get("/users", response_model=List[schemas.UserResponse])
+@router.get("/users", response_model=List[UserResponse])
 async def get_all_users(
     skip: int = 0,
     limit: int = 100,
@@ -26,7 +29,7 @@ async def get_all_users(
     users = admin_service.get_all_users(skip, limit)
     return users
 
-@router.get("/users/{user_id}", response_model=schemas.UserResponse)
+@router.get("/users/{user_id}", response_model=UserResponse)
 async def get_user(
     user_id: int,
     db: Session = Depends(get_db)
@@ -71,16 +74,18 @@ async def get_activity_logs(
     admin_service = service.AdminService(db)
     return admin_service.get_activity_logs(skip, limit)
 
-@router.get("/reports", response_model=List[schemas.ReportResponse])
+@router.get("/reports", response_model=List[ReportResponse])
 async def get_reports(
     skip: int = 0,
     limit: int = 100,
     status: str = None,  # Add this parameter
     db: Session = Depends(get_db)
 ):
-    """Get all reports, optionally filtered by status"""
-    admin_service = service.AdminService(db)
-    return admin_service.get_reports(skip, limit, status)
+    """Get all reports from reports table using reports service"""
+    # Use reports service to get reports from the reports table
+    reports = reports_service.get_reports(db, status=status, priority=None, search=None)
+    # Apply pagination manually since service doesn't support it
+    return reports[skip:skip+limit]
 
 @router.post("/reports/{report_id}/resolve")
 async def resolve_report(

@@ -9,6 +9,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 /* EMPLOYEE LAYOUT */
 import Sidebar from "./features/employeeDashboard/components/layout/Sidebar";
 import TopNavbar from "./features/employeeDashboard/components/layout/TopNavbar";
+import { ToastProvider } from "./features/employeeDashboard/context/ToastContext";
 
 /* EMPLOYEE PAGES */
 import EmployeeDashboard from "./features/employeeDashboard/pages/EmployeeDashboard";
@@ -33,17 +34,19 @@ EMPLOYEE LAYOUT
 */
 function EmployeeLayout({ children }) {
   return (
-    <div className="flex h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      <Sidebar />
+    <ToastProvider>
+      <div className="flex h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+        <Sidebar />
 
-      <div className="flex-1 flex flex-col">
-        <TopNavbar />
+        <div className="flex-1 flex flex-col">
+          <TopNavbar />
 
-        <main className="flex-1 p-6 overflow-y-auto">
-          {children}
-        </main>
+          <main className="flex-1 p-6 overflow-y-auto">
+            {children}
+          </main>
+        </div>
       </div>
-    </div>
+    </ToastProvider>
   );
 }
 

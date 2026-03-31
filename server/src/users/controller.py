@@ -3,7 +3,6 @@ from ..auth.dependencies import require_admin
 from fastapi import APIRouter, HTTPException, Depends,status
 from sqlalchemy.orm import Session
 from ..database.core import get_db
-from .models import UserCreate
 from . import service
 from . import schemas
 from .service import (
@@ -27,7 +26,7 @@ def fetch_users(db: Session = Depends(get_db)):
 
 
 @router.post("/")
-def create_user(user: UserCreate, db: Session = Depends(get_db)):
+def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     return add_user(db, user)
 
 
@@ -59,31 +58,6 @@ def remove_user(user_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="User not found")
 
     return {"message": "User deleted successfully"}
-
-
-# User management endpoints
-@router.get("/users", response_model=List[schemas.UserResponse])
-async def get_all_users(
-    skip: int = 0,
-    limit: int = 100,
-    db: Session = Depends(get_db)
-):
-    """Get all users"""
-    admin_service = service.AdminService(db)
-    users = admin_service.get_all_users(skip, limit)
-    return users
-
-@router.get("/users/{user_id}", response_model=schemas.UserResponse)
-async def get_user(
-    user_id: int,
-    db: Session = Depends(get_db)
-):
-    """Get user by ID"""
-    admin_service = service.AdminService(db)
-    user = admin_service.get_user_by_id(user_id)
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return user
 
 
 
