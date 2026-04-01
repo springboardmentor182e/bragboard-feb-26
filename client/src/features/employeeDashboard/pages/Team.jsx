@@ -40,7 +40,7 @@ const Team = () => {
                     .join("")
                     .toUpperCase() || "?",
                 shoutouts: stats?.shoutouts_received || 0,
-                reactions: 0, // Can be added if needed from backend
+                reactions: stats?.reactions_received || 0,
               };
             } catch (err) {
               console.error(`Error fetching stats for user ${user.id}:`, err);

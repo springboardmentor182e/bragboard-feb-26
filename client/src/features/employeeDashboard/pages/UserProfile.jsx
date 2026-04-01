@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { ArrowLeft, Award, Star, Crown, Zap, Flame } from "lucide-react";
+import { ArrowLeft, Award, Star, Crown, Zap, Flame, Heart } from "lucide-react";
 import { getUserStats, getLevelProgress } from "../../../services/userStatsService";
 import { getAllUsers } from "../../../services/shoutoutService";
 
@@ -155,7 +155,7 @@ const UserProfile = () => {
       </div>
 
       {/* STATS GRID */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
           <p className="text-slate-500 text-sm mb-2">Total Points</p>
           <p className="text-3xl font-bold text-indigo-600">{stats?.total_points || 0}</p>
@@ -177,6 +177,16 @@ const UserProfile = () => {
           <p className="text-slate-500 text-sm mb-2">Recognitions Sent</p>
           <p className="text-3xl font-bold text-green-600">
             {stats?.shoutouts_sent || 0}
+          </p>
+        </div>
+
+        <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+          <div className="flex items-center gap-2 mb-2">
+            <Heart size={18} className="text-red-500" />
+            <p className="text-slate-500 text-sm">Reactions Received</p>
+          </div>
+          <p className="text-3xl font-bold text-red-500">
+            {stats?.reactions_received || 0}
           </p>
         </div>
       </div>
