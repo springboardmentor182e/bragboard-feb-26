@@ -69,8 +69,8 @@ def signup_user(data, db: Session):
         name=data.name.strip(),
         email=email,
         password=hash_password(data.password),
-        role="employee",   # default role
-        status="active"
+        role="Employee",   # default role
+        status="Active"
     )
 
     db.add(new_user)
