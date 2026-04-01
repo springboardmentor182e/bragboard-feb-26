@@ -94,7 +94,12 @@ const FeedCard = ({ item }) => {
               {item.sender_name || "Unknown"}
             </p>
             <p className="text-sm text-slate-500">
-              recognized {item.receiver_name || "someone"}
+              recognized{" "}
+              <span className="font-semibold text-slate-900">
+                {item.recipients && item.recipients.length > 0
+                  ? item.recipients.map((r) => r.name).join(", ")
+                  : item.receiver_name || "someone"}
+              </span>
             </p>
           </div>
 

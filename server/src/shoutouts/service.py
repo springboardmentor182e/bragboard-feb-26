@@ -286,26 +286,31 @@ def get_user_feed(db: Session, user_id: int, limit: int = 20, offset: int = 0):
 def get_user_stats(db: Session, user_id: int):
     """Get user stats: points, level, shoutouts received/sent, rank"""
     
-    shoutouts_received = db.query(Shoutout).filter(
-        Shoutout.receiver_id == user_id,
+    # Count shoutouts RECEIVED using the ShoutOutRecipient table (new multi-recipient system)
+    shoutouts_received = db.query(ShoutOutRecipient).filter(
+        ShoutOutRecipient.user_id == user_id
+    ).join(Shoutout).filter(
         Shoutout.status == "APPROVED"
     ).count()
     
+    # Count shoutouts SENT
     shoutouts_sent = db.query(Shoutout).filter(
         Shoutout.sender_id == user_id,
         Shoutout.status == "APPROVED"
     ).count()
     
-    # Calculate total points
-    total_points = db.query(func.sum(Shoutout.points)).filter(
-        Shoutout.receiver_id == user_id,
+    # Calculate total points from received shoutouts using ShoutOutRecipient
+    total_points = db.query(func.sum(Shoutout.points)).join(
+        ShoutOutRecipient
+    ).filter(
+        ShoutOutRecipient.user_id == user_id,
         Shoutout.status == "APPROVED"
     ).scalar() or 0
     
     # Calculate level (500 points per level)
     current_level = int(total_points // 500) + 1
     
-    # Get user rank (how many users have more points)
+    # Get user rank (how many users have more points than this user)
     rank = db.query(func.count(User.id)).filter(
         User.id != user_id
     ).scalar() + 1
@@ -314,9 +319,9 @@ def get_user_stats(db: Session, user_id: int):
         "user_id": user_id,
         "shoutouts_received": shoutouts_received,
         "shoutouts_sent": shoutouts_sent,
-        "total_points": total_points,
+        "total_points": int(total_points),
         "current_level": current_level,
-        "points_to_next_level": (current_level * 500) - total_points,
+        "points_to_next_level": (current_level * 500) - int(total_points),
         "rank": rank,
     }
 
