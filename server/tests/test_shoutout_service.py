@@ -13,7 +13,7 @@ from src.entities.user import User
 from src.entities.shoutout import Shoutout
 from src.entities.shoutout_recipient import ShoutOutRecipient
 from src.auth.utils import hash_password
-from src.shoutouts.service import create_shoutout_with_recipients
+from src.shoutouts.service import create_shoutout_with_recipients, get_user_stats
 
 
 # Create a test database
@@ -252,7 +252,28 @@ class TestShoutoutCreation:
         )
         
         assert result["status"] == "PENDING"
-    
+
+    def test_get_user_stats_includes_pending_shoutouts(self, db_session, test_users):
+        """User stats should include PENDING shoutouts to match feed counts"""
+        sender = test_users[0]
+        recipient = test_users[1]
+
+        create_shoutout_with_recipients(
+            db=db_session,
+            sender_id=sender.id,
+            message="Great work!",
+            category="Teamwork",
+            recipient_ids=[recipient.id],
+            points=20
+        )
+
+        stats_sender = get_user_stats(db_session, sender.id)
+        stats_recipient = get_user_stats(db_session, recipient.id)
+
+        assert stats_sender["shoutouts_sent"] == 1
+        assert stats_recipient["shoutouts_received"] == 1
+        assert stats_recipient["total_points"] == 20
+
     def test_shoutout_has_created_at_timestamp(self, db_session, test_users):
         """Test that created_at timestamp is set"""
         sender = test_users[0]

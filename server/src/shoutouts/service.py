@@ -286,17 +286,20 @@ def get_user_feed(db: Session, user_id: int, limit: int = 20, offset: int = 0):
 def get_user_stats(db: Session, user_id: int):
     """Get user stats: points, level, shoutouts received/sent, rank"""
     
+    # Allow PENDING and APPROVED shoutouts, but exclude rejected/shadow states.
+    valid_statuses = ["APPROVED", "PENDING"]
+
     # Count shoutouts RECEIVED using the ShoutOutRecipient table (new multi-recipient system)
     shoutouts_received = db.query(ShoutOutRecipient).filter(
         ShoutOutRecipient.user_id == user_id
     ).join(Shoutout).filter(
-        Shoutout.status == "APPROVED"
+        Shoutout.status.in_(valid_statuses)
     ).count()
     
     # Count shoutouts SENT
     shoutouts_sent = db.query(Shoutout).filter(
         Shoutout.sender_id == user_id,
-        Shoutout.status == "APPROVED"
+        Shoutout.status.in_(valid_statuses)
     ).count()
     
     # Calculate total points from received shoutouts using ShoutOutRecipient
@@ -304,7 +307,7 @@ def get_user_stats(db: Session, user_id: int):
         ShoutOutRecipient
     ).filter(
         ShoutOutRecipient.user_id == user_id,
-        Shoutout.status == "APPROVED"
+        Shoutout.status.in_(valid_statuses)
     ).scalar() or 0
     
     # Calculate level (500 points per level)
