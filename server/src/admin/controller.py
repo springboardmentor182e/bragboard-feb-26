@@ -176,48 +176,26 @@ async def get_top_contributors(
 
 @router.get("/dashboard/stats")
 async def get_dashboard_stats(db: Session = Depends(get_db)):
-    """Get real dashboard statistics from database"""
+    """Get real dashboard statistics using AdminService"""
     try:
-        from sqlalchemy import text
-        
-        # Direct SQL queries - no model dependency
-        total_users = db.execute(text("SELECT COUNT(*) FROM users")).scalar() or 0
-        total_reports = db.execute(text("SELECT COUNT(*) FROM reports")).scalar() or 0
-        pending_reports = db.execute(text("SELECT COUNT(*) FROM reports WHERE status='pending'")).scalar() or 0
-        
-        # Try to get posts count if Shoutout model exists
-        total_posts = 0
-        total_reactions = 0
-        if SHOUTOUT_AVAILABLE and Shoutout:
-            try:
-                total_posts = db.query(func.count(Shoutout.id)).scalar() or 0
-            except:
-                pass
-        
-        print(f"📊 Dashboard - Users: {total_users}, Posts: {total_posts}, Reports: {total_reports}, Pending: {pending_reports}")
-        
-        return {
-            "total_users": total_users,
-            "total_posts": total_posts,
-            "total_reactions": total_reactions,
-            "total_reports": total_reports,
-            "active_users_today": 0,
-            "reports": pending_reports,
-            "shoutout_trend": "+0%",
-            "reaction_trend": "+0%"
-        }
+        admin_service = service.AdminService(db)
+        stats = admin_service.get_dashboard_stats()
+        return stats
         
     except Exception as e:
-        print(f"❌ Error: {e}")
+        print(f"❌ Error in dashboard stats endpoint: {e}")
         import traceback
         traceback.print_exc()
         return {
             "total_users": 0,
+            "active_users": 0,
             "total_posts": 0,
+            "total_shoutouts": 0,
             "total_reactions": 0,
             "total_reports": 0,
+            "reports": 0,
             "active_users_today": 0,
-            "shoutout_trend": "+0%",
-            "reaction_trend": "+0%"
+            "admin_count": 0,
+            "pending_users": 0,
         }
     

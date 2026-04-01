@@ -32,11 +32,11 @@ class AdminService:
     def get_dashboard_stats(self) -> Dict[str, Any]:
         """Get REAL dashboard statistics from database"""
         try:
-            # 1️⃣ TOTAL USERS
-            total_users = self.db.query(User).count()
+            # 1️⃣ TOTAL USERS (Active status only)
+            active_users = self.db.query(User).filter(User.status == "Active").count()
             
             # 2️⃣ ADMIN COUNT
-            admin_count = self.db.query(User).filter(User.is_admin == True).count()
+            admin_count = self.db.query(User).filter(User.role == "Admin").count()
             
             # 3️⃣ ACTIVE USERS TODAY
             today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
@@ -44,16 +44,13 @@ class AdminService:
                 ActivityLog.timestamp >= today_start
             ).distinct(ActivityLog.user_id).count()
             
-            # 4️⃣ NEW USERS THIS WEEK
-            week_ago = datetime.now() - timedelta(days=7)
-            new_users_this_week = self.db.query(User).filter(
-                User.created_at >= week_ago
-            ).count()
-            
             # 5️⃣ TOTAL REPORTS
             total_reports = self.db.query(AdminReport).count()
             
-            # 6️⃣ TOTAL POSTS & REACTIONS (if Shoutout model exists)
+            # 6️⃣ PENDING USERS (awaiting approval)
+            pending_users = self.db.query(User).filter(User.status == "Pending").count()
+            
+            # 7️⃣ TOTAL POSTS (Shoutouts)
             total_posts = 0
             total_reactions = 0
             
@@ -61,30 +58,27 @@ class AdminService:
                 try:
                     total_posts = self.db.query(Shoutout).count()
                     
-                    # Sum all likes/reactions
-                    result = self.db.query(func.sum(Shoutout.likes_count)).scalar()
-                    total_reactions = result if result is not None else 0
+                    # Count all reactions from Reaction table
+                    from ..entities.reaction import Reaction
+                    total_reactions = self.db.query(Reaction).count()
                     
-                    print(f"📊 Found {total_posts} posts with {total_reactions} reactions")
+                    print(f"📊 Found {total_posts} posts with {total_reactions} reactions and {active_users} active users")
                 except Exception as e:
-                    print(f"Error counting posts: {e}")
-            
-            # 7️⃣ REPORTS PENDING
-            # If you have a status column, uncomment this
-            # reports_pending = self.db.query(Report).filter(Report.status == 'pending').count()
+                    print(f"Error counting posts/reactions: {e}")
+                    total_posts = 0
+                    total_reactions = 0
             
             return {
-                "total_users": total_users,
-                "active_users_today": active_users_today,
-                "active_users": active_users_today,  # Alias for frontend
+                "total_users": active_users,
+                "active_users": active_users,
                 "total_posts": total_posts,
-                "total_shoutouts": total_posts,  # Alias for frontend
+                "total_shoutouts": total_posts,
                 "total_reactions": total_reactions,
                 "total_reports": total_reports,
-                "reports": total_reports,  # Alias for frontend
-                "new_users_this_week": new_users_this_week,
+                "reports": total_reports,
+                "active_users_today": active_users_today,
                 "admin_count": admin_count,
-                # "reports_pending": reports_pending
+                "pending_users": pending_users,
             }
             
         except Exception as e:
@@ -93,12 +87,14 @@ class AdminService:
             traceback.print_exc()
             return {
                 "total_users": 0,
-                "active_users_today": 0,
+                "active_users": 0,
                 "total_posts": 0,
                 "total_reactions": 0,
                 "total_reports": 0,
-                "new_users_this_week": 0,
-                "admin_count": 0
+                "reports": 0,
+                "active_users_today": 0,
+                "admin_count": 0,
+                "pending_users": 0,
             }
     
     def get_reports(self, skip: int = 0, limit: int = 100, status: str = None) -> List[AdminReport]:

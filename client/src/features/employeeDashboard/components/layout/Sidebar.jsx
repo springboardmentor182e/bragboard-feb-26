@@ -3,7 +3,6 @@ import {
   Trophy,
   Users,
   Award,
-  BarChart3,
   Heart,
   ShieldCheck,
   FileText,
@@ -24,7 +23,6 @@ const Sidebar = () => {
     { label: "Leaderboard", icon: <Trophy size={18} />, path: "/leaderboard" },
     { label: "Team", icon: <Users size={18} />, path: "/team" },
     { label: "Badges", icon: <Award size={18} />, path: "/badges" },
-    { label: "Analytics", icon: <BarChart3 size={18} />, path: "/analytics" },
     { label: "Settings", icon: <Settings size={18} />, path: "/settings" },
   ];
 

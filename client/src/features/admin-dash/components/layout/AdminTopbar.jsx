@@ -2,12 +2,14 @@ import { Bell, LogOut, ChevronDown } from "lucide-react";
 import { useAuth } from "../../../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
+import { adminAPI } from "../../../../services/api";
 
 const AdminTopbar = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const [open, setOpen] = useState(false);
+  const [pendingCount, setPendingCount] = useState(0);
   const dropdownRef = useRef();
 
   // 🔤 initials
@@ -26,6 +28,22 @@ const AdminTopbar = () => {
     navigate("/login");
   };
 
+  // 📊 Fetch pending count on load and refresh
+  useEffect(() => {
+    const fetchPendingCount = async () => {
+      try {
+        const res = await adminAPI.getDashboardStats();
+        setPendingCount(res.data?.pending_users || 0);
+      } catch (error) {
+        console.error("Error fetching pending:", error);
+      }
+    };
+
+    fetchPendingCount();
+    const interval = setInterval(fetchPendingCount, 30000); // Refresh every 30s
+    return () => clearInterval(interval);
+  }, []);
+
   // 👇 close dropdown when clicked outside
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -39,15 +57,30 @@ const AdminTopbar = () => {
       document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const handleNotificationClick = () => {
+    navigate("/admin/employees");
+  };
+
   return (
     <header className="bg-white px-8 py-4 flex items-center justify-end border-b border-slate-200 shadow-sm">
 
       <div className="flex items-center gap-6">
 
         {/* 🔔 NOTIFICATION */}
-        <div className="relative cursor-pointer hover:opacity-80 transition">
-          <Bell className="text-slate-600" size={20} />
-          <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-white"></span>
+        <div 
+          className="relative cursor-pointer transition"
+          onClick={handleNotificationClick}
+          title={pendingCount > 0 ? `${pendingCount} pending approval(s)` : "No pending requests"}
+        >
+          <Bell 
+            className={pendingCount > 0 ? "text-yellow-500 hover:text-yellow-600" : "text-slate-600 hover:text-slate-700"} 
+            size={20} 
+          />
+          {pendingCount > 0 && (
+            <span className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full border-2 border-white flex items-center justify-center text-white text-xs font-bold animate-pulse">
+              {pendingCount > 9 ? "9+" : pendingCount}
+            </span>
+          )}
         </div>
 
         {/* 👤 PROFILE + DROPDOWN */}
