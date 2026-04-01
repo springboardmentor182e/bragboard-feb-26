@@ -246,12 +246,9 @@ def delete_shoutout(db: Session, shoutout_id: int):
 # ============ NEW FUNCTIONS BELOW ============
 
 def get_user_feed(db: Session, user_id: int, limit: int = 20, offset: int = 0):
-    """Get shoutouts for user's feed (received + team shoutouts with engagement counts)"""
+    """Get all company shoutouts for user's feed (real-time activity stream visible to all employees)"""
     
-    shoutouts = db.query(Shoutout).filter(
-        (Shoutout.receiver_id == user_id) | 
-        (Shoutout.status == "APPROVED")
-    ).options(
+    shoutouts = db.query(Shoutout).options(
         selectinload(Shoutout.sender),
         selectinload(Shoutout.recipients).selectinload(ShoutOutRecipient.user)
     ).order_by(Shoutout.created_at.desc()).limit(limit).offset(offset).all()
