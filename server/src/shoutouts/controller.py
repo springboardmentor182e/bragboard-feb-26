@@ -129,7 +129,7 @@ def fetch_user_progress(user_id: int, db: Session = Depends(get_db)):
 
 @router.get("/leaderboard")
 def fetch_leaderboard(
-    limit: int = Query(10, ge=1, le=100),
+    limit: int = Query(10, ge=1, le=1000),
     offset: int = Query(0, ge=0),
     include_pending: bool = Query(True),
     db: Session = Depends(get_db)
