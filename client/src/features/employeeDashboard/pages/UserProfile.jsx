@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { ArrowLeft, Award, Star, Crown, Flame, Heart } from "lucide-react";
-import { getUserStats } from "../../../services/userStatsService";
+import { ArrowLeft, Award, Star, Crown, Zap, Flame } from "lucide-react";
+import { getUserStats, getLevelProgress } from "../../../services/userStatsService";
 import { getAllUsers } from "../../../services/shoutoutService";
 
 const UserProfile = () => {
@@ -28,13 +28,13 @@ const UserProfile = () => {
           return;
         }
 
-        // Fetch user stats
+        // Fetch user stats and level progress
         const userStats = await getUserStats(userId);
-        const userLevelProgress = await getLevelProgress(userId);
+        const userProgress = await getLevelProgress(userId);
 
         setUser(userData);
         setStats(userStats);
-        setLevelProgress(userLevelProgress);
+        setLevelProgress(userProgress);
       } catch (err) {
         console.error("Error fetching user profile:", err);
         setError("Failed to load profile");
@@ -46,51 +46,17 @@ const UserProfile = () => {
     fetchUserProfile();
   }, [userId]);
 
-  // Mock function to fetch level progress - import if available
-  const getLevelProgress = async (id) => {
-    try {
-      const response = await fetch(`/api/shoutouts/progress/${id}`);
-      if (!response.ok) throw new Error("Failed to fetch progress");
-      return await response.json();
-    } catch (err) {
-      console.error("Error fetching level progress:", err);
-      return null;
-    }
+  // Map backend icon strings to Lucide React components
+  const getIconComponent = (iconName) => {
+    const iconMap = {
+      star: Star,
+      award: Award,
+      crown: Crown,
+      zap: Zap,
+      flame: Flame,
+    };
+    return iconMap[iconName] || Star;
   };
-
-  // Badge configuration
-  const BADGES = [
-    {
-      name: "Rising Star",
-      icon: Star,
-      color: "from-yellow-400 to-yellow-500",
-      points_required: 0,
-    },
-    {
-      name: "Achiever",
-      icon: Award,
-      color: "from-blue-400 to-blue-500",
-      points_required: 500,
-    },
-    {
-      name: "Leader",
-      icon: Crown,
-      color: "from-purple-400 to-purple-500",
-      points_required: 1000,
-    },
-    {
-      name: "Champion",
-      icon: Flame,
-      color: "from-red-400 to-red-500",
-      points_required: 1500,
-    },
-    {
-      name: "Legend",
-      icon: Heart,
-      color: "from-pink-400 to-pink-500",
-      points_required: 2000,
-    },
-  ];
 
   // Calculate member since date
   const getMemberSinceDate = () => {
@@ -182,7 +148,7 @@ const UserProfile = () => {
           {stats?.rank && (
             <div className="bg-white/20 rounded-xl p-4 text-center min-w-fit">
               <p className="text-white/70 text-sm">Current Rank</p>
-              <p className="text-2xl font-bold">{stats.rank}</p>
+              <p className="text-2xl font-bold">#{stats.rank}</p>
             </div>
           )}
         </div>
@@ -192,12 +158,12 @@ const UserProfile = () => {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
           <p className="text-slate-500 text-sm mb-2">Total Points</p>
-          <p className="text-3xl font-bold text-indigo-600">{stats?.points || 0}</p>
+          <p className="text-3xl font-bold text-indigo-600">{stats?.total_points || 0}</p>
         </div>
 
         <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
           <p className="text-slate-500 text-sm mb-2">Current Level</p>
-          <p className="text-3xl font-bold text-purple-600">{stats?.level || 1}</p>
+          <p className="text-3xl font-bold text-purple-600">{stats?.current_level || 1}</p>
         </div>
 
         <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
@@ -221,7 +187,7 @@ const UserProfile = () => {
         <div className="space-y-3">
           <div className="flex justify-between items-center">
             <span className="text-slate-600">
-              Level {stats?.level || 1}
+              Level {stats?.current_level || 1}
             </span>
             <span className="text-slate-500 text-sm">
               {stats?.points_to_next_level || 500} points to next level
@@ -237,6 +203,9 @@ const UserProfile = () => {
               }}
             ></div>
           </div>
+          <p className="text-xs text-slate-500 mt-2">
+            {stats?.total_points || 0} / {(stats?.current_level || 1) * 500} points
+          </p>
         </div>
       </div>
 
@@ -244,30 +213,40 @@ const UserProfile = () => {
       <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
         <h2 className="text-xl font-bold text-slate-900 mb-6">Achievements</h2>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-          {BADGES.map((badge, idx) => {
-            const IconComponent = badge.icon;
-            const isUnlocked =
-              (stats?.points || 0) >= badge.points_required;
+          {levelProgress?.badges && levelProgress.badges.length > 0 ? (
+            levelProgress.badges.map((badge) => {
+              const IconComponent = getIconComponent(badge.icon);
+              const colorMap = {
+                star: "from-yellow-400 to-yellow-500",
+                award: "from-blue-400 to-blue-500",
+                crown: "from-purple-400 to-purple-500",
+                zap: "from-orange-400 to-orange-500",
+                flame: "from-red-400 to-red-500",
+              };
 
-            return (
-              <div
-                key={idx}
-                className={`relative rounded-2xl p-6 flex flex-col items-center justify-center text-center transition-all duration-300 ${
-                  isUnlocked
-                    ? `bg-gradient-to-br ${badge.color} text-white shadow-lg hover:shadow-xl`
-                    : "bg-slate-100 text-slate-400"
-                }`}
-              >
-                <IconComponent size={32} className="mb-3" />
-                <p className="text-xs font-bold">{badge.name}</p>
-                {!isUnlocked && (
-                  <p className="text-xs mt-2 opacity-75">
-                    {badge.points_required} pts
-                  </p>
-                )}
-              </div>
-            );
-          })}
+              return (
+                <div
+                  key={badge.id}
+                  className={`relative rounded-2xl p-6 flex flex-col items-center justify-center text-center transition-all duration-300 ${
+                    badge.unlocked
+                      ? `bg-gradient-to-br ${colorMap[badge.icon]} text-white shadow-lg hover:shadow-xl`
+                      : "bg-slate-100 text-slate-400"
+                  }`}
+                  title={badge.description}
+                >
+                  <IconComponent size={32} className="mb-3" />
+                  <p className="text-xs font-bold">{badge.name}</p>
+                  {!badge.unlocked && (
+                    <p className="text-xs mt-2 opacity-75">
+                      {badge.points_to_unlock} pts
+                    </p>
+                  )}
+                </div>
+              );
+            })
+          ) : (
+            <p className="text-slate-500 col-span-full text-center">Loading badges...</p>
+          )}
         </div>
       </div>
 
