@@ -1,13 +1,15 @@
-import { Bell, ChevronDown, LogOut } from "lucide-react";
+import { Bell, ChevronDown, LogOut, User } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "../../../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import ProfilePopup from "../ProfilePopup";
 
 const TopNavbar = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const [open, setOpen] = useState(false);
+  const [profilePopupOpen, setProfilePopupOpen] = useState(false);
   const dropdownRef = useRef();
 
   // 🔤 initials
@@ -87,10 +89,22 @@ const TopNavbar = () => {
                 </p>
               </div>
 
-              {/* ACTIONS */}
+              {/* VIEW PROFILE BUTTON */}
+              <button
+                onClick={() => {
+                  setProfilePopupOpen(true);
+                  setOpen(false);
+                }}
+                className="w-full flex items-center gap-2 px-4 py-3 text-sm text-indigo-600 hover:bg-indigo-50 transition"
+              >
+                <User size={16} />
+                View Profile
+              </button>
+
+              {/* LOGOUT BUTTON */}
               <button
                 onClick={handleLogout}
-                className="w-full flex items-center gap-2 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition"
+                className="w-full flex items-center gap-2 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition border-t"
               >
                 <LogOut size={16} />
                 Logout
@@ -102,6 +116,12 @@ const TopNavbar = () => {
         </div>
 
       </div>
+
+      {/* PROFILE POPUP MODAL */}
+      <ProfilePopup
+        isOpen={profilePopupOpen}
+        onClose={() => setProfilePopupOpen(false)}
+      />
     </div>
   );
 };
