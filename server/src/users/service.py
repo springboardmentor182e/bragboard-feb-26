@@ -59,12 +59,24 @@ def add_user(db: Session, user_data):
 
 
 def update_user_status(db: Session, user_id: int):
+    """
+    Smart status transitions:
+    Pending → Active (approve new user)
+    Active → Suspended (suspend user)
+    Suspended → Active (reactivate user)
+    """
     user = db.query(User).filter(User.id == user_id).first()
 
     if not user:
         return None
 
-    user.status = "Suspended" if user.status == "Active" else "Active"
+    # Handle different status transitions
+    if user.status == "Pending":
+        user.status = "Active"      # Approve pending user
+    elif user.status == "Active":
+        user.status = "Suspended"   # Suspend active user
+    elif user.status == "Suspended":
+        user.status = "Active"      # Reactivate suspended user
 
     db.commit()
     db.refresh(user)

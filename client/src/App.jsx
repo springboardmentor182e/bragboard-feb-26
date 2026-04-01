@@ -5,6 +5,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import ForgotPassword from "./pages/ForgotPassword";
+import PendingApproval from "./pages/PendingApproval";
 
 /* EMPLOYEE LAYOUT */
 import Sidebar from "./features/employeeDashboard/components/layout/Sidebar";
@@ -61,8 +62,7 @@ function App() {
         {/* 🔓 PUBLIC ROUTES */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-
+        <Route path="/forgot-password" element={<ForgotPassword />} />        <Route path="/pending-approval" element={<PendingApproval />} />
         {/* 🔐 EMPLOYEE ROUTES */}
         <Route
           path="/"

@@ -70,7 +70,7 @@ def signup_user(data, db: Session):
         email=email,
         password=hash_password(data.password),
         role="Employee",   # default role
-        status="Active"
+        status="Pending"   # 🔒 Pending admin approval
     )
 
     db.add(new_user)

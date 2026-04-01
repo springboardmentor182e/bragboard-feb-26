@@ -103,34 +103,49 @@ function EmployeeTable({
 
                 {/* STATUS */}
                 <td className="px-8 py-7">
-                  <span
-                    className={`px-4 py-1.5 text-xs font-semibold rounded-full ${
-                      employee.status === "Active"
-                        ? "bg-emerald-100 text-emerald-700"
-                        : "bg-rose-100 text-rose-700"
-                    }`}
-                  >
-                    {employee.status}
-                  </span>
+                  {employee.status === "Pending" ? (
+                    <span className="px-4 py-1.5 text-xs font-semibold rounded-full bg-amber-100 text-amber-700">
+                      Pending
+                    </span>
+                  ) : (
+                    <span
+                      className={`px-4 py-1.5 text-xs font-semibold rounded-full ${
+                        employee.status === "Active"
+                          ? "bg-emerald-100 text-emerald-700"
+                          : "bg-rose-100 text-rose-700"
+                      }`}
+                    >
+                      {employee.status}
+                    </span>
+                  )}
                 </td>
 
                 {/* ACTIONS */}
                 <td className="px-10 py-7">
                   <div className="flex justify-end gap-3">
 
-                    {/* Suspend / Activate */}
-                    <button
-                      onClick={() => onToggleStatus(employee.id)}
-                      className={`px-5 py-2.5 text-xs font-semibold rounded-xl shadow-sm transition-all duration-200 active:scale-95 ${
-                        employee.status === "Active"
-                          ? "bg-rose-500 text-white hover:bg-rose-600 hover:shadow-md"
-                          : "bg-emerald-500 text-white hover:bg-emerald-600 hover:shadow-md"
-                      }`}
-                    >
-                      {employee.status === "Active"
-                        ? "Suspend"
-                        : "Activate"}
-                    </button>
+                    {/* Approve / Suspend / Activate */}
+                    {employee.status === "Pending" ? (
+                      <button
+                        onClick={() => onToggleStatus(employee.id)}
+                        className="px-5 py-2.5 text-xs font-semibold rounded-xl bg-green-500 text-white hover:bg-green-600 hover:shadow-md shadow-sm transition-all duration-200 active:scale-95"
+                      >
+                        Approve
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => onToggleStatus(employee.id)}
+                        className={`px-5 py-2.5 text-xs font-semibold rounded-xl shadow-sm transition-all duration-200 active:scale-95 ${
+                          employee.status === "Active"
+                            ? "bg-rose-500 text-white hover:bg-rose-600 hover:shadow-md"
+                            : "bg-emerald-500 text-white hover:bg-emerald-600 hover:shadow-md"
+                        }`}
+                      >
+                        {employee.status === "Active"
+                          ? "Suspend"
+                          : "Activate"}
+                      </button>
+                    )}
 
                     {/* Delete */}
                     <button

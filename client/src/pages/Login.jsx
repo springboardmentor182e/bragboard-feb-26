@@ -23,8 +23,10 @@ const Login = () => {
     try {
       const user = await login(form); // ✅ get user directly
 
-      // 🔥 ROLE BASED REDIRECT
-      if (user.role?.toLowerCase() === "admin") {
+      // 🔥 STATUS & ROLE BASED REDIRECT
+      if (user.status === "Pending") {
+        navigate("/pending-approval");
+      } else if (user.role?.toLowerCase() === "admin") {
         navigate("/admin/dashboard");
       } else {
         navigate("/");
