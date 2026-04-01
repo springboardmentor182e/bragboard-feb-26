@@ -31,6 +31,8 @@ const Signup = () => {
       // 🔥 STATUS & ROLE BASED REDIRECT
       if (user.status === "Pending") {
         navigate("/pending-approval");
+      } else if (user.status === "Suspended") {
+        navigate("/suspended-account");
       } else if (user.role?.toLowerCase() === "admin") {
         navigate("/admin/dashboard");
       } else {

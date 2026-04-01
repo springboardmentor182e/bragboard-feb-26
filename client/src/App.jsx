@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import ForgotPassword from "./pages/ForgotPassword";
 import PendingApproval from "./pages/PendingApproval";
+import SuspendedAccount from "./pages/SuspendedAccount";
 
 /* EMPLOYEE LAYOUT */
 import Sidebar from "./features/employeeDashboard/components/layout/Sidebar";
@@ -62,7 +63,10 @@ function App() {
         {/* 🔓 PUBLIC ROUTES */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />        <Route path="/pending-approval" element={<PendingApproval />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/pending-approval" element={<PendingApproval />} />
+        <Route path="/suspended-account" element={<SuspendedAccount />} />
+
         {/* 🔐 EMPLOYEE ROUTES */}
         <Route
           path="/"
