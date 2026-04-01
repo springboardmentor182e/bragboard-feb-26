@@ -10,6 +10,7 @@ from .service import (
     add_user,
     update_user_status,
     update_user_role,
+    update_user_department,
     delete_user,
 )
 from ..auth.utils import hash_password
@@ -43,6 +44,16 @@ def toggle_status(user_id: int, db: Session = Depends(get_db)):
 @router.put("/{user_id}/role")
 def change_role(user_id: int, role: str, db: Session = Depends(get_db)):
     updated_user = update_user_role(db, user_id, role)
+
+    if not updated_user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    return updated_user
+
+
+@router.put("/{user_id}/department")
+def change_department(user_id: int, department: str, db: Session = Depends(get_db)):
+    updated_user = update_user_department(db, user_id, department)
 
     if not updated_user:
         raise HTTPException(status_code=404, detail="User not found")

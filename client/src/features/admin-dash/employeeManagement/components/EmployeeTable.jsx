@@ -4,8 +4,23 @@ function EmployeeTable({
   employees,
   onToggleStatus,
   onRoleChange,
+  onDepartmentChange,
   onDeleteEmployee,
 }) {
+  // Common departments in the company
+  const departments = [
+    "Engineering",
+    "Design",
+    "Product",
+    "Analytics",
+    "Marketing",
+    "Sales",
+    "HR",
+    "Finance",
+    "Operations",
+    "Support",
+  ];
+
   return (
     <div className="bg-white rounded-[28px] shadow-sm border border-slate-200 overflow-hidden">
       <div className="overflow-x-auto">
@@ -53,9 +68,22 @@ function EmployeeTable({
                   </div>
                 </td>
 
-                {/* DEPARTMENT */}
-                <td className="px-8 py-7 text-slate-600 font-medium text-sm">
-                  {employee.department}
+                {/* DEPARTMENT - NOW EDITABLE */}
+                <td className="px-8 py-7">
+                  <select
+                    value={employee.department || ""}
+                    onChange={(e) =>
+                      onDepartmentChange(employee.id, e.target.value)
+                    }
+                    className="px-4 py-2 rounded-xl border border-slate-200 bg-white shadow-sm text-sm font-medium focus:ring-2 focus:ring-indigo-500 outline-none transition"
+                  >
+                    <option value="">Unassigned</option>
+                    {departments.map((dept) => (
+                      <option key={dept} value={dept}>
+                        {dept}
+                      </option>
+                    ))}
+                  </select>
                 </td>
 
                 {/* ROLE */}

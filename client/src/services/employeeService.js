@@ -66,6 +66,21 @@ export const updateEmployeeRole = async (id, role) => {
 };
 
 /*
+UPDATE EMPLOYEE DEPARTMENT
+*/
+export const updateEmployeeDepartment = async (id, department) => {
+  try {
+    const res = await API.put(`/users/${id}/department`, null, {
+      params: { department },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error updating employee department:", error);
+    throw error;
+  }
+};
+
+/*
 DELETE EMPLOYEE
 */
 export const deleteEmployee = async (id) => {

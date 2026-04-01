@@ -14,6 +14,7 @@ import {
   fetchEmployees,
   toggleEmployeeStatus,
   updateEmployeeRole,
+  updateEmployeeDepartment,
   deleteEmployee,
 } from "../../../services/employeeService";
 
@@ -56,6 +57,15 @@ function AdminEmployees() {
       loadEmployees();
     } catch (error) {
       console.error("Role update error:", error);
+    }
+  };
+
+  const handleDepartmentChange = async (id, department) => {
+    try {
+      await updateEmployeeDepartment(id, department);
+      loadEmployees();
+    } catch (error) {
+      console.error("Department update error:", error);
     }
   };
 
@@ -125,6 +135,7 @@ function AdminEmployees() {
             employees={filteredEmployees}
             onToggleStatus={handleToggleStatus}
             onRoleChange={handleRoleChange}
+            onDepartmentChange={handleDepartmentChange}
             onDeleteEmployee={handleDeleteEmployee}
           />
         </>

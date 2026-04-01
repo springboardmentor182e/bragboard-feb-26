@@ -102,6 +102,28 @@ def update_user_role(db: Session, user_id: int, role: str):
     }
 
 
+def update_user_department(db: Session, user_id: int, department: str):
+    user = db.query(User).filter(User.id == user_id).first()
+
+    if not user:
+        return None
+
+    user.department = department
+
+    db.commit()
+    db.refresh(user)
+
+    # Return safe fields only
+    return {
+        "id": user.id,
+        "name": user.name,
+        "email": user.email,
+        "department": user.department,
+        "role": user.role,
+        "status": user.status,
+    }
+
+
 def delete_user(db: Session, user_id: int):
     user = db.query(User).filter(User.id == user_id).first()
 
