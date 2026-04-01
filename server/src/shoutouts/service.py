@@ -313,9 +313,24 @@ def get_user_stats(db: Session, user_id: int):
     # Calculate level (500 points per level)
     current_level = int(total_points // 500) + 1
     
-    # Get user rank (how many users have more points than this user)
-    rank = db.query(func.count(User.id)).filter(
-        User.id != user_id
+    # Get user rank by comparing points with other users
+    # Create a subquery that gets each user's total points
+    user_points_subquery = db.query(
+        User.id,
+        func.sum(Shoutout.points).label('total_points')
+    ).join(
+        ShoutOutRecipient,
+        User.id == ShoutOutRecipient.user_id
+    ).join(
+        Shoutout,
+        ShoutOutRecipient.shoutout_id == Shoutout.id
+    ).filter(
+        Shoutout.status.in_(valid_statuses)
+    ).group_by(User.id).subquery()
+    
+    # Count how many users have more points than the current user (add 1 for the user's own rank)
+    rank = db.query(func.count(user_points_subquery.c.id)).filter(
+        user_points_subquery.c.total_points > total_points
     ).scalar() + 1
     
     return {
