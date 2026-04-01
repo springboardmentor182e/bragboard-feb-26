@@ -44,6 +44,9 @@ def seed_employees():
                 Employee(name="Priya",  department="Design"),
             ])
             sess.commit()
+            print("[Seed] Employees seeded successfully")
+        else:
+            print("[Seed] Employees already exist, skipping")
     except Exception as e:
         sess.rollback()
         print(f"[Seed Error] {e}")
@@ -53,15 +56,25 @@ def seed_employees():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # ── Each create_all in its OWN try block ──
+    # so a duplicate index error in one does NOT stop the other
     try:
         Base.metadata.create_all(bind=engine, checkfirst=True)
-        CoreBase.metadata.create_all(bind=core_engine, checkfirst=True)
+        print("[DB] Base tables ready")
     except Exception as e:
-        print(f"[DB Init Warning] {e} - continuing...")
+        print(f"[DB Init Warning] Base: {e} - continuing...")
+
+    try:
+        CoreBase.metadata.create_all(bind=core_engine, checkfirst=True)
+        print("[DB] CoreBase tables ready")
+    except Exception as e:
+        print(f"[DB Init Warning] CoreBase: {e} - continuing...")
+
     try:
         seed_employees()
     except Exception as e:
         print(f"[Seed Warning] {e} - continuing...")
+
     yield
 
 
