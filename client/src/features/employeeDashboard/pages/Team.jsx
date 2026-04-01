@@ -1,60 +1,78 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search } from "lucide-react";
-
-const teamData = [
-  {
-    name: "Sarah Chen",
-    role: "Product Manager",
-    dept: "Product",
-    initials: "SC",
-    shoutouts: 24,
-    reactions: 156,
-  },
-  {
-    name: "David Kim",
-    role: "Engineering Lead",
-    dept: "Engineering",
-    initials: "DK",
-    shoutouts: 18,
-    reactions: 142,
-  },
-  {
-    name: "Jessica Park",
-    role: "Senior Designer",
-    dept: "Design",
-    initials: "JP",
-    shoutouts: 21,
-    reactions: 178,
-  },
-  {
-    name: "Emma Watson",
-    role: "Design Lead",
-    dept: "Design",
-    initials: "EW",
-    shoutouts: 22,
-    reactions: 165,
-  },
-  {
-    name: "Alex Thompson",
-    role: "Frontend Engineer",
-    dept: "Engineering",
-    initials: "AT",
-    shoutouts: 16,
-    reactions: 112,
-  },
-  {
-    name: "Lisa Chang",
-    role: "Product Designer",
-    dept: "Product",
-    initials: "LC",
-    shoutouts: 20,
-    reactions: 145,
-  },
-];
+import { getAllUsers } from "../../../services/shoutoutService";
+import { getUserStats } from "../../../services/userStatsService";
 
 const Team = () => {
+  const [teamData, setTeamData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("All");
+
+  // Fetch team data on component mount
+  useEffect(() => {
+    const fetchTeamData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Fetch all users
+        const users = await getAllUsers();
+
+        // Fetch stats for each user
+        const usersWithStats = await Promise.all(
+          users.map(async (user) => {
+            try {
+              const stats = await getUserStats(user.id);
+              return {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                role: user.role || "Team Member",
+                dept: user.department || "General",
+                initials:
+                  user.name
+                    .split(" ")
+                    .map((word) => word[0])
+                    .join("")
+                    .toUpperCase() || "?",
+                shoutouts: stats?.shoutouts_received || 0,
+                reactions: 0, // Can be added if needed from backend
+              };
+            } catch (err) {
+              console.error(`Error fetching stats for user ${user.id}:`, err);
+              return {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                role: user.role || "Team Member",
+                dept: user.department || "General",
+                initials:
+                  user.name
+                    .split(" ")
+                    .map((word) => word[0])
+                    .join("")
+                    .toUpperCase() || "?",
+                shoutouts: 0,
+                reactions: 0,
+              };
+            }
+          })
+        );
+
+        setTeamData(usersWithStats);
+      } catch (err) {
+        console.error("Error fetching team data:", err);
+        setError("Failed to load team data");
+        setTeamData([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTeamData();
+  }, []);
 
   const filtered = teamData.filter((user) => {
     const matchesSearch =
@@ -66,6 +84,38 @@ const Team = () => {
 
     return matchesSearch && matchesDept;
   });
+
+  if (loading) {
+    return (
+      <div className="space-y-8">
+        <div>
+          <h1 className="text-3xl font-bold text-slate-900">Team</h1>
+          <p className="text-slate-500">
+            Connect with your colleagues and celebrate their wins
+          </p>
+        </div>
+        <div className="text-center py-12">
+          <p className="text-slate-500">Loading team data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-8">
+        <div>
+          <h1 className="text-3xl font-bold text-slate-900">Team</h1>
+          <p className="text-slate-500">
+            Connect with your colleagues and celebrate their wins
+          </p>
+        </div>
+        <div className="text-center py-12">
+          <p className="text-red-600">{error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
