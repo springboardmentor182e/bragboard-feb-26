@@ -97,6 +97,151 @@ class AdminService:
                 "pending_users": 0,
             }
     
+    def get_engagement_analytics(self) -> Dict[str, Any]:
+        """Get comprehensive engagement analytics for dashboard"""
+        try:
+            analytics = {
+                "top_contributors": [],
+                "department_engagement": [],
+                "category_breakdown": [],
+                "reaction_breakdown": {"like": 0, "clap": 0, "star": 0},
+                "engagement_trend": []
+            }
+            
+            if not SHOUTOUT_AVAILABLE or Shoutout is None:
+                return analytics
+            
+            try:
+                from ..entities.shoutout_recipient import ShoutOutRecipient
+                from ..entities.reaction import Reaction
+                
+                # 1️⃣ TOP CONTRIBUTORS (Most Shout-outs sent + received + reactions)
+                sent_query = self.db.query(
+                    User.name,
+                    User.department,
+                    func.count(Shoutout.id).label('sent_count')
+                ).join(Shoutout, Shoutout.sender_id == User.id).filter(
+                    Shoutout.status == 'APPROVED'
+                ).group_by(User.id, User.name, User.department).order_by(
+                    func.count(Shoutout.id).desc()
+                ).limit(5).all()
+                
+                contributors_dict = {}
+                for name, dept, count in sent_query:
+                    contributors_dict[name] = {
+                        "name": name,
+                        "department": dept or "Unknown",
+                        "sent": count,
+                        "received": 0,
+                        "reactions": 0,
+                        "engagement_score": count
+                    }
+                
+                # Get received shout-outs
+                received_query = self.db.query(
+                    User.name,
+                    func.count(ShoutOutRecipient.id).label('received_count')
+                ).join(ShoutOutRecipient, ShoutOutRecipient.user_id == User.id).join(
+                    Shoutout, Shoutout.id == ShoutOutRecipient.shoutout_id
+                ).filter(Shoutout.status == 'APPROVED').group_by(User.id, User.name).all()
+                
+                for name, count in received_query:
+                    if name not in contributors_dict:
+                        contributors_dict[name] = {"name": name, "department": "Unknown", "sent": 0, "received": count, "reactions": 0, "engagement_score": 0}
+                    else:
+                        contributors_dict[name]["received"] = count
+                
+                # Get reactions received - need to join shoutout → recipients → reactions
+                reactions_query = self.db.query(
+                    User.name,
+                    func.count(Reaction.id).label('reaction_count')
+                ).join(ShoutOutRecipient, ShoutOutRecipient.user_id == User.id).join(
+                    Shoutout, Shoutout.id == ShoutOutRecipient.shoutout_id
+                ).join(Reaction, Reaction.shoutout_id == Shoutout.id
+                ).group_by(User.id, User.name).all()
+                
+                for name, count in reactions_query:
+                    if name not in contributors_dict:
+                        contributors_dict[name] = {"name": name, "department": "Unknown", "sent": 0, "received": 0, "reactions": count, "engagement_score": 0}
+                    else:
+                        contributors_dict[name]["reactions"] = count
+                
+                # Calculate engagement score and sort
+                for contributor in contributors_dict.values():
+                    contributor["engagement_score"] = (
+                        contributor["sent"] * 1.5 + 
+                        contributor["received"] * 2 + 
+                        contributor["reactions"] * 0.5
+                    )
+                
+                analytics["top_contributors"] = sorted(
+                    list(contributors_dict.values()),
+                    key=lambda x: x["engagement_score"],
+                    reverse=True
+                )[:5]
+                
+                # 2️⃣ DEPARTMENT ENGAGEMENT
+                dept_query = self.db.query(
+                    User.department,
+                    func.count(Shoutout.id).label('total_shoutouts'),
+                    func.count(User.id).label('total_members')
+                ).join(Shoutout, Shoutout.sender_id == User.id).filter(
+                    Shoutout.status == 'APPROVED'
+                ).group_by(User.department).all()
+                
+                for dept, shoutouts, members in dept_query:
+                    engagement_rate = (shoutouts / members * 100) if members > 0 else 0
+                    analytics["department_engagement"].append({
+                        "department": dept or "Unknown",
+                        "shoutouts": shoutouts,
+                        "members": members,
+                        "engagement_rate": round(engagement_rate, 1),
+                        "percentage": round((shoutouts / max(sum([s[1] for s in dept_query]), 1)) * 100, 1)
+                    })
+                
+                # 3️⃣ CATEGORY BREAKDOWN
+                category_query = self.db.query(
+                    Shoutout.category,
+                    func.count(Shoutout.id).label('count')
+                ).filter(Shoutout.status == 'APPROVED').group_by(
+                    Shoutout.category
+                ).all()
+                
+                total_by_category = sum([c[1] for c in category_query])
+                for category, count in category_query:
+                    analytics["category_breakdown"].append({
+                        "category": category or "Uncategorized",
+                        "count": count,
+                        "percentage": round((count / total_by_category * 100), 1) if total_by_category > 0 else 0
+                    })
+                
+                # 4️⃣ REACTION TYPES BREAKDOWN
+                reaction_query = self.db.query(
+                    Reaction.reaction_type,
+                    func.count(Reaction.id).label('count')
+                ).group_by(Reaction.reaction_type).all()
+                
+                for reaction_type, count in reaction_query:
+                    analytics["reaction_breakdown"][reaction_type] = count
+                
+                print(f"📊 Engagement Analytics - {len(analytics['top_contributors'])} contributors, {len(analytics['department_engagement'])} depts")
+                
+            except Exception as e:
+                print(f"❌ Error calculating engagement metrics: {e}")
+                import traceback
+                traceback.print_exc()
+            
+            return analytics
+            
+        except Exception as e:
+            print(f"❌ Error in get_engagement_analytics: {e}")
+            return {
+                "top_contributors": [],
+                "department_engagement": [],
+                "category_breakdown": [],
+                "reaction_breakdown": {}
+            }
+    
     def get_reports(self, skip: int = 0, limit: int = 100, status: str = None) -> List[AdminReport]:
         """Get all reports, optionally filtered by status"""
         try:

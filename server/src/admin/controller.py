@@ -141,33 +141,52 @@ async def get_top_contributors(
     limit: int = 10
 ):
     """
-    Get top contributors based on total interactions
+    Get top contributors based on engagement analytics
     """
     try:
-        # Query top contributors from user_contributions table
-        contributors = db.query(
-            UserContribution.user_name,
-            UserContribution.total_interactions
-        ).order_by(
-            UserContribution.total_interactions.desc()
-        ).limit(limit).all()
-
-        # Format the response with colors
-        colors = ['#3882F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6']
-        result = []
+        admin_service = service.AdminService(db)
+        analytics = admin_service.get_engagement_analytics()
+        contributors = analytics.get("top_contributors", [])[:limit]
         
-        for idx, (name, value) in enumerate(contributors):
+        # Format for chart display
+        result = []
+        for idx, contrib in enumerate(contributors):
             result.append({
-                "name": name,
-                "value": value or 0,
-                "fill": colors[idx % len(colors)]
+                "name": contrib["name"],
+                "value": int(contrib["engagement_score"]),
+                "fill": ['#3882F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6'][idx % 5]
             })
-
+        
         return result
 
     except Exception as e:
         print(f"Error fetching top contributors: {e}")
+        import traceback
+        traceback.print_exc()
         return []
+
+
+@router.get("/engagement/analytics")
+async def get_engagement_analytics(db: Session = Depends(get_db)):
+    """
+    Get comprehensive engagement analytics
+    """
+    try:
+        admin_service = service.AdminService(db)
+        analytics = admin_service.get_engagement_analytics()
+        return analytics
+        
+    except Exception as e:
+        print(f"❌ Error in engagement analytics endpoint: {e}")
+        import traceback
+        traceback.print_exc()
+        return {
+            "top_contributors": [],
+            "department_engagement": [],
+            "category_breakdown": [],
+            "reaction_breakdown": {}
+        }
+
 
 # ============= FIXED DASHBOARD STATS ENDPOINT =============
 # Frontend calls /admin/dashboard/stats (without /api prefix)

@@ -9,11 +9,16 @@ export const adminAPI = {
   getDashboardStats: () => API.get('/api/admin/dashboard/stats'),
   getAllUsers: () => API.get('/api/admin/users'),
   getActivityLogs: () => API.get('/api/admin/activities'),
-getReports: (status = null) => {
-  const url = status ? `/api/admin/reports?status=${status}` : '/api/admin/reports';
-  return API.get(url);
-},  getTopContributors: () => {
+  getReports: (status = null) => {
+    const url = status ? `/api/admin/reports?status=${status}` : '/api/admin/reports';
+    return API.get(url);
+  },
+  getTopContributors: () => {
     return API.get('/api/admin/contributors/top');
+  },
+  // NEW: Get comprehensive engagement analytics
+  getEngagementAnalytics: () => {
+    return API.get('/api/admin/engagement/analytics');
   },
   // Report/Post functions
   resolveReport: (reportId) => API.post(`/api/admin/reports/${reportId}/resolve`),
