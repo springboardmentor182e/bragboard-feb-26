@@ -8,6 +8,7 @@ from .service import (
     get_all_shoutouts_feed,
     get_user_feed,
     get_user_stats,
+    get_leaderboard_users,
     add_reaction,
     remove_reaction,
     get_reactions,
@@ -117,6 +118,17 @@ def fetch_all_shoutouts_feed(
 def fetch_user_stats(user_id: int, db: Session = Depends(get_db)):
     """Get user stats: points, level, shoutouts count, rank"""
     return get_user_stats(db, user_id)
+
+
+@router.get("/leaderboard")
+def fetch_leaderboard(
+    limit: int = Query(10, ge=1, le=100),
+    offset: int = Query(0, ge=0),
+    include_pending: bool = Query(True),
+    db: Session = Depends(get_db)
+):
+    """Get leaderboard of top users by points received"""
+    return get_leaderboard_users(db, limit, offset, include_pending)
 
 
 @router.get("/user/given")

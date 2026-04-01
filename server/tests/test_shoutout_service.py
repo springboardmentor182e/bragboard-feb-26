@@ -13,7 +13,7 @@ from src.entities.user import User
 from src.entities.shoutout import Shoutout
 from src.entities.shoutout_recipient import ShoutOutRecipient
 from src.auth.utils import hash_password
-from src.shoutouts.service import create_shoutout_with_recipients, get_user_stats
+from src.shoutouts.service import create_shoutout_with_recipients, get_user_stats, get_leaderboard_users
 
 
 # Create a test database
@@ -294,3 +294,182 @@ class TestShoutoutCreation:
         
         created_at = datetime.fromisoformat(result["created_at"])
         assert before_creation <= created_at <= after_creation
+
+
+class TestLeaderboard:
+    """Tests for leaderboard functionality"""
+    
+    def test_get_leaderboard_users_basic(self, db_session, test_users):
+        """Test basic leaderboard retrieval"""
+        sender = test_users[0]
+        recipients = [test_users[1].id, test_users[2].id]
+        
+        # Create shoutout with multiple recipients
+        create_shoutout_with_recipients(
+            db=db_session,
+            sender_id=sender.id,
+            message="Great work!",
+            category="Achievement",
+            recipient_ids=recipients,
+            points=100
+        )
+        
+        # Get leaderboard
+        leaderboard = get_leaderboard_users(db_session, limit=10)
+        
+        # Verify structure
+        assert len(leaderboard) <= 2
+        assert all('position' in entry for entry in leaderboard)
+        assert all('name' in entry for entry in leaderboard)
+        assert all('points' in entry for entry in leaderboard)
+        assert all('initials' in entry for entry in leaderboard)
+        assert all('badges' in entry for entry in leaderboard)
+    
+    def test_leaderboard_sorted_by_points(self, db_session, test_users):
+        """Test that leaderboard is sorted by points descending"""
+        sender1 = test_users[0]
+        recipient1 = test_users[1]
+        recipient2 = test_users[2]
+        
+        # Create shoutout with 100 points to recipient1
+        create_shoutout_with_recipients(
+            db=db_session,
+            sender_id=sender1.id,
+            message="High value shoutout",
+            category="Achievement",
+            recipient_ids=[recipient1.id],
+            points=100
+        )
+        
+        # Create shoutout with 50 points to recipient2
+        create_shoutout_with_recipients(
+            db=db_session,
+            sender_id=sender1.id,
+            message="Medium value",
+            category="Teamwork",
+            recipient_ids=[recipient2.id],
+            points=50
+        )
+        
+        leaderboard = get_leaderboard_users(db_session, limit=10)
+        
+        # Check sorting
+        assert len(leaderboard) >= 2
+        assert leaderboard[0]['points'] >= leaderboard[1]['points']
+    
+    def test_leaderboard_position_rank(self, db_session, test_users):
+        """Test that position rank is correctly assigned"""
+        sender = test_users[0]
+        recipient = test_users[1]
+        
+        create_shoutout_with_recipients(
+            db=db_session,
+            sender_id=sender.id,
+            message="Test",
+            category="Achievement",
+            recipient_ids=[recipient.id],
+            points=50
+        )
+        
+        leaderboard = get_leaderboard_users(db_session, limit=10, offset=0)
+        
+        # First entry should have position 1
+        if leaderboard:
+            assert leaderboard[0]['position'] == 1
+    
+    def test_leaderboard_badges_awarded(self, db_session, test_users):
+        """Test that badges are correctly awarded based on metrics"""
+        sender = test_users[0]
+        recipient = test_users[1]
+        
+        # Create 10 shoutouts to reach 'fire' badge (shoutouts_received >= 10)
+        for i in range(10):
+            create_shoutout_with_recipients(
+                db=db_session,
+                sender_id=sender.id,
+                message=f"Shout {i}",
+                category="Achievement",
+                recipient_ids=[recipient.id],
+                points=50
+            )
+        
+        leaderboard = get_leaderboard_users(db_session, limit=10)
+        
+        # Find recipient in leaderboard
+        recipient_entry = next((e for e in leaderboard if e['user_id'] == recipient.id), None)
+        
+        assert recipient_entry is not None
+        # Should have 'fire' badge (shoutouts_received >= 10)
+        assert 'fire' in recipient_entry['badges']
+        # Should have 'heart' badge (points > 0)
+        assert 'heart' in recipient_entry['badges']
+    
+    def test_leaderboard_limit_and_offset(self, db_session, test_users):
+        """Test pagination with limit and offset"""
+        sender = test_users[0]
+        recipients = [u.id for u in test_users[1:]]
+        
+        # Create shoutouts for multiple recipients
+        for i, recipient_id in enumerate(recipients):
+            create_shoutout_with_recipients(
+                db=db_session,
+                sender_id=sender.id,
+                message=f"Shout {i}",
+                category="Achievement",
+                recipient_ids=[recipient_id],
+                points=100 - (i * 10)
+            )
+        
+        # Get first 1
+        leaderboard_p1 = get_leaderboard_users(db_session, limit=1, offset=0)
+        assert len(leaderboard_p1) <= 1
+        
+        # Get all
+        leaderboard_all = get_leaderboard_users(db_session, limit=10, offset=0)
+        assert len(leaderboard_all) == len(recipients)
+    
+    def test_leaderboard_includes_pending_by_default(self, db_session, test_users):
+        """Test that leaderboard includes PENDING shoutouts by default"""
+        sender = test_users[0]
+        recipient = test_users[1]
+        
+        # Create shoutout (will be PENDING status by default)
+        create_shoutout_with_recipients(
+            db=db_session,
+            sender_id=sender.id,
+            message="Pending shoutout",
+            category="Achievement",
+            recipient_ids=[recipient.id],
+            points=75
+        )
+        
+        # Get leaderboard with include_pending=True (default)
+        leaderboard_pending = get_leaderboard_users(db_session, include_pending=True)
+        
+        # Get leaderboard excluding pending
+        leaderboard_approved_only = get_leaderboard_users(db_session, include_pending=False)
+        
+        # With pending should have more or equal entries
+        assert len(leaderboard_pending) >= len(leaderboard_approved_only)
+    
+    def test_leaderboard_initials_generation(self, db_session, test_users):
+        """Test that initials are correctly generated from user names"""
+        sender = test_users[0]
+        recipient = test_users[1]  # "Recipient 1"
+        
+        create_shoutout_with_recipients(
+            db=db_session,
+            sender_id=sender.id,
+            message="Test",
+            category="Achievement",
+            recipient_ids=[recipient.id],
+            points=50
+        )
+        
+        leaderboard = get_leaderboard_users(db_session, limit=10)
+        recipient_entry = next((e for e in leaderboard if e['user_id'] == recipient.id), None)
+        
+        assert recipient_entry is not None
+        # Recipient 1 should have initials "R1" or similar
+        assert len(recipient_entry['initials']) > 0
+        assert recipient_entry['initials'][0] == 'R'

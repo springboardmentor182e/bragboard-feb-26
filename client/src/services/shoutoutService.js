@@ -127,6 +127,21 @@ export const getUserStats = async (userId) => {
 };
 
 /**
+ * Get leaderboard of top users by points
+ */
+export const getLeaderboard = async (limit = 10, offset = 0) => {
+  try {
+    const response = await API.get('/api/shoutouts/leaderboard', {
+      params: { limit, offset, include_pending: true },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching leaderboard:', error);
+    throw error;
+  }
+};
+
+/**
  * Add reaction to a shoutout
  */
 export const addReaction = async (shoutoutId, reactionType) => {

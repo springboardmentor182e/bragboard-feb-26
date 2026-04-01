@@ -329,6 +329,73 @@ def get_user_stats(db: Session, user_id: int):
     }
 
 
+def get_leaderboard_users(db: Session, limit: int = 10, offset: int = 0, include_pending: bool = True):
+    """
+    Get leaderboard of users ranked by total points received.
+    
+    Args:
+        db: Database session
+        limit: Max number of users to return (default 10)
+        offset: Pagination offset (default 0)
+        include_pending: Include PENDING shoutouts in calculation (default True)
+    
+    Returns:
+        List of user leaderboard entries with rank, points, and metadata
+    """
+    valid_statuses = ["APPROVED", "PENDING"] if include_pending else ["APPROVED"]
+    
+    # Query users with aggregated stats
+    users_query = db.query(
+        User.id.label('user_id'),
+        User.name,
+        User.department,
+        func.count(ShoutOutRecipient.id).label('shoutouts_received'),
+        func.sum(Shoutout.points).label('total_points')
+    ).join(
+        ShoutOutRecipient, User.id == ShoutOutRecipient.user_id
+    ).join(
+        Shoutout, ShoutOutRecipient.shoutout_id == Shoutout.id
+    ).filter(
+        Shoutout.status.in_(valid_statuses)
+    ).group_by(
+        User.id, User.name, User.department
+    ).order_by(
+        func.sum(Shoutout.points).desc()
+    ).offset(offset).limit(limit).all()
+    
+    # Build results with calculated fields
+    results = []
+    for rank, user in enumerate(users_query, start=offset + 1):
+        total_points = user.total_points or 0
+        level = int(total_points // 500) + 1
+        
+        # Generate initials
+        initials = ''.join([word[0].upper() for word in user.name.split()]) if user.name else '?'
+        
+        # Determine badges based on activity
+        badges = []
+        if user.shoutouts_received >= 10:
+            badges.append('fire')
+        if total_points >= 500:
+            badges.append('star')
+        if user.shoutouts_received >= 5:
+            badges.append('heart')
+        
+        results.append({
+            'position': rank,
+            'user_id': user.user_id,
+            'name': user.name,
+            'department': user.department,
+            'points': int(total_points),
+            'shoutouts_received': user.shoutouts_received,
+            'level': level,
+            'badges': badges,
+            'initials': initials
+        })
+    
+    return results
+
+
 def add_reaction(db: Session, shoutout_id: int, user_id: int, reaction_type: str):
     """Add or update user's reaction to a shoutout"""
     
