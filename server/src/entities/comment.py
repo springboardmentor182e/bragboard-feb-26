@@ -8,8 +8,8 @@ class Comment(Base):
     __tablename__ = "comments"
 
     id = Column(Integer, primary_key=True, index=True)
-    shoutout_id = Column(Integer, ForeignKey("shoutouts.id"))
-    user_id = Column(Integer, ForeignKey("users.id"))
+    shoutout_id = Column(Integer, ForeignKey("shoutouts.id", ondelete="CASCADE"))
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
     text = Column(String, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 

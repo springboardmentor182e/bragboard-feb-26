@@ -15,8 +15,8 @@ class Reaction(Base):
     __tablename__ = "reactions"
 
     id = Column(Integer, primary_key=True, index=True)
-    shoutout_id = Column(Integer, ForeignKey("shoutouts.id"))
-    user_id = Column(Integer, ForeignKey("users.id"))
+    shoutout_id = Column(Integer, ForeignKey("shoutouts.id", ondelete="CASCADE"))
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
     reaction_type = Column(Enum(ReactionType), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 

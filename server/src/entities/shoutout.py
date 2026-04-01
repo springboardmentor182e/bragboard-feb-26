@@ -9,8 +9,8 @@ class Shoutout(Base):
 
     id = Column(Integer, primary_key=True, index=True)
 
-    sender_id = Column(Integer, ForeignKey("users.id"))
-    receiver_id = Column(Integer, ForeignKey("users.id"))
+    sender_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
+    receiver_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
 
     message = Column(String)
     category = Column(String)

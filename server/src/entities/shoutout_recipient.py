@@ -9,8 +9,8 @@ class ShoutOutRecipient(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     
-    shoutout_id = Column(Integer, ForeignKey("shoutouts.id"), nullable=False)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    shoutout_id = Column(Integer, ForeignKey("shoutouts.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     
     created_at = Column(DateTime, default=datetime.utcnow)
 

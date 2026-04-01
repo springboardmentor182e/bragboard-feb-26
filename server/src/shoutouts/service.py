@@ -304,7 +304,7 @@ def get_user_stats(db: Session, user_id: int):
     
     # Calculate total points from received shoutouts using ShoutOutRecipient
     total_points = db.query(func.sum(Shoutout.points)).join(
-        ShoutOutRecipient
+        ShoutOutRecipient, Shoutout.id == ShoutOutRecipient.shoutout_id
     ).filter(
         ShoutOutRecipient.user_id == user_id,
         Shoutout.status.in_(valid_statuses)

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from datetime import datetime
 from ..database.core import Base
 
@@ -8,8 +8,8 @@ class Report(Base):
 
     id = Column(Integer, primary_key=True, index=True)
 
-    shoutout_id = Column(Integer)
-    reported_by = Column(Integer)
+    shoutout_id = Column(Integer, ForeignKey("shoutouts.id", ondelete="CASCADE"))
+    reported_by = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
 
     reason = Column(String)
     description = Column(String)

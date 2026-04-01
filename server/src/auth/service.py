@@ -111,7 +111,7 @@ def send_otp_email(email: str, db: Session):
     
     db.commit()
     
-    # Send email
+    # Send email (will print OTP in MOCK mode)
     email_sent = email_service.send_otp_email(
         recipient_email=user.email,
         otp=otp,
