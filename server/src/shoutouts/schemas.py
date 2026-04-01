@@ -75,3 +75,28 @@ class ShoutOutResponse(BaseModel):
 class ShoutOutDetailResponse(ShoutOutResponse):
     """Full shoutout response with all details"""
     pass
+
+
+class BadgeResponse(BaseModel):
+    """Badge information with unlock status"""
+    id: int
+    name: str
+    description: str
+    points_required: int
+    icon: str
+    unlocked: bool
+    points_to_unlock: int
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class ProgressResponse(BaseModel):
+    """User level progress with badges"""
+    user_id: int
+    current_level: int
+    total_points: int
+    points_to_next_level: int
+    shoutouts_received: int
+    badges: List[BadgeResponse]
+
+    model_config = ConfigDict(from_attributes=True)

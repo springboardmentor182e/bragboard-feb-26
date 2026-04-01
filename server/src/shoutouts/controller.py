@@ -8,6 +8,7 @@ from .service import (
     get_all_shoutouts_feed,
     get_user_feed,
     get_user_stats,
+    get_user_progress,
     get_leaderboard_users,
     add_reaction,
     remove_reaction,
@@ -118,6 +119,12 @@ def fetch_all_shoutouts_feed(
 def fetch_user_stats(user_id: int, db: Session = Depends(get_db)):
     """Get user stats: points, level, shoutouts count, rank"""
     return get_user_stats(db, user_id)
+
+
+@router.get("/progress/{user_id}")
+def fetch_user_progress(user_id: int, db: Session = Depends(get_db)):
+    """Get user's level progress with badge unlock status"""
+    return get_user_progress(db, user_id)
 
 
 @router.get("/leaderboard")

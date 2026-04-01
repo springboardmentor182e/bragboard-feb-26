@@ -708,3 +708,86 @@ def get_user_received_shoutouts(db: Session, user_id: int, limit: int = 20, offs
         })
     
     return feed
+
+
+# ============ LEVEL PROGRESS & BADGES ============
+
+# Badge definitions (hardcoded)
+BADGES = [
+    {
+        "id": 1,
+        "name": "Rising Star",
+        "description": "Received your first recognition",
+        "points_required": 0,
+        "icon": "star"
+    },
+    {
+        "id": 2,
+        "name": "Achiever",
+        "description": "Accumulated 500 points",
+        "points_required": 500,
+        "icon": "award"
+    },
+    {
+        "id": 3,
+        "name": "Leader",
+        "description": "Accumulated 1000 points",
+        "points_required": 1000,
+        "icon": "crown"
+    },
+    {
+        "id": 4,
+        "name": "Champion",
+        "description": "Accumulated 1500 points",
+        "points_required": 1500,
+        "icon": "zap"
+    },
+    {
+        "id": 5,
+        "name": "Legend",
+        "description": "Accumulated 2000 points",
+        "points_required": 2000,
+        "icon": "flame"
+    }
+]
+
+def get_user_progress(db: Session, user_id: int):
+    """
+    Get user's level progress with badge unlock status.
+    
+    Args:
+        db: Database session
+        user_id: User ID
+    
+    Returns:
+        Dictionary with current level, total points, and badge list
+    """
+    # Get user stats
+    stats = get_user_stats(db, user_id)
+    total_points = stats["total_points"]
+    current_level = stats["current_level"]
+    
+    # Build badge list with unlock status
+    badges = []
+    for badge in BADGES:
+        is_unlocked = total_points >= badge["points_required"]
+        points_to_unlock = max(0, badge["points_required"] - total_points)
+        
+        badges.append({
+            "id": badge["id"],
+            "name": badge["name"],
+            "description": badge["description"],
+            "points_required": badge["points_required"],
+            "icon": badge["icon"],
+            "unlocked": is_unlocked,
+            "points_to_unlock": points_to_unlock
+        })
+    
+    return {
+        "user_id": user_id,
+        "current_level": current_level,
+        "total_points": total_points,
+        "points_to_next_level": stats["points_to_next_level"],
+        "shoutouts_received": stats["shoutouts_received"],
+        "badges": badges
+    }

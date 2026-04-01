@@ -1,13 +1,18 @@
+import { useState } from "react";
 import { Star, TrendingUp } from "lucide-react";
 import { useUserStats } from "../../hooks/useUserStats";
+import { useLevelProgress } from "../../hooks/useLevelProgress";
+import LevelProgressModal from "../modals/LevelProgressModal";
 
 const LevelProgress = () => {
   const { stats } = useUserStats();
+  const { progress: levelProgress, loading } = useLevelProgress();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Calculate progress percentage
   const totalPointsPerLevel = 500;
   const currentLevelProgress = (stats?.total_points || 0) % totalPointsPerLevel;
-  const progress = Math.min((currentLevelProgress / totalPointsPerLevel) * 100, 100);
+  const progressPercentage = Math.min((currentLevelProgress / totalPointsPerLevel) * 100, 100);
 
   // Get next level title
   const getLevelTitle = (level) => {
@@ -63,7 +68,7 @@ const LevelProgress = () => {
           {getLevelTitle(stats?.current_level || 1)}
         </p>
         <p className="text-sm text-white/70">
-          {Math.min(Math.round(progress), 100)}%
+          {Math.min(Math.round(progressPercentage), 100)}%
         </p>
       </div>
 
@@ -76,7 +81,7 @@ const LevelProgress = () => {
             bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400
             transition-all duration-700
           "
-          style={{ width: `${progress}%` }}
+          style={{ width: `${progressPercentage}%` }}
         />
 
       </div>
@@ -117,12 +122,18 @@ const LevelProgress = () => {
         </div>
 
         {/* Optional CTA */}
-        <button className="text-xs bg-white/20 px-3 py-1 rounded-lg hover:bg-white/30 transition">
+        <button onClick={() => setIsModalOpen(true)} className="text-xs bg-white/20 px-3 py-1 rounded-lg hover:bg-white/30 transition">
           View
         </button>
 
       </div>
 
+      <LevelProgressModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        progress={levelProgress}
+        loading={loading}
+      />
     </div>
   );
 };
