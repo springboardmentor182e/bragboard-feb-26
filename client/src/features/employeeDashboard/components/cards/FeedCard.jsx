@@ -1,23 +1,18 @@
-import { Heart, MessageCircle, ThumbsUp } from "lucide-react";
+import { Heart, ThumbsUp } from "lucide-react";
 import { useState } from "react";
 import { useReactions } from "../../hooks/useReactions";
 import useToast from "../../hooks/useToast";
+import CommentsViewer from "../../../../components/CommentsViewer";
 
 const FeedCard = ({ item }) => {
   const [expanded, setExpanded] = useState(false);
-  const [showComments, setShowComments] = useState(false);
-  const [commentText, setCommentText] = useState("");
   const [showReactionPicker, setShowReactionPicker] = useState(false);
   const { showToast } = useToast();
 
   const { 
     toggleReaction, 
-    addCommentOptimistic, 
-    deleteCommentOptimistic,
     optimisticReactions,
-    optimisticComments,
     reactingLoading,
-    commentLoading,
     error
   } = useReactions(item.id);
 
@@ -60,28 +55,6 @@ const FeedCard = ({ item }) => {
       );
     } catch (err) {
       showToast(err.message || "Failed to update reaction", "error");
-    }
-  };
-
-  const handleAddComment = async (e) => {
-    e.preventDefault();
-    if (!commentText.trim()) return;
-
-    try {
-      await addCommentOptimistic(commentText);
-      setCommentText("");
-      showToast("Comment added!", "success");
-    } catch (err) {
-      showToast(err.message || "Failed to add comment", "error");
-    }
-  };
-
-  const handleDeleteComment = async (commentId) => {
-    try {
-      await deleteCommentOptimistic(commentId);
-      showToast("Comment deleted", "success");
-    } catch (err) {
-      showToast(err.message || "Failed to delete comment", "error");
     }
   };
 
@@ -223,68 +196,16 @@ const FeedCard = ({ item }) => {
             )}
           </div>
 
-          {/* COMMENT BUTTON */}
-          <button
-            onClick={() => setShowComments(!showComments)}
-            className="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-full text-sm text-slate-600 hover:bg-slate-200 transition"
-          >
-            <MessageCircle size={14} />
-            {commentCount || 0}
-          </button>
+          {/* COMMENTS VIEWER - Integrated Component */}
+          <CommentsViewer 
+            shoutoutId={item.id}
+            initialCommentCount={commentCount}
+          />
 
         </div>
 
-        {/* COMMENTS SECTION */}
-        {showComments && (
-          <div className="mt-4 space-y-3 border-t border-slate-200 pt-3">
-
-            {/* COMMENTS LIST */}
-            {optimisticComments.length > 0 && (
-              <div className="space-y-2 max-h-40 overflow-y-auto">
-                {optimisticComments.map((comment) => (
-                  <div key={comment.id} className="bg-slate-50 p-2 rounded text-xs">
-                    <div className="flex justify-between items-start">
-                      <p className="font-semibold text-slate-900">{comment.user_name}</p>
-                      {!comment.isOptimistic && (
-                        <button
-                          onClick={() => handleDeleteComment(comment.id)}
-                          className="text-slate-400 hover:text-red-500 transition"
-                        >
-                          ✕
-                        </button>
-                      )}
-                    </div>
-                    <p className="text-slate-700 mt-1">{comment.text}</p>
-                    <p className="text-slate-400 mt-1">{formatTime(comment.created_at)}</p>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* ADD COMMENT INPUT */}
-            <form onSubmit={handleAddComment} className="flex gap-2">
-              <input
-                type="text"
-                placeholder="Add a comment..."
-                value={commentText}
-                onChange={(e) => setCommentText(e.target.value)}
-                disabled={commentLoading}
-                className="flex-1 text-xs px-3 py-1.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-              <button
-                type="submit"
-                disabled={commentLoading || !commentText.trim()}
-                className="px-3 py-1.5 bg-indigo-500 text-white text-xs rounded-lg hover:bg-indigo-600 disabled:opacity-50 transition"
-              >
-                {commentLoading ? "..." : "Post"}
-              </button>
-            </form>
-
-            {error && (
-              <p className="text-xs text-red-500">{error}</p>
-            )}
-
-          </div>
+        {error && (
+          <p className="text-xs text-red-500 mt-2">{error}</p>
         )}
 
       </div>

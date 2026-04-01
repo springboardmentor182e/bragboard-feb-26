@@ -7,6 +7,93 @@ from ..entities.reaction import Reaction, ReactionType
 from ..entities.comment import Comment
 from ..entities.user import User
 
+# ============ BATCH QUERY HELPERS (N+1 OPTIMIZATION) ============
+
+def get_comments_counts_batch(db: Session, shoutout_ids: list) -> dict:
+    """
+    Fetch comment counts for multiple shoutouts in a single query.
+    
+    Args:
+        db: Database session
+        shoutout_ids: List of shoutout IDs
+        
+    Returns:
+        Dict mapping shoutout_id → comments_count
+    """
+    if not shoutout_ids:
+        return {}
+    
+    results = db.query(
+        Comment.shoutout_id,
+        func.count(Comment.id).label('count')
+    ).filter(Comment.shoutout_id.in_(shoutout_ids)).group_by(Comment.shoutout_id).all()
+    
+    return {result[0]: result[1] for result in results}
+
+
+def get_reactions_counts_batch(db: Session, shoutout_ids: list) -> dict:
+    """
+    Fetch reaction counts (by type) for multiple shoutouts in a single query.
+    
+    Args:
+        db: Database session
+        shoutout_ids: List of shoutout IDs
+        
+    Returns:
+        Dict mapping shoutout_id → {like_count, clap_count, star_count}
+    """
+    if not shoutout_ids:
+        return {}
+    
+    results = db.query(
+        Reaction.shoutout_id,
+        Reaction.reaction_type,
+        func.count(Reaction.id).label('count')
+    ).filter(Reaction.shoutout_id.in_(shoutout_ids)).group_by(
+        Reaction.shoutout_id,
+        Reaction.reaction_type
+    ).all()
+    
+    # Initialize all shoutouts with zero counts
+    reactions_map = {sid: {"like": 0, "clap": 0, "star": 0} for sid in shoutout_ids}
+    
+    # Populate with actual counts
+    for shoutout_id, reaction_type, count in results:
+        reaction_key = reaction_type.value if hasattr(reaction_type, 'value') else str(reaction_type)
+        reactions_map[shoutout_id][reaction_key] = count
+    
+    return reactions_map
+
+
+def get_user_reactions_batch(db: Session, user_id: int, shoutout_ids: list) -> dict:
+    """
+    Fetch current user's reactions for multiple shoutouts in a single query.
+    
+    Args:
+        db: Database session
+        user_id: Current user ID
+        shoutout_ids: List of shoutout IDs
+        
+    Returns:
+        Dict mapping shoutout_id → reaction_type (or None)
+    """
+    if not shoutout_ids:
+        return {}
+    
+    reactions = db.query(
+        Reaction.shoutout_id,
+        Reaction.reaction_type
+    ).filter(
+        Reaction.user_id == user_id,
+        Reaction.shoutout_id.in_(shoutout_ids)
+    ).all()
+    
+    return {
+        r[0]: r[1].value if hasattr(r[1], 'value') else str(r[1])
+        for r in reactions
+    }
+
+
 def get_all_shoutouts(db: Session):
     result = db.execute(text("""
         SELECT id, sender, message, department, date
@@ -43,6 +130,7 @@ def get_all_shoutouts_feed(
 ):
     """
     Get all approved shoutouts with optional filters and user engagement data.
+    Optimized to avoid N+1 queries using batch operations.
     
     Args:
         db: Database session
@@ -64,8 +152,7 @@ def get_all_shoutouts_feed(
         Shoutout.status == "APPROVED"
     ).options(
         selectinload(Shoutout.sender),
-        selectinload(Shoutout.recipients).selectinload(ShoutOutRecipient.user),
-        selectinload(Shoutout.reactions)
+        selectinload(Shoutout.recipients).selectinload(ShoutOutRecipient.user)
     )
     
     # Apply filters
@@ -94,27 +181,17 @@ def get_all_shoutouts_feed(
         Shoutout.created_at.desc()
     ).limit(limit).offset(offset).all()
     
+    # Get shoutout IDs for batch queries
+    shoutout_ids = [s.id for s in shoutouts]
+    
+    # BATCH QUERIES (avoiding N+1) - single query per type
+    comments_counts = get_comments_counts_batch(db, shoutout_ids)
+    reactions_counts = get_reactions_counts_batch(db, shoutout_ids)
+    user_reactions = get_user_reactions_batch(db, current_user_id, shoutout_ids) if current_user_id else {}
+    
     # Build response with all details
     feed = []
     for shoutout in shoutouts:
-        # Get reaction counts using aggregation (optimized)
-        reactions_count = get_reaction_counts(db, shoutout.id)
-        
-        # Get comments count efficiently (aggregation, not loading full objects)
-        comments_count = db.query(func.count(Comment.id)).filter(
-            Comment.shoutout_id == shoutout.id
-        ).scalar() or 0
-        
-        # Get current user's reaction (if authenticated)
-        my_reaction = None
-        if current_user_id:
-            user_reaction = db.query(Reaction).filter(
-                Reaction.shoutout_id == shoutout.id,
-                Reaction.user_id == current_user_id
-            ).first()
-            if user_reaction:
-                my_reaction = user_reaction.reaction_type.value if user_reaction.reaction_type else None
-        
         # Build recipients list
         recipients_list = [
             {
@@ -144,13 +221,13 @@ def get_all_shoutouts_feed(
             "sender": sender_info,
             "recipients": recipients_list,
             "recipients_count": len(recipients_list),
-            "reactions_count": reactions_count,
-            "comments_count": comments_count
+            "reactions_count": reactions_counts.get(shoutout.id, {"like": 0, "clap": 0, "star": 0}),
+            "comments_count": comments_counts.get(shoutout.id, 0)
         }
         
         # Include user's reaction only if authenticated
         if current_user_id:
-            feed_item["my_reaction"] = my_reaction
+            feed_item["my_reaction"] = user_reactions.get(shoutout.id)
         
         feed.append(feed_item)
     
@@ -174,7 +251,17 @@ def get_user_feed(db: Session, user_id: int, limit: int = 20, offset: int = 0):
     shoutouts = db.query(Shoutout).filter(
         (Shoutout.receiver_id == user_id) | 
         (Shoutout.status == "APPROVED")
+    ).options(
+        selectinload(Shoutout.sender),
+        selectinload(Shoutout.recipients).selectinload(ShoutOutRecipient.user)
     ).order_by(Shoutout.created_at.desc()).limit(limit).offset(offset).all()
+    
+    # Get shoutout IDs for batch queries
+    shoutout_ids = [s.id for s in shoutouts]
+    
+    # BATCH QUERIES (avoiding N+1)
+    comments_counts = get_comments_counts_batch(db, shoutout_ids)
+    reactions_counts = get_reactions_counts_batch(db, shoutout_ids)
     
     feed = []
     for shoutout in shoutouts:
@@ -189,8 +276,8 @@ def get_user_feed(db: Session, user_id: int, limit: int = 20, offset: int = 0):
             "points": shoutout.points,
             "status": shoutout.status,
             "created_at": shoutout.created_at.isoformat(),
-            "reactions_count": get_reaction_counts(db, shoutout.id),
-            "comments_count": db.query(Comment).filter(Comment.shoutout_id == shoutout.id).count(),
+            "reactions_count": reactions_counts.get(shoutout.id, {"like": 0, "clap": 0, "star": 0}),
+            "comments_count": comments_counts.get(shoutout.id, 0),
         })
     
     return feed
@@ -453,7 +540,17 @@ def get_user_given_shoutouts(db: Session, user_id: int, limit: int = 20, offset:
     
     shoutouts = db.query(Shoutout).filter(
         Shoutout.sender_id == user_id
+    ).options(
+        selectinload(Shoutout.sender),
+        selectinload(Shoutout.recipients).selectinload(ShoutOutRecipient.user)
     ).order_by(Shoutout.created_at.desc()).limit(limit).offset(offset).all()
+    
+    # Get shoutout IDs for batch queries
+    shoutout_ids = [s.id for s in shoutouts]
+    
+    # BATCH QUERIES (avoiding N+1)
+    comments_counts = get_comments_counts_batch(db, shoutout_ids)
+    reactions_counts = get_reactions_counts_batch(db, shoutout_ids)
     
     feed = []
     for shoutout in shoutouts:
@@ -478,8 +575,8 @@ def get_user_given_shoutouts(db: Session, user_id: int, limit: int = 20, offset:
             "points": shoutout.points,
             "status": shoutout.status,
             "created_at": shoutout.created_at.isoformat(),
-            "reactions_count": get_reaction_counts(db, shoutout.id),
-            "comments_count": db.query(Comment).filter(Comment.shoutout_id == shoutout.id).count(),
+            "reactions_count": reactions_counts.get(shoutout.id, {"like": 0, "clap": 0, "star": 0}),
+            "comments_count": comments_counts.get(shoutout.id, 0),
         })
     
     return feed
@@ -496,7 +593,17 @@ def get_user_received_shoutouts(db: Session, user_id: int, limit: int = 20, offs
         ShoutOutRecipient
     ).filter(
         ShoutOutRecipient.user_id == user_id
+    ).options(
+        selectinload(Shoutout.sender),
+        selectinload(Shoutout.recipients).selectinload(ShoutOutRecipient.user)
     ).order_by(Shoutout.created_at.desc()).limit(limit).offset(offset).all()
+    
+    # Get shoutout IDs for batch queries
+    shoutout_ids = [s.id for s in shoutouts]
+    
+    # BATCH QUERIES (avoiding N+1)
+    comments_counts = get_comments_counts_batch(db, shoutout_ids)
+    reactions_counts = get_reactions_counts_batch(db, shoutout_ids)
     
     feed = []
     for shoutout in shoutouts:
@@ -521,8 +628,8 @@ def get_user_received_shoutouts(db: Session, user_id: int, limit: int = 20, offs
             "points": shoutout.points,
             "status": shoutout.status,
             "created_at": shoutout.created_at.isoformat(),
-            "reactions_count": get_reaction_counts(db, shoutout.id),
-            "comments_count": db.query(Comment).filter(Comment.shoutout_id == shoutout.id).count(),
+            "reactions_count": reactions_counts.get(shoutout.id, {"like": 0, "clap": 0, "star": 0}),
+            "comments_count": comments_counts.get(shoutout.id, 0),
         })
     
     return feed
