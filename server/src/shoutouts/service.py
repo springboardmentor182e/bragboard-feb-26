@@ -262,12 +262,25 @@ def get_user_feed(db: Session, user_id: int, limit: int = 20, offset: int = 0):
     
     feed = []
     for shoutout in shoutouts:
+        # Build recipients list with all recipients
+        recipients_list = [
+            {
+                "id": recipient.user_id,
+                "name": recipient.user.name if recipient.user else "Unknown",
+                "email": recipient.user.email if recipient.user else None,
+                "department": recipient.user.department if recipient.user else None
+            }
+            for recipient in shoutout.recipients
+        ]
+        
         feed.append({
             "id": shoutout.id,
             "sender_id": shoutout.sender_id,
             "receiver_id": shoutout.receiver_id,
             "sender_name": shoutout.sender.name if shoutout.sender else "Unknown",
             "receiver_name": shoutout.receiver.name if shoutout.receiver else "Unknown",
+            "recipients": recipients_list,
+            "recipients_count": len(recipients_list),
             "message": shoutout.message,
             "category": shoutout.category,
             "points": shoutout.points,
