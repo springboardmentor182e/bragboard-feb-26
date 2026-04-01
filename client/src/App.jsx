@@ -18,6 +18,7 @@ import EmployeeDashboard from "./features/employeeDashboard/pages/EmployeeDashbo
 import MyShoutouts from "./features/employeeDashboard/pages/MyShoutouts";
 import Leaderboard from "./features/employeeDashboard/pages/Leaderboard";
 import Team from "./features/employeeDashboard/pages/Team";
+import UserProfile from "./features/employeeDashboard/pages/UserProfile";
 import AllRecognitions from "./features/employeeDashboard/pages/RecognitionsPage";
 import Badges from "./features/employeeDashboard/pages/Badges";
 import Analytics from "./features/employeeDashboard/pages/Analytics";
@@ -107,6 +108,17 @@ function App() {
             <ProtectedRoute role="employee">
               <EmployeeLayout>
                 <Team />
+              </EmployeeLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/profile/:userId"
+          element={
+            <ProtectedRoute role="employee">
+              <EmployeeLayout>
+                <UserProfile />
               </EmployeeLayout>
             </ProtectedRoute>
           }

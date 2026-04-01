@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
 import { getAllUsers } from "../../../services/shoutoutService";
 import { getUserStats } from "../../../services/userStatsService";
 
 const Team = () => {
+  const navigate = useNavigate();
   const [teamData, setTeamData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -227,6 +229,7 @@ const Team = () => {
 
             {/* BUTTON */}
             <button
+              onClick={() => navigate(`/profile/${user.id}`)}
               className="
                 mt-5 w-full
                 bg-gradient-to-r from-indigo-500 to-purple-600
