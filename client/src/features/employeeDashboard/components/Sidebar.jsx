@@ -1,12 +1,13 @@
-import { LayoutDashboard, Trophy, User, Settings } from "lucide-react";
+import { LayoutDashboard, Trophy, User, Settings, Megaphone } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { motion } from "framer-motion";
 
 const NAV_ITEMS = [
-  { icon: <LayoutDashboard size={18} />, label: "Dashboard",   to: "/" },
-  { icon: <Trophy size={18} />,          label: "Achievements", to: "/achievements" },
-  { icon: <User size={18} />,            label: "Profile",      to: "/profile" },
-  { icon: <Settings size={18} />,        label: "Settings",     to: "/settings" },
+  { icon: <LayoutDashboard size={18} />, label: "Dashboard",    to: "/",              end: true },
+  { icon: <Trophy size={18} />,          label: "Achievements",  to: "/achievements" },
+  { icon: <Megaphone size={18} />,       label: "My Shoutouts", to: "/my-shoutouts" },
+  { icon: <User size={18} />,            label: "Profile",       to: "/profile" },
+  { icon: <Settings size={18} />,        label: "Settings",      to: "/settings" },
 ];
 
 const Sidebar = ({ selectedEmployee }) => {
@@ -59,20 +60,38 @@ const Sidebar = ({ selectedEmployee }) => {
   );
 };
 
-const SidebarItem = ({ icon, label, to }) => (
-  <NavLink
-    to={to}
-    className={({ isActive }) =>
-      `flex items-center gap-3 px-4 py-2.5 rounded-lg cursor-pointer transition-all duration-200 ${
-        isActive
-          ? "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400"
-          : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-      }`
-    }
-  >
-    {icon}
-    <span className="text-sm font-medium">{label}</span>
-  </NavLink>
-);
+const SidebarItem = ({ icon, label, to, end, active }) => {
+  const classes = `flex items-center gap-3 px-4 py-2.5 rounded-lg cursor-pointer transition-all duration-200 ${
+    active
+      ? "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400"
+      : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+  }`;
+
+  if (to) {
+    return (
+      <NavLink
+        to={to}
+        end={end}
+        className={({ isActive }) =>
+          `flex items-center gap-3 px-4 py-2.5 rounded-lg cursor-pointer transition-all duration-200 ${
+            isActive
+              ? "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400"
+              : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+          }`
+        }
+      >
+        {icon}
+        <span className="text-sm font-medium">{label}</span>
+      </NavLink>
+    );
+  }
+
+  return (
+    <div className={classes}>
+      {icon}
+      <span className="text-sm font-medium">{label}</span>
+    </div>
+  );
+};
 
 export default Sidebar;

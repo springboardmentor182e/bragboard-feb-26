@@ -4,11 +4,15 @@ import { X } from "lucide-react";
 // NOW:   "../services/achievementService"      (no capital S — matches your file)
 import { createAchievement, updateAchievement } from "../services/achievementService";
 
-const EMPTY_FORM = { title: "", description: "", points: "" };
+const EMPTY_FORM = { title: "", category: "", description: "", points: "" };
 
 const AddAchievementModal = ({
   isOpen,
   setIsOpen,
+  setAchievements,
+  editingIndex,
+  setEditingIndex,
+  achievements,
   selectedEmployee,
   editingAchievement,
   setEditingAchievement,
@@ -23,14 +27,23 @@ const AddAchievementModal = ({
     if (editingAchievement) {
       setForm({
         title:       editingAchievement.title,
+        category:    editingAchievement.category ?? "",
         description: editingAchievement.description ?? "",
         points:      editingAchievement.points,
+      });
+    } else if (editingIndex !== null && achievements) {
+      const item = achievements[editingIndex];
+      setForm({
+        title:       item.title,
+        category:    item.category ?? "",
+        description: item.description ?? "",
+        points:      item.points,
       });
     } else {
       setForm(EMPTY_FORM);
     }
     setError(null);
-  }, [isOpen, editingAchievement]);
+  }, [isOpen, editingAchievement, editingIndex, achievements]);
 
   if (!isOpen) return null;
 
@@ -41,30 +54,45 @@ const AddAchievementModal = ({
   const handleClose = () => {
     setIsOpen(false);
     if (setEditingAchievement) setEditingAchievement(null);
+    if (setEditingIndex) setEditingIndex(null);
     setError(null);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!selectedEmployee) return;
     setLoading(true);
     setError(null);
     try {
       const payload = {
         title:       form.title,
+        category:    form.category,
         description: form.description,
         points:      Number(form.points),
-        employee_id: selectedEmployee.id,
+        employee_id: selectedEmployee?.id,
       };
-      let saved;
       if (editingAchievement) {
         const res = await updateAchievement(editingAchievement.id, payload);
-        saved = res.data;
-      } else {
+        if (onSave) onSave(res.data);
+      } else if (selectedEmployee) {
         const res = await createAchievement(payload);
-        saved = res.data;
+        if (onSave) onSave(res.data);
+      } else {
+        const updatedAchievement = {
+          title:    form.title,
+          category: form.category,
+          points:   Number(form.points),
+          status:   "Pending",
+        };
+        if (editingIndex !== null) {
+          setAchievements((prev) =>
+            prev.map((item, index) =>
+              index === editingIndex ? updatedAchievement : item
+            )
+          );
+        } else {
+          setAchievements((prev) => [updatedAchievement, ...prev]);
+        }
       }
-      if (onSave) onSave(saved);
       handleClose();
     } catch (err) {
       console.error("Failed to save achievement", err);
@@ -75,8 +103,8 @@ const AddAchievementModal = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-md p-6 relative">
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 transition-all duration-300">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl dark:shadow-black/40 w-full max-w-md p-6 relative animate-fadeIn">
 
         <button
           onClick={handleClose}
@@ -85,12 +113,13 @@ const AddAchievementModal = ({
           <X size={20} />
         </button>
 
+        {/* Header */}
         <div className="mb-6">
           <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
-            {editingAchievement ? "Edit Achievement" : "Add Achievement"}
+            {editingAchievement || editingIndex !== null ? "Edit Achievement" : "Add Achievement"}
           </h2>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            {selectedEmployee ? `For: ${selectedEmployee.name}` : "No employee selected"}
+            {selectedEmployee ? `For: ${selectedEmployee.name}` : "Fill in the details below"}
           </p>
         </div>
 
@@ -100,7 +129,10 @@ const AddAchievementModal = ({
           </div>
         )}
 
+        {/* Form */}
         <form className="space-y-5" onSubmit={handleSubmit}>
+
+          {/* Title */}
           <div>
             <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">
               Title
@@ -115,6 +147,22 @@ const AddAchievementModal = ({
             />
           </div>
 
+          {/* Category */}
+          <div>
+            <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">
+              Category
+            </label>
+            <input
+              name="category"
+              type="text"
+              value={form.category}
+              onChange={handleChange}
+              className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition"
+              required
+            />
+          </div>
+
+          {/* Description */}
           <div>
             <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">
               Description
@@ -128,6 +176,7 @@ const AddAchievementModal = ({
             />
           </div>
 
+          {/* Points */}
           <div>
             <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">
               Points
@@ -143,6 +192,7 @@ const AddAchievementModal = ({
             />
           </div>
 
+          {/* Buttons */}
           <div className="flex justify-end gap-3 pt-2">
             <button
               type="button"
@@ -153,10 +203,10 @@ const AddAchievementModal = ({
             </button>
             <button
               type="submit"
-              disabled={loading || !selectedEmployee}
+              disabled={loading}
               className="px-4 py-2 rounded-lg text-sm font-medium bg-indigo-600 hover:bg-indigo-700 text-white transition shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              {loading ? "Saving..." : editingAchievement ? "Update" : "Save"}
+              {loading ? "Saving..." : editingAchievement || editingIndex !== null ? "Update" : "Save"}
             </button>
           </div>
         </form>

@@ -17,13 +17,25 @@ server/venv/
 server/__pycache__/
 __pycache__/
 *.pyc
-*.pyo
+
+# Env
+client/.env
+server/.env
 
 # Logs
 *.log
 
 # Database
 *.db
+
+# Python
+server/venv
+server/__pycache__
+*.pyc
+
+# Env
+client/.env
+server/.env
 
 # OS files
 .DS_Store

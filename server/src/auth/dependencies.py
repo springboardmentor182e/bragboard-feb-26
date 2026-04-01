@@ -1,5 +1,11 @@
 from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from jose import jwt
+from src.auth.config import SECRET_KEY, ALGORITHM
 from src.entities.user import User
+
+security = HTTPBearer()
+
 
 # TEMPORARY: For testing only - remove this in production!
 async def get_current_admin_user():
@@ -28,12 +34,6 @@ async def get_current_admin_user(current_user: User = Depends(get_current_user))
         )
     return current_user
 """
-from fastapi import Depends, HTTPException
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from jose import jwt
-from src.auth.config import SECRET_KEY, ALGORITHM
-
-security = HTTPBearer()
 
 
 def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
