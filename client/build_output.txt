@@ -1,0 +1,58 @@
+﻿[36mvite v5.4.21 [32mbuilding for production...[36m[39m
+transforming...
+[32mΓ£ô[39m 3 modules transformed.
+node.exe : [31mx[39m 
+Build failed in 102ms
+At line:1 char:1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo 
+...
++ ~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~
+    + CategoryInfo     
+         : NotSpecifi  
+  ed: ([31mx[39m B   
+ uild failed in 102    
+ms:String) [], Rem    
+oteException
+    + FullyQualifiedEr 
+   rorId : NativeComm  
+  andError
+ 
+[31merror during 
+build:
+[31mCould not resolve 
+"./index.css" from 
+"src/main.jsx"[31m
+file: [36mC:/Users/SUR
+EKHA/bragboard-feb-26/c
+lient/src/main.jsx[31m
+    at getRollupError (
+file:///C:/Users/SUREKH
+A/bragboard-feb-26/clie
+nt/node_modules/rollup/
+dist/es/shared/parseAst
+.js:402:41)
+    at error (file:///C
+:/Users/SUREKHA/bragboa
+rd-feb-26/client/node_m
+odules/rollup/dist/es/s
+hared/parseAst.js:398:4
+2)
+    at ModuleLoader.han
+dleInvalidResolvedId (f
+ile:///C:/Users/SUREKHA
+/bragboard-feb-26/clien
+t/node_modules/rollup/d
+ist/es/shared/node-entr
+y.js:21710:24)
+    at file:///C:/Users
+/SUREKHA/bragboard-feb-
+26/client/node_modules/
+rollup/dist/es/shared/n
+ode-entry.js:21670:26[
+39m

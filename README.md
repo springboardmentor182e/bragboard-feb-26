@@ -1,4 +1,4 @@
-# 🏆 BragBoard
+# BragBoard
 
 BragBoard is a professional employee recognition platform that allows team members to appreciate each other's hard work. It's a full-stack application built with **React**, **FastAPI**, and **PostgreSQL**.
 
@@ -33,6 +33,10 @@ npm install
 npm run dev
 ```
 *Note: Create a `.env` file in the `client` folder using `.env.example` as a template.*
+
+## 📂 Project Structure
+- `/client`: React (Vite, Tailwind, Lucide Icons)
+- `/server`: FastAPI (SQLAlchemy, PostgreSQL, Pydantic)
 
 ## 🛠️ Tech Stack
 - **Frontend**: React, Vite, Tailwind CSS, Lucide Icons.

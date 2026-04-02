@@ -1,26 +1,21 @@
-import { X } from "lucide-react";
+import React from "react";
 
-const Modal = ({ isOpen, onClose, title, children, headerBg = "bg-purple-600" }) => {
+const Modal = ({ isOpen, onClose, children }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
-        {/* Header */}
-        <div className={`${headerBg} p-6 flex items-center justify-between text-white`}>
-          <h2 className="text-xl font-bold">{title}</h2>
-          <button
-            onClick={onClose}
-            className="p-1 hover:bg-white/20 rounded-lg transition-colors"
-          >
-            <X className="w-6 h-6" />
-          </button>
-        </div>
+    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-[500px] relative">
+        
+        <button
+          onClick={onClose}
+          className="absolute top-2 right-3 text-gray-600 text-xl"
+        >
+          ×
+        </button>
 
-        {/* Content */}
-        <div className="max-h-[80vh] overflow-y-auto">
-          {children}
-        </div>
+        {children}
+        
       </div>
     </div>
   );
