@@ -1,6 +1,6 @@
 import React from 'react';
 import useEngagementData from '../hooks/useEngagementData';
-import TopContributorsBarChart from './charts/TopContributorsBarChart';
+import TopContributorsChart from './charts/TopContributorsChart';
 import DepartmentEngagementBarChart from './charts/DepartmentEngagementBarChart';
 import CategoryBreakdownDonutChart from './charts/CategoryBreakdownDonutChart';
 import ReactionTypesDonutChart from './charts/ReactionTypesDonutChart';
@@ -101,7 +101,7 @@ const EngagementAnalyticsPage = () => {
       {/* Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Row 1: Top Contributors & Category Breakdown */}
-        <TopContributorsBarChart
+        <TopContributorsChart
           data={data.topContributors}
           loading={loading}
           onRefresh={refetch}

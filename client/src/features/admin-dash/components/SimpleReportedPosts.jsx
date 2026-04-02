@@ -117,6 +117,11 @@ const SimpleReportedPosts = () => {
 
   return (
     <div className="bg-gradient-to-br from-red-50 to-rose-50 rounded-2xl p-8 border-2 border-red-100">
+      {/* Section Heading */}
+      <div className="mb-6 pb-4 border-b border-gray-200">
+        <p className="text-xs font-bold tracking-widest text-gray-600 uppercase">Moderation Section</p>
+      </div>
+
       {/* Header */}
       <div className="flex items-center gap-3 mb-6 pb-6 border-b-2 border-red-200">
         <div className="w-8 h-8 bg-red-200 rounded-full flex items-center justify-center">
