@@ -21,6 +21,17 @@ export const fetchReports = async () => {
   return res.data;
 };
 
+// ✅ NEW: Fetch reports with full shoutout details for admin dashboard
+export const fetchReportsWithDetails = async (status = null, priority = null, search = null) => {
+  const params = {};
+  if (status) params.status = status;
+  if (priority) params.priority = priority;
+  if (search) params.search = search;
+
+  const res = await API.get("/reports/with-details", { params });
+  return res.data;
+};
+
 export const deleteReport = async (reportId) => {
   const res = await API.delete(`/reports/${reportId}`);
   return res.data;

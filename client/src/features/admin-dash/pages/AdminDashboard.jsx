@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import StatCard from "../components/StatCard";
 import TopContributorsChart from "../components/charts/TopContributorsChart";
 import DepartmentPiechart from "../components/charts/DepartmentPiechart";
-import ReportedPosts from "../components/ReportedPosts";
+import SimpleReportedPosts from "../components/SimpleReportedPosts";
 import { adminAPI } from "../../../services/api";
 import { mockDashboardStats } from "../mockData";
 
@@ -147,8 +147,7 @@ const AdminDashboard = () => {
 
       {/* Moderation Section */}
       <div className="pt-4">
-        <h2 className="text-sm font-bold text-gray-600 uppercase tracking-widest mb-6">Moderation Queue</h2>
-        <ReportedPosts />
+        <SimpleReportedPosts />
       </div>
     </div>
   );

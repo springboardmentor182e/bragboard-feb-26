@@ -48,6 +48,18 @@ def fetch_reports(
     return service.get_reports(db, status, priority, search)
 
 
+# ✅ NEW ENDPOINT: Get reports with full shoutout details for admin dashboard
+@router.get("/with-details", response_model=List[dict])
+def fetch_reports_with_details(
+    status: Optional[str] = Query(None),
+    priority: Optional[str] = Query(None),
+    search: Optional[str] = Query(None),
+    db: Session = Depends(get_db),
+):
+    """Get reports with associated shoutout content for admin reported posts display"""
+    return service.get_reports_with_shoutout_details(db, status, priority, search)
+
+
 @router.post("/", response_model=ReportResponse)
 def create_report(
     report: ReportCreate,

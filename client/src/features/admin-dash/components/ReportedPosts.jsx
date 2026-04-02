@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import ReportedPostItem from './ReportedPostItem';
-import { adminAPI } from '../../../services/api';
+import { fetchReportsWithDetails, updateReportStatus, deleteReport } from '../../../services/reportService';
+import useToast from '../../employeeDashboard/hooks/useToast';
 
 const ReportedPosts = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [message, setMessage] = useState(''); // Add this for success messages
+  const { showToast } = useToast();
 
-  // Fetch reports from backend
+  // Fetch reports with shoutout details from backend
   useEffect(() => {
     fetchReports();
   }, []);
@@ -17,89 +18,81 @@ const ReportedPosts = () => {
     try {
       setLoading(true);
       setError('');
-      const response = await adminAPI.getReports('pending');
-      
-      // Transform backend data to match frontend format
-      const formattedPosts = response.data.map(report => ({
-        id: report.id,
-        author: report.content?.author || report.user_name || 'Unknown User',
-        time: new Date(report.created_at).toLocaleString(),
-        content: report.content?.content || report.title || 'No content',
-        reportedBy: report.content?.reported_by || report.reporter_name || 'Anonymous',
-        reason: report.content?.reason || report.type || 'Not specified',
-        status: report.status || 'pending'
-      }));
-      
-      setPosts(formattedPosts);
+      console.log('Fetching reports with details...');
+      // Fetch only PENDING reports for the moderation queue
+      const data = await fetchReportsWithDetails('PENDING', null, null);
+      console.log('Fetched reports:', data);
+      setPosts(data || []);
     } catch (error) {
       console.error('Error fetching reports:', error);
-      setError('Failed to load reports from server');
-      // ❌ REMOVED: setFallbackData() - No more dummy data
-      setPosts([]); // Set empty array on error
+      setError('Failed to load reports. Please try again.');
+      setPosts([]);
     } finally {
       setLoading(false);
     }
   };
 
-  // ❌ REMOVED: setFallbackData function completely
-
-  // Handle post/report deletion
-  const handlePostDelete = async (deletedPostId) => {
+  // Handle delete shoutout + report
+  const handlePostDelete = async (reportId) => {
     try {
-      console.log('Deleting report:', deletedPostId);
-      
-      // Show confirmation
-      if (!window.confirm('Are you sure you want to delete this report?')) {
+      if (!window.confirm('Are you sure you want to delete this shoutout? This action cannot be undone.')) {
         return;
       }
       
-      // Call API to delete the report
-      await adminAPI.deleteReport(deletedPostId);
+      // Delete the report (shoutout will be handled separately if needed)
+      await deleteReport(reportId);
       
       // Remove from UI
-      setPosts(prevPosts => prevPosts.filter(post => post.id !== deletedPostId));
+      setPosts(prevPosts => prevPosts.filter(post => post.report_id !== reportId));
       
-      // Show success message
-      setMessage('Report deleted successfully');
-      setTimeout(() => setMessage(''), 3000);
-      
+      showToast('Shoutout deleted successfully', 'success');
     } catch (error) {
-      console.error('Error deleting report:', error);
-      alert('Failed to delete report. Please try again.');
+      console.error('Error deleting shoutout:', error);
+      showToast('Failed to delete shoutout', 'error');
     }
   };
 
-  // Handle report resolution
-  const handlePostResolve = async (reportId) => {
+  // Handle report actions (Dismiss, Warn, Escalate)
+  const handleReportAction = async (reportId, action) => {
     try {
-      // Show confirmation
-      if (!window.confirm('Mark this report as resolved?')) {
-        return;
+      let newStatus = 'RESOLVED';
+      
+      if (action === 'dismiss') {
+        newStatus = 'RESOLVED';
+      } else if (action === 'warn') {
+        newStatus = 'REVIEWING';
+      } else if (action === 'escalate') {
+        newStatus = 'REVIEWING';
       }
       
-      // API call to resolve
-      await adminAPI.resolveReport(reportId);
+      // Update report status
+      await updateReportStatus(reportId, newStatus);
       
-      // Update UI
-      setPosts(posts.map(post => 
-        post.id === reportId 
-          ? { ...post, status: 'resolved' } 
-          : post
-      ));
+      // Remove from UI since we're only showing PENDING reports
+      setPosts(prevPosts => prevPosts.filter(post => post.report_id !== reportId));
       
-      // Show success message
-      setMessage('Report resolved successfully');
-      setTimeout(() => setMessage(''), 3000);
+      const actionMessages = {
+        'dismiss': 'Report dismissed',
+        'warn': 'User warned - Report marked for review',
+        'escalate': 'Report escalated for senior review'
+      };
       
+      showToast(actionMessages[action], 'success');
     } catch (error) {
-      console.error('Error resolving report:', error);
-      alert('Failed to resolve report. Please try again.');
+      console.error('Error handling report action:', error);
+      showToast('Failed to process action', 'error');
     }
   };
 
   if (loading) {
     return (
       <div className="bg-gradient-to-br from-white to-slate-50 rounded-2xl p-8 shadow-sm border-2 border-gray-100">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 pb-8 gap-4 border-b-2 border-gray-100">
+          <div>
+            <h2 className="text-2xl font-black text-gray-950">Reported Posts</h2>
+            <p className="text-sm text-gray-600 font-medium mt-1">Loading...</p>
+          </div>
+        </div>
         <p className="text-gray-600 font-medium text-center py-16">Loading reports...</p>
       </div>
     );
@@ -108,7 +101,13 @@ const ReportedPosts = () => {
   if (error) {
     return (
       <div className="bg-gradient-to-br from-white to-slate-50 rounded-2xl p-8 shadow-sm border-2 border-red-100">
-        <p className="text-red-600 text-center font-semibold py-12">{error}</p>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 pb-8 gap-4 border-b-2 border-gray-100">
+          <div>
+            <h2 className="text-2xl font-black text-gray-950">Reported Posts</h2>
+            <p className="text-sm text-red-600 font-medium mt-1">Error loading reports</p>
+          </div>
+        </div>
+        <p className="text-red-600 text-center font-semibold py-6">{error}</p>
         <button 
           onClick={fetchReports}
           className="px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white rounded-lg hover:shadow-lg transition-all font-bold mx-auto block"
@@ -119,20 +118,10 @@ const ReportedPosts = () => {
     );
   }
 
-  const pendingPosts = posts.filter(p => p.status !== 'resolved');
+  const pendingPosts = posts.filter(p => p.status === 'PENDING');
 
   return (
     <div className="bg-gradient-to-br from-white to-slate-50 rounded-2xl p-8 shadow-sm border-2 border-gray-100 hover:shadow-xl hover:border-gray-200 transition-all duration-300">
-      {/* Success message */}
-      {message && (
-        <div className="mb-6 p-4 bg-emerald-50 text-emerald-700 rounded-xl text-sm font-bold border-2 border-emerald-200 flex items-center gap-3">
-          <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-          </svg>
-          {message}
-        </div>
-      )}
-      
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 pb-8 gap-4 border-b-2 border-gray-100">
         <div>
           <h2 className="text-2xl font-black text-gray-950">Reported Posts</h2>
@@ -150,11 +139,15 @@ const ReportedPosts = () => {
       
       <div className="space-y-4">
         {posts.length === 0 ? (
-          <div className="text-center py-8">
-            <p className="text-gray-500 mb-4">No reported posts found</p>
+          <div className="text-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-300">
+            <svg className="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+            </svg>
+            <p className="text-gray-500 font-medium mb-2">No reported posts found</p>
+            <p className="text-gray-400 text-sm mb-6">All reports have been handled or no new reports yet</p>
             <button 
               onClick={fetchReports}
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              className="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors font-medium"
             >
               Refresh
             </button>
@@ -162,16 +155,21 @@ const ReportedPosts = () => {
         ) : (
           posts.map((post) => (
             <ReportedPostItem 
-              key={post.id}
-              id={post.id}
-              author={post.author}
-              time={post.time}
-              content={post.content}
-              reportedBy={post.reportedBy}
+              key={post.report_id}
+              report_id={post.report_id}
+              report_created_at={post.report_created_at}
+              message={post.message}
+              sender_name={post.sender_name}
+              reporter_name={post.reporter_name}
               reason={post.reason}
+              description={post.description}
+              priority={post.priority}
               status={post.status}
-              onDelete={() => handlePostDelete(post.id)}
-              onResolve={() => handlePostResolve(post.id)}
+              category={post.category}
+              points={post.points}
+              recipients={post.recipients}
+              onDelete={handlePostDelete}
+              onReportAction={handleReportAction}
             />
           ))
         )}
