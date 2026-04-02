@@ -1,223 +1,161 @@
-from typing import List
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-from sqlalchemy import func
-from .models import AdminReport, UserContribution, ActivityLog
+from typing import List, Optional
+
 from ..database.core import get_db
-from . import schemas, service
-from ..auth.utils import hash_password
-from ..entities.user import User
-from ..users.schemas import UserResponse
-from ..reports.models import ReportResponse
-from ..reports import service as reports_service
+from .service import AdminService
+from ..reports.service import update_report_status, delete_report
+from ..users.service import (
+    get_users, add_user, update_user_status, update_user_role, delete_user
+)
+from ..users.schemas import UserCreate
 
-from ..entities.shoutout import Shoutout
-
-# Define this variable
-SHOUTOUT_AVAILABLE = True
 router = APIRouter(tags=["Admin"])
 
-# User management endpoints
-@router.get("/users", response_model=List[UserResponse])
-async def get_all_users(
+
+# ─────────────────────────────────────────────────────────────
+# DASHBOARD
+# ─────────────────────────────────────────────────────────────
+@router.get("/dashboard/stats")
+async def get_dashboard_stats(db: Session = Depends(get_db)):
+    """Complete real-time dashboard stats"""
+    return AdminService(db).get_dashboard_stats()
+
+
+@router.get("/contributors/top")
+async def get_top_contributors(limit: int = 5, db: Session = Depends(get_db)):
+    """Top N users by shoutouts sent (live from DB)"""
+    return AdminService(db).get_top_contributors(limit)
+
+
+@router.get("/stats/departments")
+async def get_department_stats(db: Session = Depends(get_db)):
+    """Department-wise shoutout breakdown (live from DB)"""
+    return AdminService(db).get_department_stats()
+
+
+# ─────────────────────────────────────────────────────────────
+# SHOUTOUTS MANAGEMENT
+# ─────────────────────────────────────────────────────────────
+@router.get("/shoutouts")
+async def get_all_shoutouts(
     skip: int = 0,
     limit: int = 100,
-    db: Session = Depends(get_db)
+    search: Optional[str] = None,
+    department: Optional[str] = None,
+    status: Optional[str] = None,
+    db: Session = Depends(get_db),
 ):
-    """Get all users"""
-    admin_service = service.AdminService(db)
-    users = admin_service.get_all_users(skip, limit)
-    return users
+    """All shoutouts with search, filter, pagination"""
+    return AdminService(db).get_all_shoutouts(skip, limit, search, department, status)
 
-@router.get("/users/{user_id}", response_model=UserResponse)
-async def get_user(
-    user_id: int,
-    db: Session = Depends(get_db)
-):
-    """Get user by ID"""
-    admin_service = service.AdminService(db)
-    user = admin_service.get_user_by_id(user_id)
-    if not user:
+
+@router.get("/shoutouts/stats")
+async def get_shoutout_stats(db: Session = Depends(get_db)):
+    """Shoutout counts: total, approved, pending, rejected, reactions"""
+    return AdminService(db).get_shoutout_stats()
+
+
+@router.delete("/shoutouts/{shoutout_id}")
+async def delete_shoutout(shoutout_id: int, db: Session = Depends(get_db)):
+    ok = AdminService(db).delete_shoutout(shoutout_id)
+    if not ok:
+        raise HTTPException(status_code=404, detail="Shoutout not found")
+    return {"message": "Deleted successfully"}
+
+
+@router.put("/shoutouts/{shoutout_id}/approve")
+async def approve_shoutout(shoutout_id: int, db: Session = Depends(get_db)):
+    ok = AdminService(db).approve_shoutout(shoutout_id)
+    if not ok:
+        raise HTTPException(status_code=404, detail="Shoutout not found")
+    return {"message": "Approved"}
+
+
+@router.put("/shoutouts/{shoutout_id}/reject")
+async def reject_shoutout(shoutout_id: int, db: Session = Depends(get_db)):
+    ok = AdminService(db).reject_shoutout(shoutout_id)
+    if not ok:
+        raise HTTPException(status_code=404, detail="Shoutout not found")
+    return {"message": "Rejected"}
+
+
+# ─────────────────────────────────────────────────────────────
+# USER / EMPLOYEE MANAGEMENT
+# ─────────────────────────────────────────────────────────────
+@router.get("/users")
+async def get_all_users(db: Session = Depends(get_db)):
+    """All users with shoutout counts"""
+    return AdminService(db).get_all_users()
+
+
+@router.post("/users")
+async def create_user(user: UserCreate, db: Session = Depends(get_db)):
+    return add_user(db, user)
+
+
+@router.put("/users/{user_id}/toggle-status")
+async def toggle_status(user_id: int, db: Session = Depends(get_db)):
+    result = update_user_status(db, user_id)
+    if not result:
         raise HTTPException(status_code=404, detail="User not found")
-    return user
+    return result
 
-@router.post("/users", response_model=schemas.UserResponse, status_code=status.HTTP_201_CREATED)
-async def create_user(
-    user: schemas.UserCreate,
-    db: Session = Depends(get_db)
-):
-    """Create new user"""
-    # Hash the password before saving
-    hashed_pwd = hash_password(user.password)
-    
-    # Create user in database
-    db_user = User(
-        name=user.name,
-        email=user.email,
-        department=user.department,
-        role=user.role,
-        status=user.status,
-        password=hashed_pwd
-    )
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
-    return db_user
 
-@router.get("/activities", response_model=List[schemas.ActivityLogResponse])
-async def get_activity_logs(
-    skip: int = 0,
-    limit: int = 100,
-    db: Session = Depends(get_db)
-):
-    """Get activity logs"""
-    admin_service = service.AdminService(db)
-    return admin_service.get_activity_logs(skip, limit)
+@router.put("/users/{user_id}/role")
+async def change_role(user_id: int, role: str, db: Session = Depends(get_db)):
+    result = update_user_role(db, user_id, role)
+    if not result:
+        raise HTTPException(status_code=404, detail="User not found")
+    return result
 
-@router.get("/reports", response_model=List[ReportResponse])
+
+@router.delete("/users/{user_id}")
+async def remove_user(user_id: int, db: Session = Depends(get_db)):
+    ok = delete_user(db, user_id)
+    if not ok:
+        raise HTTPException(status_code=404, detail="User not found")
+    return {"message": "User deleted"}
+
+
+# ─────────────────────────────────────────────────────────────
+# REPORTS MANAGEMENT
+# ─────────────────────────────────────────────────────────────
+@router.get("/reports")
 async def get_reports(
     skip: int = 0,
     limit: int = 100,
-    status: str = None,  # Add this parameter
-    db: Session = Depends(get_db)
+    status: Optional[str] = None,
+    db: Session = Depends(get_db),
 ):
-    """Get all reports from reports table using reports service"""
-    # Use reports service to get reports from the reports table
-    reports = reports_service.get_reports(db, status=status, priority=None, search=None)
-    # Apply pagination manually since service doesn't support it
-    return reports[skip:skip+limit]
+    return AdminService(db).get_reports(skip, limit, status)
+
+
+@router.get("/reports/stats")
+async def get_report_stats(db: Session = Depends(get_db)):
+    """Reports: total, pending, reviewing, resolved, avg response time"""
+    return AdminService(db).get_report_stats()
+
 
 @router.post("/reports/{report_id}/resolve")
-async def resolve_report(
-    report_id: int,
-    db: Session = Depends(get_db)
-):
-    """Resolve a report - FIXED VERSION"""
-    try:
-        print(f"📍 Resolving report {report_id}")
-        admin_service = service.AdminService(db)
-        result = admin_service.resolve_report(report_id)
-        
-        if not result:
-            return {"message": "Report not found", "success": False}, 404
-            
-        return {"message": "Report resolved successfully", "success": True}
-        
-    except Exception as e:
-        print(f"❌ Error: {e}")
-        return {"message": str(e), "success": False}, 500
+async def resolve_report(report_id: int, db: Session = Depends(get_db)):
+    ok = AdminService(db).resolve_report(report_id)
+    if not ok:
+        raise HTTPException(status_code=404, detail="Report not found")
+    return {"message": "Resolved successfully"}
 
-@router.delete("/posts/{post_id}")
-async def delete_post(post_id: int, db: Session = Depends(get_db)):
-    try:
-        # Log that we received the request
-        print(f"Attempting to delete post with ID: {post_id}")
-        
-        # Find the post
-        post = db.query(AdminReport).filter(AdminReport.id == post_id).first()
-        
-        if not post:
-            print(f"Post {post_id} not found")
-            return {"error": "Post not found"}, 404
-            
-        # Check for foreign key constraints (if post has comments, likes, etc.)
-        # You might need to delete related records first
-        
-        db.delete(post)
-        db.commit()
-        print(f"Post {post_id} deleted successfully")
-        return {"message": "Post deleted successfully"}
-        
-    except Exception as e:
-        print(f"ERROR deleting post {post_id}: {str(e)}")
-        import traceback
-        traceback.print_exc()  # This will print the full stack trace
-        db.rollback()
-        return {"error": str(e)}, 500
 
-@router.get("/contributors/top")
-async def get_top_contributors(
-    db: Session = Depends(get_db),
-    limit: int = 10
-):
-    """
-    Get top contributors based on total interactions
-    """
-    try:
-        # Query top contributors from user_contributions table
-        contributors = db.query(
-            UserContribution.user_name,
-            UserContribution.total_interactions
-        ).order_by(
-            UserContribution.total_interactions.desc()
-        ).limit(limit).all()
+@router.put("/reports/{report_id}/status")
+async def set_report_status(report_id: int, status: str, db: Session = Depends(get_db)):
+    result = update_report_status(db, report_id, status)
+    if not result:
+        raise HTTPException(status_code=404, detail="Report not found")
+    return result
 
-        # Format the response with colors
-        colors = ['#3882F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6']
-        result = []
-        
-        for idx, (name, value) in enumerate(contributors):
-            result.append({
-                "name": name,
-                "value": value or 0,
-                "fill": colors[idx % len(colors)]
-            })
 
-        return result
-
-    except Exception as e:
-        print(f"Error fetching top contributors: {e}")
-        return []
-
-# ============= FIXED DASHBOARD STATS ENDPOINT =============
-# Frontend calls /admin/dashboard/stats (without /api prefix)
-# So we need to add this endpoint at the root level
-# But router has prefix /api/admin, so we add both versions
-
-@router.get("/dashboard/stats")
-async def get_dashboard_stats(db: Session = Depends(get_db)):
-    """Get real dashboard statistics from database"""
-    try:
-        from sqlalchemy import text
-        
-        # Direct SQL queries - no model dependency
-        total_users = db.execute(text("SELECT COUNT(*) FROM users")).scalar() or 0
-        total_reports = db.execute(text("SELECT COUNT(*) FROM reports")).scalar() or 0
-        pending_reports = db.execute(text("SELECT COUNT(*) FROM reports WHERE status='pending'")).scalar() or 0
-        
-        # Try to get posts count if Shoutout model exists
-        total_posts = 0
-        total_reactions = 0
-        if SHOUTOUT_AVAILABLE and Shoutout:
-            try:
-                total_posts = db.query(func.count(Shoutout.id)).scalar() or 0
-            except:
-                pass
-        
-        print(f"📊 Dashboard - Users: {total_users}, Posts: {total_posts}, Reports: {total_reports}, Pending: {pending_reports}")
-        
-        return {
-            "total_users": total_users,
-            "total_posts": total_posts,
-            "total_reactions": total_reactions,
-            "total_reports": total_reports,
-            "active_users_today": 0,
-            "reports": pending_reports,
-            "shoutout_trend": "+0%",
-            "reaction_trend": "+0%"
-        }
-        
-    except Exception as e:
-        print(f"❌ Error: {e}")
-        import traceback
-        traceback.print_exc()
-        return {
-            "total_users": 0,
-            "total_posts": 0,
-            "total_reactions": 0,
-            "total_reports": 0,
-            "active_users_today": 0,
-            "shoutout_trend": "+0%",
-            "reaction_trend": "+0%"
-        }
-    
+@router.delete("/reports/{report_id}")
+async def remove_report(report_id: int, db: Session = Depends(get_db)):
+    ok = delete_report(db, report_id)
+    if not ok:
+        raise HTTPException(status_code=404, detail="Report not found")
+    return {"message": "Report deleted"}

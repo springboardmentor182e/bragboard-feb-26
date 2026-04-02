@@ -74,7 +74,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/my-shoutouts"
           element={
@@ -164,7 +163,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-
+        
         <Route
           path="/admin/employees"
           element={
@@ -198,6 +197,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+
 
         <Route
           path="/admin/settings"
