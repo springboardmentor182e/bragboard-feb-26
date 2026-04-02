@@ -1,12 +1,14 @@
-import { Heart, ThumbsUp } from "lucide-react";
-import { useState } from "react";
+import { Heart, ThumbsUp, Flag } from "lucide-react";
+import { useState, useCallback } from "react";
 import { useReactions } from "../../hooks/useReactions";
 import useToast from "../../hooks/useToast";
 import CommentsViewer from "../../../../components/CommentsViewer";
+import ReportShoutoutModal from "../../../../components/ReportShoutoutModal";
 
 const FeedCard = ({ item }) => {
   const [expanded, setExpanded] = useState(false);
   const [showReactionPicker, setShowReactionPicker] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
   const { showToast } = useToast();
 
   const { 
@@ -43,24 +45,35 @@ const FeedCard = ({ item }) => {
     }
   };
 
-  const handleReactionClick = async (reactionType) => {
-    try {
-      await toggleReaction(reactionType, optimisticReactions.user_reaction);
-      setShowReactionPicker(false);
-      showToast(
-        optimisticReactions.user_reaction === reactionType
-          ? "Reaction removed"
-          : `You reacted with ${reactionType === "like" ? "❤️" : reactionType === "clap" ? "👏" : "⭐"}`,
-        "success"
-      );
-    } catch (err) {
-      showToast(err.message || "Failed to update reaction", "error");
-    }
-  };
+  const handleReactionClick = useCallback(
+    async (reactionType) => {
+      try {
+        await toggleReaction(reactionType, optimisticReactions.user_reaction);
+        setShowReactionPicker(false);
+        showToast(
+          optimisticReactions.user_reaction === reactionType
+            ? "Reaction removed"
+            : `You reacted with ${reactionType === "like" ? "❤️" : reactionType === "clap" ? "👏" : "⭐"}`,
+          "success"
+        );
+      } catch (err) {
+        showToast(err.message || "Failed to update reaction", "error");
+      }
+    },
+    [toggleReaction, optimisticReactions.user_reaction, showToast]
+  );
 
   const reactionCounts = item.reactions_count || { like: 0, clap: 0, star: 0 };
   const totalReactions = Object.values(reactionCounts).reduce((a, b) => a + b, 0);
   const commentCount = item.comments_count || 0;
+
+  const handleCloseReportModal = useCallback(() => {
+    setShowReportModal(false);
+  }, []);
+
+  const handleReportSuccess = useCallback(() => {
+    showToast("Thank you for helping keep our community safe!", "success");
+  }, [showToast]);
 
   return (
     <div
@@ -188,6 +201,21 @@ const FeedCard = ({ item }) => {
             )}
           </div>
 
+          {/* REPORT BUTTON */}
+          <button
+            onClick={() => setShowReportModal(true)}
+            className="
+              flex items-center gap-2 px-3 py-1.5 rounded-full text-sm 
+              transition-all duration-200
+              bg-slate-100 text-slate-600 hover:bg-red-50 hover:text-red-600
+              hover:border hover:border-red-200
+            "
+            title="Report this shoutout"
+          >
+            <Flag size={14} />
+            Report
+          </button>
+
           {/* REACTION COUNTS */}
           <div className="flex gap-2 text-xs text-slate-600">
             {reactionCounts.like > 0 && (
@@ -214,6 +242,14 @@ const FeedCard = ({ item }) => {
         )}
 
       </div>
+
+      {/* REPORT MODAL */}
+      <ReportShoutoutModal
+        isOpen={showReportModal}
+        shoutoutId={item.id}
+        onClose={handleCloseReportModal}
+        onSuccess={handleReportSuccess}
+      />
 
     </div>
   );
