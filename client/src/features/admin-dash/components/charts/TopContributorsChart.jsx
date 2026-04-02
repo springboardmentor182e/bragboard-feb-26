@@ -120,7 +120,7 @@ const TopContributorsChart = () => {
     <div className="bg-gradient-to-br from-white to-slate-50 rounded-2xl p-8 shadow-sm border-2 border-gray-100 hover:shadow-xl hover:border-gray-200 transition-all duration-300">
      <div className="mb-8 pb-6 border-b-2 border-gray-100">
         <h2 className="text-2xl font-black text-gray-950 mb-1">Top 5 Contributors</h2>
-        <p className="text-sm text-gray-600 font-medium">Most impactful employees (engagement score)</p>
+        <p className="text-sm text-gray-600 font-medium">Most shout-outs given this month</p>
       </div>
       
       <ResponsiveContainer width="100%" height={320}>

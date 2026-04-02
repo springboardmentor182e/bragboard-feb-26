@@ -121,7 +121,7 @@ class AdminService:
                     User.department,
                     func.count(Shoutout.id).label('sent_count')
                 ).join(Shoutout, Shoutout.sender_id == User.id).filter(
-                    Shoutout.status == 'APPROVED'
+                    Shoutout.status.in_(['APPROVED', 'PENDING'])
                 ).group_by(User.id, User.name, User.department).order_by(
                     func.count(Shoutout.id).desc()
                 ).limit(5).all()
@@ -143,7 +143,7 @@ class AdminService:
                     func.count(ShoutOutRecipient.id).label('received_count')
                 ).join(ShoutOutRecipient, ShoutOutRecipient.user_id == User.id).join(
                     Shoutout, Shoutout.id == ShoutOutRecipient.shoutout_id
-                ).filter(Shoutout.status == 'APPROVED').group_by(User.id, User.name).all()
+                ).filter(Shoutout.status.in_(['APPROVED', 'PENDING'])).group_by(User.id, User.name).all()
                 
                 for name, count in received_query:
                     if name not in contributors_dict:
@@ -158,6 +158,7 @@ class AdminService:
                 ).join(ShoutOutRecipient, ShoutOutRecipient.user_id == User.id).join(
                     Shoutout, Shoutout.id == ShoutOutRecipient.shoutout_id
                 ).join(Reaction, Reaction.shoutout_id == Shoutout.id
+                ).filter(Shoutout.status.in_(['APPROVED', 'PENDING'])
                 ).group_by(User.id, User.name).all()
                 
                 for name, count in reactions_query:
@@ -180,24 +181,58 @@ class AdminService:
                     reverse=True
                 )[:5]
                 
-                # 2️⃣ DEPARTMENT ENGAGEMENT
-                dept_query = self.db.query(
+                # 2️⃣ DEPARTMENT ENGAGEMENT - Get all departments with their members and shoutouts
+                # First, get all departments and member counts
+                all_depts = self.db.query(
                     User.department,
-                    func.count(Shoutout.id).label('total_shoutouts'),
-                    func.count(User.id).label('total_members')
+                    func.count(User.id).label('member_count')
+                ).filter(User.department.isnot(None)).group_by(User.department).all()
+                
+                dept_data = {}
+                for dept, member_count in all_depts:
+                    dept_data[dept or "Unknown"] = {
+                        "department": dept or "Unknown",
+                        "members": member_count,
+                        "shoutouts": 0,
+                        "engagement_rate": 0
+                    }
+                
+                # Now count shoutouts by sender's department (include both APPROVED and PENDING)
+                shoutout_query = self.db.query(
+                    User.department,
+                    func.count(Shoutout.id).label('shoutout_count')
                 ).join(Shoutout, Shoutout.sender_id == User.id).filter(
-                    Shoutout.status == 'APPROVED'
+                    Shoutout.status.in_(['APPROVED', 'PENDING'])
                 ).group_by(User.department).all()
                 
-                for dept, shoutouts, members in dept_query:
-                    engagement_rate = (shoutouts / members * 100) if members > 0 else 0
-                    analytics["department_engagement"].append({
-                        "department": dept or "Unknown",
-                        "shoutouts": shoutouts,
-                        "members": members,
-                        "engagement_rate": round(engagement_rate, 1),
-                        "percentage": round((shoutouts / max(sum([s[1] for s in dept_query]), 1)) * 100, 1)
-                    })
+                for dept, shoutout_count in shoutout_query:
+                    dept_key = dept or "Unknown"
+                    if dept_key in dept_data:
+                        dept_data[dept_key]["shoutouts"] = shoutout_count
+                    else:
+                        dept_data[dept_key] = {
+                            "department": dept_key,
+                            "members": 0,
+                            "shoutouts": shoutout_count,
+                            "engagement_rate": 0
+                        }
+                
+                # Calculate engagement rate and percentage
+                total_shoutouts = sum([d["shoutouts"] for d in dept_data.values()])
+                for dept_info in dept_data.values():
+                    if dept_info["members"] > 0:
+                        dept_info["engagement_rate"] = round((dept_info["shoutouts"] / dept_info["members"]) * 100, 1)
+                    if total_shoutouts > 0:
+                        dept_info["percentage"] = round((dept_info["shoutouts"] / total_shoutouts) * 100, 1)
+                    else:
+                        dept_info["percentage"] = 0
+                
+                # Add to analytics and sort by shoutouts descending
+                analytics["department_engagement"] = sorted(
+                    list(dept_data.values()),
+                    key=lambda x: x["shoutouts"],
+                    reverse=True
+                )
                 
                 # 3️⃣ CATEGORY BREAKDOWN
                 category_query = self.db.query(
