@@ -40,7 +40,7 @@ const AdminTopbar = () => {
     };
 
     fetchPendingCount();
-    const interval = setInterval(fetchPendingCount, 30000); // Refresh every 30s
+    const interval = setInterval(fetchPendingCount, 300000); // Refresh every 5 minutes
     return () => clearInterval(interval);
   }, []);
 

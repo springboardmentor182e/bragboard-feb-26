@@ -75,17 +75,13 @@ const SimpleReportedPosts = () => {
 
   if (loading) {
     return (
-      <div className="bg-gradient-to-br from-red-50 to-rose-50 rounded-2xl p-8 border-2 border-red-100">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-8 h-8 bg-red-200 rounded-full flex items-center justify-center">
-            <svg className="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-            </svg>
-          </div>
-          <div>
-            <h3 className="text-lg font-bold text-gray-900">Reported Posts</h3>
-            <p className="text-sm text-gray-600">Loading...</p>
-          </div>
+      <div className="bg-gradient-to-br from-white to-slate-50 rounded-2xl p-8 shadow-sm border-2 border-gray-100">
+        <div className="mb-8 pb-6 border-b-2 border-gray-100">
+          <h2 className="text-2xl font-black text-gray-950 mb-1"><span className="text-2xl">🚨</span> Reported Posts</h2>
+          <p className="text-sm text-gray-600 font-medium">Posts requiring moderation</p>
+        </div>
+        <div className="h-[280px] flex items-center justify-center">
+          <div className="animate-pulse text-sm text-gray-400">Loading...</div>
         </div>
       </div>
     );
@@ -93,46 +89,32 @@ const SimpleReportedPosts = () => {
 
   if (error) {
     return (
-      <div className="bg-gradient-to-br from-red-50 to-rose-50 rounded-2xl p-8 border-2 border-red-200">
-        <div className="flex items-center gap-3 mb-6 pb-6 border-b-2 border-red-200">
-          <div className="w-8 h-8 bg-red-200 rounded-full flex items-center justify-center">
-            <svg className="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-            </svg>
-          </div>
-          <div>
-            <h3 className="text-lg font-bold text-gray-900">Reported Posts</h3>
-            <p className="text-sm text-red-600">{error}</p>
+      <div className="bg-gradient-to-br from-white to-slate-50 rounded-2xl p-8 shadow-sm border-2 border-gray-100">
+        <div className="mb-8 pb-6 border-b-2 border-gray-100">
+          <h2 className="text-2xl font-black text-gray-950 mb-1"><span className="text-2xl">🚨</span> Reported Posts</h2>
+          <p className="text-sm text-gray-600 font-medium">Posts requiring moderation</p>
+        </div>
+        <div className="h-[280px] flex items-center justify-center">
+          <div className="text-center">
+            <p className="text-red-600 mb-3 font-medium">{error}</p>
+            <button 
+              onClick={fetchReports}
+              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-medium"
+            >
+              Retry
+            </button>
           </div>
         </div>
-        <button 
-          onClick={fetchReports}
-          className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium"
-        >
-          Retry
-        </button>
       </div>
     );
   }
 
   return (
-    <div className="bg-gradient-to-br from-red-50 to-rose-50 rounded-2xl p-8 border-2 border-red-100">
-      {/* Section Heading */}
-      <div className="mb-6 pb-4 border-b border-gray-200">
-        <p className="text-xs font-bold tracking-widest text-gray-600 uppercase">Moderation Section</p>
-      </div>
-
-      {/* Header */}
-      <div className="flex items-center gap-3 mb-6 pb-6 border-b-2 border-red-200">
-        <div className="w-8 h-8 bg-red-200 rounded-full flex items-center justify-center">
-          <svg className="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-          </svg>
-        </div>
-        <div>
-          <h3 className="text-lg font-bold text-gray-900">Reported Posts</h3>
-          <p className="text-sm text-gray-600">{posts.length} posts requiring moderation</p>
-        </div>
+    <div className="bg-gradient-to-br from-white to-slate-50 rounded-2xl p-8 shadow-sm border-2 border-gray-100 hover:shadow-xl hover:border-gray-200 transition-all duration-300">
+      {/* Section Heading - Consolidated */}
+      <div className="mb-8 pb-6 border-b-2 border-gray-100">
+        <h2 className="text-2xl font-black text-gray-950 mb-1"><span className="text-2xl">🚨</span> Reported Posts</h2>
+        <p className="text-sm text-gray-600 font-medium">{posts.length} posts requiring moderation</p>
       </div>
 
       {/* Posts List */}

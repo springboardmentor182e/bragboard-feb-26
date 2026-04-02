@@ -42,7 +42,7 @@ const AdminDashboard = () => {
     fetchDashboardData();
     
     // Real-time refresh every 30 seconds
-    const interval = setInterval(fetchDashboardData, 30000);
+    const interval = setInterval(fetchDashboardData, 300000); // Refresh every 5 minutes
     return () => clearInterval(interval);
   }, []);
 
@@ -138,7 +138,7 @@ const AdminDashboard = () => {
 
       {/* Analytics Section */}
       <div className="pt-4">
-        <h2 className="text-sm font-bold text-gray-600 uppercase tracking-widest mb-6">Engagement Analytics</h2>
+        <h2 className="text-sm font-bold text-gray-600 uppercase tracking-widest mb-6">📊 Engagement Analytics</h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <TopContributorsChart />
           <DepartmentPiechart />
@@ -147,6 +147,7 @@ const AdminDashboard = () => {
 
       {/* Moderation Section */}
       <div className="pt-4">
+        <h2 className="text-sm font-bold text-gray-600 uppercase tracking-widest mb-6">🚨 Moderation Section</h2>
         <SimpleReportedPosts />
       </div>
     </div>

@@ -9,7 +9,7 @@ const DepartmentPiechart = () => {
 
   useEffect(() => {
     fetchDepartmentData();
-    const interval = setInterval(fetchDepartmentData, 60000); // Refresh every minute
+    const interval = setInterval(fetchDepartmentData, 300000); // Refresh every 5 minutes
     return () => clearInterval(interval);
   }, []);
 
@@ -144,7 +144,7 @@ const DepartmentPiechart = () => {
           </PieChart>
         </ResponsiveContainer>
 
-        <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 w-full">
+        <div className="mt-6 flex flex-wrap justify-center gap-2 w-full">
           {departments.map((dept, i) => (
             <div key={i} className="p-3 bg-slate-50 rounded-lg border border-gray-100 text-center hover:bg-slate-100 transition-colors duration-200">
               <div 
