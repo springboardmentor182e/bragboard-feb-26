@@ -95,24 +95,67 @@ def get_user_reactions_batch(db: Session, user_id: int, shoutout_ids: list) -> d
 
 
 def get_all_shoutouts(db: Session):
-    result = db.execute(text("""
-        SELECT id, sender, message, department, date
-        FROM shoutouts
-        ORDER BY id DESC
-    """))
-
-    rows = result.fetchall()
-
-    return [
-        {
-            "id": row.id,
-            "sender": row.sender,
-            "message": row.message,
-            "department": row.department,
-            "date": str(row.date),
-        }
-        for row in rows
-    ]
+    """
+    Get all shoutouts with sender info, recipients, and engagement metrics for admin dashboard
+    """
+    from ..entities.user import User
+    from ..entities.shoutout_recipient import ShoutOutRecipient
+    from ..entities.reaction import Reaction
+    from ..entities.comment import Comment
+    from sqlalchemy import func
+    
+    # Query shoutouts with sender info
+    query = db.query(
+        Shoutout.id,
+        Shoutout.message,
+        Shoutout.category,
+        Shoutout.points,
+        Shoutout.status,
+        Shoutout.created_at,
+        User.name.label("sender_name"),
+        User.department.label("sender_department")
+    ).join(User, Shoutout.sender_id == User.id).order_by(Shoutout.created_at.desc())
+    
+    shoutouts = query.all()
+    
+    # Process each shoutout to get recipients and engagement counts
+    result = []
+    for shout in shoutouts:
+        # Get recipients
+        recipients = db.query(
+            ShoutOutRecipient.user_id,
+            User.name
+        ).join(User, ShoutOutRecipient.user_id == User.id).filter(
+            ShoutOutRecipient.shoutout_id == shout.id
+        ).all()
+        
+        # Get reaction count
+        reaction_count = db.query(func.count(Reaction.id)).filter(
+            Reaction.shoutout_id == shout.id
+        ).scalar() or 0
+        
+        # Get comment count
+        comment_count = db.query(func.count(Comment.id)).filter(
+            Comment.shoutout_id == shout.id
+        ).scalar() or 0
+        
+        result.append({
+            "id": shout.id,
+            "sender_name": shout.sender_name,
+            "sender_department": shout.sender_department,
+            "message": shout.message,
+            "category": shout.category or "General",
+            "points": shout.points or 0,
+            "status": shout.status,
+            "created_at": shout.created_at.isoformat() if shout.created_at else None,
+            "recipients": [{"id": r.user_id, "name": r.name} for r in recipients],
+            "engagement": {
+                "reactions": reaction_count,
+                "comments": comment_count
+            }
+        })
+    
+    return result
 
 
 # ============ PUBLIC SHOUTOUT FEED (NEW) ============
@@ -600,7 +643,7 @@ def create_shoutout_with_recipients(db: Session, sender_id: int, message: str, c
         message=message,
         category=category,
         points=points,
-        status="PENDING"
+        status="APPROVED"  # Auto-approve on creation - only reported ones need review
     )
     
     db.add(shoutout)
