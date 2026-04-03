@@ -1,0 +1,158 @@
+/* ============================================
+   CREATE SHOUTOUT BUTTON - PREMIUM STYLING
+   ============================================ */
+
+/* Base animated gradient background */
+@keyframes gradientFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Subtle glow pulse effect */
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(255, 122, 24, 0.4),
+                0 0 30px rgba(255, 60, 172, 0.2),
+                0 0 45px rgba(255, 65, 108, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(255, 122, 24, 0.5),
+                0 0 40px rgba(255, 60, 172, 0.3),
+                0 0 60px rgba(255, 65, 108, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  }
+}
+
+/* Blur color transition effect */
+@keyframes blurColorShift {
+  0% {
+    filter: blur(0px) drop-shadow(0 0 8px rgba(255, 122, 24, 0.3));
+  }
+  16% {
+    filter: blur(0.25px) drop-shadow(0 0 12px rgba(255, 193, 7, 0.4));
+  }
+  32% {
+    filter: blur(0.4px) drop-shadow(0 0 14px rgba(76, 175, 80, 0.4));
+  }
+  50% {
+    filter: blur(0.5px) drop-shadow(0 0 16px rgba(255, 60, 172, 0.4));
+  }
+  68% {
+    filter: blur(0.4px) drop-shadow(0 0 14px rgba(255, 193, 7, 0.4));
+  }
+  84% {
+    filter: blur(0.25px) drop-shadow(0 0 12px rgba(255, 65, 108, 0.4));
+  }
+  100% {
+    filter: blur(0px) drop-shadow(0 0 8px rgba(255, 122, 24, 0.3));
+  }
+}
+
+/* Light sweep shimmer across button */
+@keyframes lightSweep {
+  0% {
+    left: -100%;
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.4;
+  }
+  100% {
+    left: 100%;
+    opacity: 0;
+  }
+}
+
+/* Create Shoutout Card Button - Premium Style */
+.create-shoutout-btn {
+  position: relative;
+  background: linear-gradient(
+    135deg,
+    #ff7a18 0%,
+    #ffc107 20%,
+    #4caf50 35%,
+    #ff3cac 50%,
+    #ffc107 65%,
+    #ff416c 80%,
+    #ff7a18 100%
+  );
+  background-size: 300% 300%;
+  animation: gradientFlow 4s ease-in-out infinite, blurColorShift 4s ease-in-out infinite;
+  
+  /* Glow effect - reduced by 5% */
+  box-shadow: 0 0 14px rgba(255, 122, 24, 0.38),
+              0 0 29px rgba(255, 60, 172, 0.19),
+              0 0 43px rgba(255, 65, 108, 0.095),
+              inset 0 1px 0 rgba(255, 255, 255, 0.095);
+  
+  /* Smooth transitions */
+  transition: all 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  
+  /* Prevent overflow of shimmer */
+  overflow: visible;
+}
+
+/* Eye-catching plus icon glow */
+.create-shoutout-btn svg {
+  filter: drop-shadow(0 0 6px rgba(255, 193, 7, 0.7));
+  transition: filter 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Hover state - scale and increase glow */
+.create-shoutout-btn:hover {
+  transform: scale(1.04);
+  box-shadow: 0 0 24px rgba(255, 122, 24, 0.57),
+              0 0 38px rgba(255, 60, 172, 0.38),
+              0 0 57px rgba(255, 65, 108, 0.19),
+              inset 0 1px 0 rgba(255, 255, 255, 0.19);
+  filter: brightness(1.1) blur(0.2px) drop-shadow(0 0 20px rgba(255, 60, 172, 0.5));
+}
+
+/* Enhance plus icon glow on hover */
+.create-shoutout-btn:hover svg {
+  filter: drop-shadow(0 0 10px rgba(255, 193, 7, 0.9));
+}
+
+/* Light sweep effect - passes across the button */
+.create-shoutout-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  animation: lightSweep 4s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Active/Pressed state - slight scale down */
+.create-shoutout-btn:active {
+  transform: scale(0.98);
+}
+
+/* Focus state for accessibility */
+.create-shoutout-btn:focus {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
+}
+
+/* Ensure text content stays above the shimmer effect */
+.create-shoutout-btn > * {
+  position: relative;
+  z-index: 2;
+}

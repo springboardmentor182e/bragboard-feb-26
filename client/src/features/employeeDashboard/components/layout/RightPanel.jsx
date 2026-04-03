@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import CreateShoutoutModal from "../modals/CreateShoutoutModal";
 import CampaignCard from "../cards/campaignCard";
 import { useUserStats } from "../../hooks/useUserStats";
+import "./RightPanel.css";
 
 const RightPanel = () => {
   const navigate = useNavigate();
@@ -25,23 +26,21 @@ const RightPanel = () => {
         <div
           onClick={() => setOpenModal(true)}
           className="
-            bg-white rounded-xl p-4
-            border border-slate-200
-            shadow-sm hover:shadow-md
-            transition-all duration-200
-            cursor-pointer hover:-translate-y-0.5
+            create-shoutout-btn rounded-xl p-4
+            border border-white/20
+            cursor-pointer
           "
         >
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow">
+            <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center text-white shadow">
               <Plus size={18} />
             </div>
 
             <div>
-              <p className="text-sm font-semibold text-slate-900">
+              <p className="text-sm font-semibold text-white">
                 Create Shout-Out
               </p>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-white/80">
                 Recognize a teammate
               </p>
             </div>
