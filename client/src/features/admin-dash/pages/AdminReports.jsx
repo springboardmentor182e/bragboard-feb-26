@@ -6,7 +6,7 @@ import ReportsStatsCards from "../reportsManagement/ReportsStatsCards";
 import ReportsSearchBar from "../reportsManagement/ReportsSearchBar";
 import ReportsList from "../reportsManagement/ReportsList";
 
-import { fetchReports } from "../../../services/reportService";
+import { fetchReportsWithDetails } from "../../../services/reportService";
 
 function AdminReports() {
   const [reports, setReports] = useState([]);
@@ -19,7 +19,7 @@ function AdminReports() {
   const loadReports = useCallback(async () => {
     try {
       setLoading(true);
-      const data = await fetchReports();
+      const data = await fetchReportsWithDetails();
       setReports(data);
     } catch (error) {
       console.error("Failed to load reports:", error);
@@ -36,9 +36,10 @@ function AdminReports() {
     const query = searchQuery.toLowerCase();
 
     return (
-      (report.report_code?.toLowerCase().includes(query) ||
-        report.id?.toString().includes(query) ||
-        report.reported_user?.toLowerCase().includes(query) ||
+      (report.report_id?.toString().includes(query) ||
+        report.reporter_name?.toLowerCase().includes(query) ||
+        report.sender_name?.toLowerCase().includes(query) ||
+        report.message?.toLowerCase().includes(query) ||
         report.reason?.toLowerCase().includes(query)) &&
       (statusFilter === "ALL" ||
         report.status?.toUpperCase() === statusFilter) &&

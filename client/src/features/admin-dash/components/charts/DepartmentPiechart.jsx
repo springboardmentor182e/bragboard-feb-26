@@ -144,9 +144,9 @@ const DepartmentPiechart = () => {
           </PieChart>
         </ResponsiveContainer>
 
-        <div className="mt-6 flex flex-wrap justify-center gap-2 w-full">
+        <div className="mt-6 flex flex-wrap justify-center gap-2 w-full max-w-full">
           {departments.map((dept, i) => (
-            <div key={i} className="p-3 bg-slate-50 rounded-lg border border-gray-100 text-center hover:bg-slate-100 transition-colors duration-200">
+            <div key={i} className="p-3 bg-slate-50 rounded-lg border border-gray-100 text-center hover:bg-slate-100 transition-colors duration-200 w-24">
               <div 
                 className="w-3 h-3 rounded-full mx-auto mb-2 shadow-md" 
                 style={{ backgroundColor: COLORS[i % COLORS.length] }}

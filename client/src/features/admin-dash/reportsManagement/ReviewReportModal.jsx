@@ -14,12 +14,19 @@ import {
 const ReviewReportModal = ({ report, onClose, refreshReports }) => {
   if (!report) return null;
 
+  // Extract report details
+  const reporterName = report.reporter_name || 'Unknown';
+  const senderName = report.sender_name || 'Unknown';
+  const shoutoutMessage = report.message || 'No content';
+  const recipients = report.recipients || [];
+  const reportId = report.report_id;
+
   /*
   ACTIONS
   */
   const handleDelete = async () => {
     try {
-      await deleteReport(report.id);
+      await deleteReport(reportId);
       await refreshReports();
       onClose();
     } catch (err) {
@@ -29,7 +36,7 @@ const ReviewReportModal = ({ report, onClose, refreshReports }) => {
 
   const handleDismiss = async () => {
     try {
-      await updateReportStatus(report.id, "RESOLVED");
+      await updateReportStatus(reportId, "RESOLVED");
       await refreshReports();
       onClose();
     } catch (err) {
@@ -39,7 +46,7 @@ const ReviewReportModal = ({ report, onClose, refreshReports }) => {
 
   const handleWarn = async () => {
     try {
-      await updateReportStatus(report.id, "REVIEWING");
+      await updateReportStatus(reportId, "REVIEWING");
       await refreshReports();
       onClose();
     } catch (err) {
@@ -49,7 +56,7 @@ const ReviewReportModal = ({ report, onClose, refreshReports }) => {
 
   const handleEscalate = async () => {
     try {
-      await updateReportStatus(report.id, "REVIEWING");
+      await updateReportStatus(reportId, "REVIEWING");
       await refreshReports();
       onClose();
     } catch (err) {
@@ -69,7 +76,7 @@ const ReviewReportModal = ({ report, onClose, refreshReports }) => {
               Report Details
             </h2>
             <p className="text-sm text-slate-500">
-              {report.report_code || `RPT-${report.id}`}
+              RPT-{reportId}
             </p>
           </div>
 
@@ -95,77 +102,96 @@ const ReviewReportModal = ({ report, onClose, refreshReports }) => {
             </span>
           </div>
 
-          {/* REPORT INFO (FIXED) */}
+          {/* REPORT INFO */}
           <div>
             <p className="text-xs text-slate-500 uppercase mb-2">
-              Report Info
+              REPORT INFO
             </p>
 
             <div className="flex items-center gap-4 bg-slate-50 p-4 rounded-xl">
-
               <div className="w-10 h-10 rounded-full bg-indigo-500 text-white flex items-center justify-center font-semibold">
-                {String(report.reported_by).charAt(0)}
+                {reporterName.charAt(0).toUpperCase()}
               </div>
-
               <div>
                 <p className="font-medium text-slate-900">
-                  User #{report.reported_by}
+                  {reporterName}
                 </p>
                 <p className="text-sm text-slate-500">
-                  {new Date(report.created_at).toLocaleString()}
+                  Reported on {new Date(report.report_created_at).toLocaleString()}
                 </p>
               </div>
-
             </div>
           </div>
 
-          {/* SHOUTOUT INFO */}
+          {/* REPORTED POST DETAILS */}
           <div>
             <p className="text-xs text-slate-500 uppercase mb-2">
-              Related Shoutout
+              POSTED BY
             </p>
-
-            <div className="bg-slate-50 p-4 rounded-xl">
-              <p className="text-sm text-slate-700">
-                Shoutout ID: {report.shoutout_id}
-              </p>
+            <div className="flex items-center gap-4 bg-blue-50 p-4 rounded-xl">
+              <div className="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-semibold">
+                {senderName.charAt(0).toUpperCase()}
+              </div>
+              <div>
+                <p className="font-medium text-slate-900">
+                  {senderName}
+                </p>
+                <p className="text-sm text-slate-500">
+                  Posted on {new Date(report.shoutout_created_at).toLocaleString()}
+                </p>
+              </div>
             </div>
           </div>
+
+          {/* RECIPIENTS */}
+          {recipients.length > 0 && (
+            <div>
+              <p className="text-xs text-slate-500 uppercase mb-2">
+                RECIPIENTS
+              </p>
+              <div className="bg-green-50 p-4 rounded-xl space-y-2">
+                {recipients.map((recipient) => (
+                  <div key={recipient.id} className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-semibold">
+                      {recipient.name.charAt(0).toUpperCase()}
+                    </div>
+                    <p className="text-sm text-slate-700 font-medium">{recipient.name}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* REASON */}
           <div>
             <p className="text-xs text-slate-500 uppercase mb-2">
-              Reason
+              REASON FOR REPORT
             </p>
-
             <div className="bg-slate-50 p-4 rounded-xl">
               <p className="font-medium text-slate-900">
                 {report.reason}
               </p>
-
-              <p className="text-sm text-slate-600 mt-1">
-                {report.description}
-              </p>
+              {report.description && (
+                <p className="text-sm text-slate-600 mt-2">
+                  {report.description}
+                </p>
+              )}
             </div>
           </div>
 
-          {/* FLAGGED CONTENT */}
+          {/* REPORTED CONTENT */}
           <div>
             <p className="text-xs text-slate-500 uppercase mb-2">
-              Reported Content
+              REPORTED CONTENT
             </p>
-
             <div className="border border-red-200 bg-red-50 rounded-xl p-4">
-
               <div className="flex items-center gap-2 text-red-600 text-sm font-semibold mb-2">
                 <AlertTriangle size={16} />
                 FLAGGED CONTENT
               </div>
-
               <p className="italic text-sm text-slate-700">
-                "{report.description}"
+                &quot;{shoutoutMessage}&quot;
               </p>
-
             </div>
           </div>
 

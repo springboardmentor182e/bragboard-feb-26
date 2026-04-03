@@ -52,7 +52,7 @@ const ReportsList = ({ reports, refreshReports }) => {
                 <div className="flex items-center gap-3 flex-wrap">
 
                   <span className="font-semibold text-slate-700">
-                    {report.report_code || `RPT-${report.id}`}
+                    RPT-{report.report_id}
                   </span>
 
                   <span
@@ -79,24 +79,24 @@ const ReportsList = ({ reports, refreshReports }) => {
 
                   <div className="flex items-center gap-2">
                     <User size={16} />
-                    Reported by: {report.reported_by}
+                    Reported by: <span className="text-slate-700 font-medium">{report.reporter_name || 'Unknown'}</span>
                   </div>
 
                   <div className="flex items-center gap-2">
                     <Flag size={16} />
-                    User: {report.reported_user}
+                    Posted by: <span className="text-slate-700 font-medium">{report.sender_name || 'Unknown'}</span>
                   </div>
 
                   <div className="flex items-center gap-2">
                     <Calendar size={16} />
-                    {new Date(report.created_at).toLocaleString()}
+                    {new Date(report.report_created_at).toLocaleString()}
                   </div>
 
                 </div>
 
                 {/* DESCRIPTION */}
                 <p className="text-sm text-slate-600">
-                  {report.description}
+                  {report.message}
                 </p>
 
                 {/* REPORTED CONTENT */}
@@ -104,7 +104,7 @@ const ReportsList = ({ reports, refreshReports }) => {
 
                   <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
                     <MessageSquare size={16} />
-                    REPORTED CONTENT
+                    FLAGGED REASON
                   </div>
 
                   <p className="text-sm text-slate-700 italic leading-relaxed">
