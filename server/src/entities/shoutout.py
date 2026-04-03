@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Boolean
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from ..database.core import Base
@@ -16,8 +16,16 @@ class Shoutout(Base):
     category = Column(String)
     points = Column(Integer, default=0)
 
-    status = Column(String, default="PENDING")  # APPROVED / REJECTED
-
+    status = Column(String, default="PENDING")  # APPROVED / REJECTED / ARCHIVED
+    
+    # Soft delete & archive tracking
+    is_deleted = Column(Boolean, default=False)
+    deleted_at = Column(DateTime, nullable=True)
+    is_archived = Column(Boolean, default=False)
+    archived_at = Column(DateTime, nullable=True)
+    
+    # Track updates
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     # Relationships

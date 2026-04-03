@@ -97,6 +97,7 @@ def get_user_reactions_batch(db: Session, user_id: int, shoutout_ids: list) -> d
 def get_all_shoutouts(db: Session):
     """
     Get all shoutouts with sender info, recipients, and engagement metrics for admin dashboard
+    Shows ACTIVE shoutouts only (excludes deleted and archived)
     """
     from ..entities.user import User
     from ..entities.shoutout_recipient import ShoutOutRecipient
@@ -104,17 +105,22 @@ def get_all_shoutouts(db: Session):
     from ..entities.comment import Comment
     from sqlalchemy import func
     
-    # Query shoutouts with sender info
+    # Query shoutouts - exclude deleted & archived, show only APPROVED or PENDING
     query = db.query(
         Shoutout.id,
         Shoutout.message,
         Shoutout.category,
         Shoutout.points,
         Shoutout.status,
+        Shoutout.is_deleted,
+        Shoutout.is_archived,
         Shoutout.created_at,
         User.name.label("sender_name"),
         User.department.label("sender_department")
-    ).join(User, Shoutout.sender_id == User.id).order_by(Shoutout.created_at.desc())
+    ).join(User, Shoutout.sender_id == User.id).filter(
+        Shoutout.is_deleted == False,  # Exclude deleted
+        Shoutout.is_archived == False   # Exclude archived
+    ).order_by(Shoutout.created_at.desc())
     
     shoutouts = query.all()
     
@@ -190,9 +196,11 @@ def get_all_shoutouts_feed(
         List of shoutouts with sender info, recipients, and engagement metrics
     """
     
-    # Start with base query - filter for APPROVED shoutouts only
+    # Start with base query - filter for APPROVED shoutouts only (active, not deleted/archived)
     query = db.query(Shoutout).filter(
-        Shoutout.status == "APPROVED"
+        Shoutout.status == "APPROVED",
+        Shoutout.is_deleted == False,  # Exclude deleted
+        Shoutout.is_archived == False  # Exclude archived
     ).options(
         selectinload(Shoutout.sender),
         selectinload(Shoutout.recipients).selectinload(ShoutOutRecipient.user)
@@ -278,12 +286,82 @@ def get_all_shoutouts_feed(
 
 
 def delete_shoutout(db: Session, shoutout_id: int):
-    db.execute(
-        text("DELETE FROM shoutouts WHERE id = :id"),
-        {"id": shoutout_id}
-    )
-    db.commit()
-    return {"message": "Shoutout deleted successfully"}
+    """
+    Soft delete - marks shoutout as deleted instead of hard delete
+    This preserves data for audit trails and recovery
+    """
+    try:
+        shoutout = db.query(Shoutout).filter(Shoutout.id == shoutout_id).first()
+        if not shoutout:
+            return {"error": "Shoutout not found", "success": False}
+        
+        # Soft delete - mark as deleted with timestamp
+        shoutout.is_deleted = True
+        shoutout.deleted_at = datetime.utcnow()
+        shoutout.status = "DELETED"
+        db.commit()
+        
+        return {"message": "Shoutout deleted successfully", "success": True}
+    except Exception as e:
+        db.rollback()
+        return {"error": str(e), "success": False}
+
+
+def archive_shoutout(db: Session, shoutout_id: int):
+    """
+    Archive a shoutout - moves to archived status
+    Archived shoutouts still exist but are excluded from active feeds
+    """
+    try:
+        shoutout = db.query(Shoutout).filter(Shoutout.id == shoutout_id).first()
+        if not shoutout:
+            return {"error": "Shoutout not found", "success": False}
+        
+        # Archive - mark as archived with timestamp
+        shoutout.is_archived = True
+        shoutout.archived_at = datetime.utcnow()
+        shoutout.status = "ARCHIVED"
+        db.commit()
+        
+        return {"message": "Shoutout archived successfully", "success": True}
+    except Exception as e:
+        db.rollback()
+        return {"error": str(e), "success": False}
+
+
+def edit_shoutout(db: Session, shoutout_id: int, message: str, category: str = None):
+    """
+    Edit shoutout - update message and optionally category
+    Updates propagate to all feeds automatically since they query the same Shoutout table
+    """
+    try:
+        shoutout = db.query(Shoutout).filter(Shoutout.id == shoutout_id).first()
+        if not shoutout:
+            return {"error": "Shoutout not found", "success": False}
+        
+        # Update message
+        if message:
+            shoutout.message = message.strip()
+        
+        # Update category if provided
+        if category:
+            shoutout.category = category
+        
+        # Update timestamp
+        shoutout.updated_at = datetime.utcnow()
+        db.commit()
+        
+        return {"message": "Shoutout updated successfully", "success": True, "data": {
+            "id": shoutout.id,
+            "message": shoutout.message,
+            "category": shoutout.category,
+            "updated_at": shoutout.updated_at.isoformat()
+        }}
+    except Exception as e:
+        db.rollback()
+        return {"error": str(e), "success": False}
+
+
 
 
 # ============ NEW FUNCTIONS BELOW ============

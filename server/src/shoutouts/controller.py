@@ -5,6 +5,8 @@ from ..database.core import get_db
 from .service import (
     get_all_shoutouts, 
     delete_shoutout,
+    archive_shoutout,
+    edit_shoutout,
     get_all_shoutouts_feed,
     get_user_feed,
     get_user_stats,
@@ -32,7 +34,23 @@ def fetch_shoutouts(db: Session = Depends(get_db)):
 
 @admin_router.delete("/{shoutout_id}")
 def remove_shoutout(shoutout_id: int, db: Session = Depends(get_db)):
+    """Soft delete a shoutout"""
     return delete_shoutout(db, shoutout_id)
+
+@admin_router.post("/{shoutout_id}/archive")
+def archive_single_shoutout(shoutout_id: int, db: Session = Depends(get_db)):
+    """Archive a shoutout"""
+    return archive_shoutout(db, shoutout_id)
+
+@admin_router.put("/{shoutout_id}")
+def update_shoutout(
+    shoutout_id: int, 
+    message: str = Body(..., min_length=1),
+    category: str = Body(None),
+    db: Session = Depends(get_db)
+):
+    """Edit/update a shoutout message and category"""
+    return edit_shoutout(db, shoutout_id, message, category)
 
 
 # User/Employee routes

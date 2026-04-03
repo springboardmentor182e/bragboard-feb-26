@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Heart, MessageCircle, Eye, Edit2, Trash2, Archive, Search } from "lucide-react";
-import { getShoutouts, deleteShoutout } from "../../../services/adminShoutoutService";
+import { getShoutouts, deleteShoutout, archiveShoutout, editShoutout } from "../../../services/adminShoutoutService";
 import { fetchReportsWithDetails } from "../../../services/reportService";
+import ShoutoutDetailsModal from "../components/ShoutoutDetailsModal";
+import DeleteShoutoutModal from "../components/DeleteShoutoutModal";
+import EditShoutoutModal from "../components/EditShoutoutModal";
+import ArchiveShoutoutModal from "../components/ArchiveShoutoutModal";
 
 const AdminShoutouts = () => {
   const [shoutouts, setShoutouts] = useState([]);
@@ -9,6 +13,15 @@ const AdminShoutouts = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [department, setDepartment] = useState("");
   const [loading, setLoading] = useState(true);
+  
+  // Details Modal State
+  const [selectedShoutout, setSelectedShoutout] = useState(null);
+  const [detailsModalOpen, setDetailsModalOpen] = useState(false);
+  
+  // Action Modals State
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [archiveModalOpen, setArchiveModalOpen] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -35,10 +48,85 @@ const AdminShoutouts = () => {
   const handleDelete = async (id) => {
     try {
       await deleteShoutout(id);
+      setDeleteModalOpen(false);
+      setDetailsModalOpen(false);
+      setSelectedShoutout(null);
       fetchData();
     } catch (error) {
       console.error("Failed to delete shoutout:", error);
+      alert("Failed to delete shoutout. Please try again.");
     }
+  };
+
+  const handleArchive = async (id) => {
+    try {
+      await archiveShoutout(id);
+      setArchiveModalOpen(false);
+      setDetailsModalOpen(false);
+      setSelectedShoutout(null);
+      fetchData();
+    } catch (error) {
+      console.error("Failed to archive shoutout:", error);
+      alert("Failed to archive shoutout. Please try again.");
+    }
+  };
+
+  const handleEdit = async (id, formData) => {
+    try {
+      const { message, category } = formData;
+      await editShoutout(id, message, category);
+      setEditModalOpen(false);
+      setDetailsModalOpen(false);
+      setSelectedShoutout(null);
+      fetchData();
+    } catch (error) {
+      console.error("Failed to edit shoutout:", error);
+      alert("Failed to edit shoutout. Please try again.");
+    }
+  };
+
+  // Details Modal Handlers
+  const handleOpenDetailsModal = (shoutout) => {
+    setSelectedShoutout(shoutout);
+    setDetailsModalOpen(true);
+  };
+
+  const handleCloseDetailsModal = () => {
+    setDetailsModalOpen(false);
+    setSelectedShoutout(null);
+  };
+
+  // Delete Modal Handlers
+  const handleOpenDeleteModal = (shoutout) => {
+    setSelectedShoutout(shoutout);
+    setDeleteModalOpen(true);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setDeleteModalOpen(false);
+    setSelectedShoutout(null);
+  };
+
+  // Edit Modal Handlers
+  const handleOpenEditModal = (shoutout) => {
+    setSelectedShoutout(shoutout);
+    setEditModalOpen(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setEditModalOpen(false);
+    setSelectedShoutout(null);
+  };
+
+  // Archive Modal Handlers
+  const handleOpenArchiveModal = (shoutout) => {
+    setSelectedShoutout(shoutout);
+    setArchiveModalOpen(true);
+  };
+
+  const handleCloseArchiveModal = () => {
+    setArchiveModalOpen(false);
+    setSelectedShoutout(null);
   };
 
   const filteredShoutouts = shoutouts.filter((s) => {
@@ -261,16 +349,32 @@ const AdminShoutouts = () => {
                     {/* Actions */}
                     <div className="col-span-3 ml-auto pr-6">
                       <div className="flex items-center gap-2">
-                        <button className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors" title="View">
+                        <button 
+                          onClick={() => handleOpenDetailsModal(shoutout)}
+                          className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors" 
+                          title="View"
+                        >
                           <Eye size={18} />
                         </button>
-                        <button className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors" title="Edit">
+                        <button 
+                          onClick={() => handleOpenEditModal(shoutout)}
+                          className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" 
+                          title="Edit"
+                        >
                           <Edit2 size={18} />
                         </button>
-                        <button className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Delete">
+                        <button 
+                          onClick={() => handleOpenDeleteModal(shoutout)}
+                          className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" 
+                          title="Delete"
+                        >
                           <Trash2 size={18} />
                         </button>
-                        <button className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors" title="Archive">
+                        <button 
+                          onClick={() => handleOpenArchiveModal(shoutout)}
+                          className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors" 
+                          title="Archive"
+                        >
                           <Archive size={18} />
                         </button>
                       </div>
@@ -282,6 +386,39 @@ const AdminShoutouts = () => {
           )}
         </div>
       </div>
+
+      {/* Details Modal */}
+      <ShoutoutDetailsModal
+        isOpen={detailsModalOpen}
+        onClose={handleCloseDetailsModal}
+        shoutout={selectedShoutout}
+        onArchive={() => handleArchive(selectedShoutout?.id)}
+        onDelete={() => handleDelete(selectedShoutout?.id)}
+      />
+
+      {/* Delete Modal */}
+      <DeleteShoutoutModal
+        isOpen={deleteModalOpen}
+        onClose={handleCloseDeleteModal}
+        shoutout={selectedShoutout}
+        onConfirmDelete={handleDelete}
+      />
+
+      {/* Edit Modal */}
+      <EditShoutoutModal
+        isOpen={editModalOpen}
+        onClose={handleCloseEditModal}
+        shoutout={selectedShoutout}
+        onConfirmEdit={handleEdit}
+      />
+
+      {/* Archive Modal */}
+      <ArchiveShoutoutModal
+        isOpen={archiveModalOpen}
+        onClose={handleCloseArchiveModal}
+        shoutout={selectedShoutout}
+        onConfirmArchive={handleArchive}
+      />
     </div>
   );
 };
