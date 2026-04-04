@@ -31,28 +31,28 @@
   }
 }
 
-/* Blur color transition effect */
+/* Drop-shadow color transition effect (blur removed for text clarity) */
 @keyframes blurColorShift {
   0% {
-    filter: blur(0px) drop-shadow(0 0 8px rgba(255, 122, 24, 0.3));
+    filter: drop-shadow(0 0 8px rgba(255, 122, 24, 0.3));
   }
   16% {
-    filter: blur(0.25px) drop-shadow(0 0 12px rgba(255, 193, 7, 0.4));
+    filter: drop-shadow(0 0 12px rgba(255, 193, 7, 0.4));
   }
   32% {
-    filter: blur(0.4px) drop-shadow(0 0 14px rgba(76, 175, 80, 0.4));
+    filter: drop-shadow(0 0 14px rgba(76, 175, 80, 0.4));
   }
   50% {
-    filter: blur(0.5px) drop-shadow(0 0 16px rgba(255, 60, 172, 0.4));
+    filter: drop-shadow(0 0 16px rgba(255, 60, 172, 0.4));
   }
   68% {
-    filter: blur(0.4px) drop-shadow(0 0 14px rgba(255, 193, 7, 0.4));
+    filter: drop-shadow(0 0 14px rgba(255, 193, 7, 0.4));
   }
   84% {
-    filter: blur(0.25px) drop-shadow(0 0 12px rgba(255, 65, 108, 0.4));
+    filter: drop-shadow(0 0 12px rgba(255, 65, 108, 0.4));
   }
   100% {
-    filter: blur(0px) drop-shadow(0 0 8px rgba(255, 122, 24, 0.3));
+    filter: drop-shadow(0 0 8px rgba(255, 122, 24, 0.3));
   }
 }
 
@@ -106,14 +106,14 @@
   transition: filter 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* Hover state - scale and increase glow */
+/* Hover state - scale and increase glow (removed blur for text clarity) */
 .create-shoutout-btn:hover {
   transform: scale(1.04);
   box-shadow: 0 0 24px rgba(255, 122, 24, 0.57),
               0 0 38px rgba(255, 60, 172, 0.38),
               0 0 57px rgba(255, 65, 108, 0.19),
               inset 0 1px 0 rgba(255, 255, 255, 0.19);
-  filter: brightness(1.1) blur(0.2px) drop-shadow(0 0 20px rgba(255, 60, 172, 0.5));
+  filter: brightness(1.1) drop-shadow(0 0 20px rgba(255, 60, 172, 0.5));
 }
 
 /* Enhance plus icon glow on hover */
@@ -151,8 +151,9 @@
   outline-offset: 2px;
 }
 
-/* Ensure text content stays above the shimmer effect */
+/* Ensure text content stays above the shimmer effect with improved visibility */
 .create-shoutout-btn > * {
   position: relative;
   z-index: 2;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
