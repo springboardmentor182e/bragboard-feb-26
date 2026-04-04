@@ -21,6 +21,8 @@ from .service import (
     create_shoutout_with_recipients,
     get_user_given_shoutouts,
     get_user_received_shoutouts,
+    edit_user_shoutout,
+    delete_user_shoutout,
 )
 from .schemas import ShoutOutCreate, ShoutOutResponse, FeedItemResponse
 from ..auth.dependencies import get_current_user
@@ -212,6 +214,44 @@ def create_shoutout(
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to create shoutout: {str(e)}")
+
+
+@router.put("/{shoutout_id}")
+def update_user_shoutout(
+    shoutout_id: int,
+    message: str = Body(..., min_length=1),
+    category: str = Body(None),
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """Edit shoutout - user can only edit their own within 5 minutes of creation"""
+    try:
+        result = edit_user_shoutout(db, shoutout_id, current_user.id, message, category)
+        if "error" in result:
+            raise HTTPException(status_code=400, detail=result["error"])
+        return result
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to update shoutout: {str(e)}")
+
+
+@router.delete("/{shoutout_id}")
+def delete_user_shoutout_endpoint(
+    shoutout_id: int,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """Delete shoutout - user can only delete their own within 5 minutes of creation"""
+    try:
+        result = delete_user_shoutout(db, shoutout_id, current_user.id)
+        if "error" in result:
+            raise HTTPException(status_code=400, detail=result["error"])
+        return result
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete shoutout: {str(e)}")
 
 
 @router.post("/{shoutout_id}/reactions")

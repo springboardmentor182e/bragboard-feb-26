@@ -369,6 +369,77 @@ def edit_shoutout(db: Session, shoutout_id: int, message: str, category: str = N
         return {"error": str(e), "success": False}
 
 
+def edit_user_shoutout(db: Session, shoutout_id: int, user_id: int, message: str, category: str = None):
+    """
+    User edits their own shoutout - only within 5 minutes of creation.
+    Non-admin users can only edit their own shoutouts.
+    """
+    try:
+        shoutout = db.query(Shoutout).filter(Shoutout.id == shoutout_id).first()
+        if not shoutout:
+            return {"error": "Shoutout not found", "success": False}
+        
+        # Check if user is the creator
+        if shoutout.sender_id != user_id:
+            return {"error": "You can only edit your own shoutouts", "success": False}
+        
+        # Check 5-minute window
+        time_elapsed = datetime.now(timezone.utc) - shoutout.created_at
+        if time_elapsed.total_seconds() > 300:  # 300 seconds = 5 minutes
+            minutes_passed = int(time_elapsed.total_seconds() / 60)
+            return {"error": f"Can only edit within 5 minutes of creation. {minutes_passed} minutes have passed.", "success": False}
+        
+        # Update message and category
+        if message:
+            shoutout.message = message.strip()
+        if category:
+            shoutout.category = category
+        
+        shoutout.updated_at = datetime.now(timezone.utc)
+        db.commit()
+        
+        return {"message": "Shoutout updated successfully", "success": True, "data": {
+            "id": shoutout.id,
+            "message": shoutout.message,
+            "category": shoutout.category,
+            "updated_at": shoutout.updated_at.isoformat()
+        }}
+    except Exception as e:
+        db.rollback()
+        return {"error": str(e), "success": False}
+
+
+def delete_user_shoutout(db: Session, shoutout_id: int, user_id: int):
+    """
+    User deletes their own shoutout - only within 5 minutes of creation.
+    Performs soft delete by setting is_deleted flag.
+    """
+    try:
+        shoutout = db.query(Shoutout).filter(Shoutout.id == shoutout_id).first()
+        if not shoutout:
+            return {"error": "Shoutout not found", "success": False}
+        
+        # Check if user is the creator
+        if shoutout.sender_id != user_id:
+            return {"error": "You can only delete your own shoutouts", "success": False}
+        
+        # Check 5-minute window
+        time_elapsed = datetime.now(timezone.utc) - shoutout.created_at
+        if time_elapsed.total_seconds() > 300:  # 300 seconds = 5 minutes
+            minutes_passed = int(time_elapsed.total_seconds() / 60)
+            return {"error": f"Can only delete within 5 minutes of creation. {minutes_passed} minutes have passed.", "success": False}
+        
+        # Soft delete
+        shoutout.is_deleted = True
+        shoutout.deleted_at = datetime.now(timezone.utc)
+        db.commit()
+        
+        return {"message": "Shoutout deleted successfully", "success": True}
+    except Exception as e:
+        db.rollback()
+        return {"error": str(e), "success": False}
+
+
 
 
 # ============ NEW FUNCTIONS BELOW ============

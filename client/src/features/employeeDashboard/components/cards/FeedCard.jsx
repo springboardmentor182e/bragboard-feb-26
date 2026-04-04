@@ -1,15 +1,24 @@
-import { Heart, ThumbsUp, Flag } from "lucide-react";
-import { useState, useCallback } from "react";
+import { Heart, ThumbsUp, Flag, Edit2, Trash2 } from "lucide-react";
+import { useState, useCallback, useEffect } from "react";
+import { useAuth } from "../../../../context/AuthContext";
 import { useReactions } from "../../hooks/useReactions";
 import useToast from "../../hooks/useToast";
 import CommentsViewer from "../../../../components/CommentsViewer";
 import ReportShoutoutModal from "../../../../components/ReportShoutoutModal";
 import AdminEditBadge from "../../../../components/ui/AdminEditBadge";
+import { updateShoutout, deleteShoutout } from "../../../../services/shoutoutService";
 
-const FeedCard = ({ item }) => {
+const FeedCard = ({ item, onShoutoutDelete }) => {
+  const { user } = useAuth();
   const [expanded, setExpanded] = useState(false);
   const [showReactionPicker, setShowReactionPicker] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
+  const [editingMessage, setEditingMessage] = useState(null);
+  const [editingCategory, setEditingCategory] = useState(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [canEdit, setCanEdit] = useState(false);
+  const [timeRemaining, setTimeRemaining] = useState(0);
   const { showToast } = useToast();
 
   const { 
@@ -75,6 +84,76 @@ const FeedCard = ({ item }) => {
   const handleReportSuccess = useCallback(() => {
     showToast("Thank you for helping keep our community safe!", "success");
   }, [showToast]);
+
+  // Check if user can edit/delete (within 5 minutes and is creator)
+  useEffect(() => {
+    const checkEditWindow = () => {
+      if (!user || item.sender_id !== user.id) {
+        setCanEdit(false);
+        return;
+      }
+
+      const created = new Date(item.created_at);
+      const now = new Date();
+      const diffMs = now - created;
+      const diffSeconds = Math.floor(diffMs / 1000);
+      const remaining = Math.max(0, 300 - diffSeconds); // 300 seconds = 5 minutes
+
+      setTimeRemaining(remaining);
+      setCanEdit(remaining > 0);
+    };
+
+    checkEditWindow();
+    const timer = setInterval(checkEditWindow, 1000); // Update every second
+
+    return () => clearInterval(timer);
+  }, [item.sender_id, item.created_at, user]);
+
+  // Handle edit shoutout
+  const handleEditShoutout = async () => {
+    if (!editingMessage?.trim()) {
+      showToast("Message cannot be empty", "error");
+      return;
+    }
+
+    try {
+      await updateShoutout(item.id, editingMessage, editingCategory || item.category);
+      showToast("Shoutout updated successfully!", "success");
+      setIsEditModalOpen(false);
+      setEditingMessage(null);
+      setEditingCategory(null);
+      // Refresh would happen through parent component or real-time updates
+    } catch (error) {
+      showToast(error.response?.data?.detail || "Failed to update shoutout", "error");
+    }
+  };
+
+  // Handle delete shoutout
+  const handleDeleteShoutout = async () => {
+    if (!window.confirm("Are you sure you want to delete this shoutout? This action cannot be undone.")) {
+      return;
+    }
+
+    try {
+      setIsDeleting(true);
+      await deleteShoutout(item.id);
+      showToast("Shoutout deleted successfully!", "success");
+      if (onShoutoutDelete) {
+        onShoutoutDelete(item.id);
+      }
+    } catch (error) {
+      showToast(error.response?.data?.detail || "Failed to delete shoutout", "error");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const formatTimeRemaining = (seconds) => {
+    if (seconds <= 0) return "Time's up";
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  };
 
   return (
     <div
@@ -149,6 +228,34 @@ const FeedCard = ({ item }) => {
           </span>
         )}
       </p>
+
+      {/* EDIT/DELETE BUTTONS - Only show if user is creator and within 5 min window */}
+      {canEdit && (
+        <div className="flex gap-2 mt-3 pb-2 border-b border-slate-100">
+          <button
+            onClick={() => {
+              setEditingMessage(item.message);
+              setEditingCategory(item.category);
+              setIsEditModalOpen(true);
+            }}
+            className="flex items-center gap-1 px-3 py-1 text-xs bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition"
+            title="Edit shoutout"
+          >
+            <Edit2 size={14} /> Edit
+          </button>
+          <button
+            onClick={handleDeleteShoutout}
+            disabled={isDeleting}
+            className="flex items-center gap-1 px-3 py-1 text-xs bg-red-50 text-red-600 hover:bg-red-100 disabled:opacity-50 rounded-lg transition"
+            title="Delete shoutout"
+          >
+            <Trash2 size={14} /> Delete
+          </button>
+          <div className="ml-auto text-xs text-amber-600 font-semibold flex items-center">
+            ⏱️ {formatTimeRemaining(timeRemaining)}
+          </div>
+        </div>
+      )}
 
       {/* REACTIONS & COMMENTS SECTION */}
       <div className="mt-5 space-y-3">
@@ -250,6 +357,58 @@ const FeedCard = ({ item }) => {
       </div>
 
       {/* REPORT MODAL */}
+      {/* EDIT MODAL */}
+      {isEditModalOpen && (
+        <>
+          <div className="fixed inset-0 bg-black/50 z-40 backdrop-blur-sm" onClick={() => setIsEditModalOpen(false)} />
+          <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white rounded-2xl shadow-2xl z-50 p-6 space-y-4">
+            <h3 className="text-lg font-bold text-slate-900">Edit Shout-Out</h3>
+            
+            <div>
+              <label className="text-sm font-semibold text-slate-700 block mb-2">Message</label>
+              <textarea
+                value={editingMessage}
+                onChange={(e) => setEditingMessage(e.target.value)}
+                placeholder="Enter your message..."
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                rows="4"
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-semibold text-slate-700 block mb-2">Category</label>
+              <select
+                value={editingCategory || ""}
+                onChange={(e) => setEditingCategory(e.target.value)}
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+              >
+                <option value="">Select category</option>
+                <option value="Achievement">Achievement</option>
+                <option value="Teamwork">Teamwork</option>
+                <option value="Innovation">Innovation</option>
+                <option value="Support">Support</option>
+                <option value="Leadership">Leadership</option>
+              </select>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={handleEditShoutout}
+                className="flex-1 bg-indigo-600 text-white py-2 rounded-lg font-medium hover:bg-indigo-700 transition"
+              >
+                Save Changes
+              </button>
+              <button
+                onClick={() => setIsEditModalOpen(false)}
+                className="flex-1 bg-slate-200 text-slate-700 py-2 rounded-lg font-medium hover:bg-slate-300 transition"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+
       <ReportShoutoutModal
         isOpen={showReportModal}
         shoutoutId={item.id}

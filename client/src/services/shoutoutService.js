@@ -251,4 +251,56 @@ export const deleteComment = async (commentId) => {
   }
 };
 
+/**
+ * Edit user's own shoutout - only within 5 minutes of creation
+ * @param {number} shoutoutId - ID of shoutout to edit
+ * @param {string} message - Updated message
+ * @param {string} category - Updated category
+ * @returns {Promise<Object>} Updated shoutout data
+ */
+export const updateShoutout = async (shoutoutId, message, category) => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await API.put(
+      `/api/shoutouts/${shoutoutId}`,
+      {
+        message,
+        category,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error updating shoutout:', error);
+    throw error;
+  }
+};
+
+/**
+ * Delete user's own shoutout - only within 5 minutes of creation
+ * @param {number} shoutoutId - ID of shoutout to delete
+ * @returns {Promise<Object>} Success message
+ */
+export const deleteShoutout = async (shoutoutId) => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await API.delete(
+      `/api/shoutouts/${shoutoutId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting shoutout:', error);
+    throw error;
+  }
+};
+
 export default API;
