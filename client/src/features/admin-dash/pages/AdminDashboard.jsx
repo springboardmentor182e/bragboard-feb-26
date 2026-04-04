@@ -4,7 +4,6 @@ import TopContributorsChart from "../components/charts/TopContributorsChart";
 import DepartmentPiechart from "../components/charts/DepartmentPiechart";
 import SimpleReportedPosts from "../components/SimpleReportedPosts";
 import { adminAPI } from "../../../services/api";
-import { mockDashboardStats } from "../mockData";
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState({

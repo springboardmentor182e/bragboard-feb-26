@@ -1,14 +1,16 @@
-import { Bell, LogOut, ChevronDown } from "lucide-react";
+import { Bell, LogOut, User, ChevronDown } from "lucide-react";
 import { useAuth } from "../../../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import { adminAPI } from "../../../../services/api";
+import AdminProfileModal from "../AdminProfileModal";
 
 const AdminTopbar = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const [open, setOpen] = useState(false);
+  const [profileModalOpen, setProfileModalOpen] = useState(false);
   const [pendingCount, setPendingCount] = useState(0);
   const dropdownRef = useRef();
 
@@ -112,22 +114,34 @@ const AdminTopbar = () => {
 
           {/* 🔽 DROPDOWN */}
           {open && (
-            <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden z-50">
+            <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden z-50">
 
               {/* USER INFO */}
-              <div className="px-4 py-3 border-b">
-                <p className="text-sm font-semibold text-slate-900">
+              <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-700">
+                <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                   {user?.name}
                 </p>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-slate-500 dark:text-slate-400">
                   {user?.email}
                 </p>
               </div>
 
-              {/* ACTIONS */}
+              {/* PROFILE LINK */}
+              <button
+                onClick={() => {
+                  setProfileModalOpen(true);
+                  setOpen(false);
+                }}
+                className="w-full flex items-center gap-2 px-4 py-3 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition border-b border-slate-200 dark:border-slate-700"
+              >
+                <User size={16} />
+                View Profile
+              </button>
+
+              {/* LOGOUT */}
               <button
                 onClick={handleLogout}
-                className="w-full flex items-center gap-2 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition"
+                className="w-full flex items-center gap-2 px-4 py-3 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition"
               >
                 <LogOut size={16} />
                 Logout
@@ -138,6 +152,12 @@ const AdminTopbar = () => {
         </div>
 
       </div>
+
+      {/* PROFILE MODAL */}
+      <AdminProfileModal 
+        isOpen={profileModalOpen} 
+        onClose={() => setProfileModalOpen(false)} 
+      />
     </header>
   );
 };
