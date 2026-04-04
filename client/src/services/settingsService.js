@@ -58,11 +58,11 @@ export const settingsService = {
 
   /**
    * Fetch system-wide admin settings (admin only)
-   * GET /admin/settings
+   * GET /api/admin/settings
    */
   getAdminSettings: async () => {
     try {
-      const response = await API.get('/admin/settings');
+      const response = await API.get('/api/admin/settings');
       return response.data;
     } catch (error) {
       console.error('Error fetching admin settings:', error);
@@ -72,11 +72,11 @@ export const settingsService = {
 
   /**
    * Auto-save a single admin setting (admin only)
-   * PUT /admin/settings/{key}
+   * PUT /api/admin/settings/{key}
    */
   updateAdminSetting: async (settingKey, value) => {
     try {
-      const response = await API.put(`/admin/settings/${settingKey}`, {
+      const response = await API.put(`/api/admin/settings/${settingKey}`, {
         value
       });
       return response.data;

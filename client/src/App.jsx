@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { ThemeProvider } from "./context/ThemeContext";
 
 /* AUTH */
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -38,13 +39,13 @@ EMPLOYEE LAYOUT
 function EmployeeLayout({ children }) {
   return (
     <ToastProvider>
-      <div className="flex h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+      <div className="flex h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 transition-colors">
         <Sidebar />
 
         <div className="flex-1 flex flex-col">
           <TopNavbar />
 
-          <main className="flex-1 p-6 overflow-y-auto">
+          <main className="flex-1 p-6 overflow-y-auto bg-slate-50 dark:bg-slate-950 transition-colors">
             {children}
           </main>
         </div>
@@ -58,15 +59,16 @@ APP ROUTES
 */
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
+    <ThemeProvider>
+      <BrowserRouter>
+        <Routes>
 
-        {/* 🔓 PUBLIC ROUTES */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/pending-approval" element={<PendingApproval />} />
-        <Route path="/suspended-account" element={<SuspendedAccount />} />
+          {/* 🔓 PUBLIC ROUTES */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/pending-approval" element={<PendingApproval />} />
+          <Route path="/suspended-account" element={<SuspendedAccount />} />
 
         {/* 🔐 EMPLOYEE ROUTES */}
         <Route
@@ -231,6 +233,7 @@ function App() {
 
       </Routes>
     </BrowserRouter>
+    </ThemeProvider>
   );
 }
 

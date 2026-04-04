@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Bell, Lock, Palette, Globe, Mail, Smartphone, Shield, Clock } from "lucide-react";
 import settingsService from "../../../services/settingsService";
 import { ChangePasswordModal } from "../../../components/ChangePasswordModal";
+import { useTheme } from "../../../context/ThemeContext";
 
 const EmployeeSettings = () => {
+  const { changeTheme } = useTheme();
   const [activeTab, setActiveTab] = useState("notifications");
   const [loading, setLoading] = useState(false);
   const [savingField, setSavingField] = useState(null);
@@ -82,6 +84,11 @@ const EmployeeSettings = () => {
       [key]: value
     }));
     setSavingField(key);
+    
+    // If changing theme, also call changeTheme from context
+    if (key === "theme") {
+      await changeTheme(value);
+    }
     
     try {
       await settingsService.updateUserSetting(key, value);

@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Bell, Lock, Palette, Globe, Mail, Smartphone, Shield, Clock, Settings } from "lucide-react";
 import settingsService from "../../../services/settingsService";
 import { ChangePasswordModal } from "../../../components/ChangePasswordModal";
+import { useTheme } from "../../../context/ThemeContext";
 
 const AdminSettings = () => {
+  const { changeTheme } = useTheme();
   const [activeTab, setActiveTab] = useState("notifications");
   const [loading, setLoading] = useState(false);
   const [savingField, setSavingField] = useState(null);
@@ -40,19 +42,27 @@ const AdminSettings = () => {
     const fetchAllSettings = async () => {
       setLoading(true);
       try {
-        // Fetch user settings
+        // Always fetch user settings
         const userSettings = await settingsService.getUserSettings();
-        // Fetch admin settings
-        const adminSettings = await settingsService.getAdminSettings();
+        console.log("✅ Loaded user settings:", userSettings);
+        
+        // Try to fetch admin settings if user is admin
+        let adminSettings = {};
+        try {
+          adminSettings = await settingsService.getAdminSettings();
+          console.log("✅ Loaded admin settings:", adminSettings);
+        } catch (err) {
+          // If admin settings fail (user is not admin), just use user settings
+          console.warn("⚠️ Admin settings not accessible (user may not be admin)");
+        }
         
         // Merge both
         const merged = { ...userSettings, ...adminSettings };
-        console.log("✅ Loaded all settings:", merged);
         setSettings(merged);
         setError("");
       } catch (err) {
-        console.error("❌ Error loading settings:", err);
-        setError("Failed to load settings");
+        console.error("❌ Error loading user settings:", err);
+        setError("Failed to load settings. Please refresh or logout and login again.");
       } finally {
         setLoading(false);
       }
@@ -113,6 +123,11 @@ const AdminSettings = () => {
       [key]: value
     }));
     setSavingField(key);
+    
+    // If changing theme, also call changeTheme from context
+    if (key === "theme") {
+      await changeTheme(value);
+    }
     
     try {
       if (isAdminSetting) {
