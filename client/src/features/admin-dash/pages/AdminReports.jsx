@@ -70,8 +70,9 @@ function AdminReports() {
     let total = 0;
 
     resolved.forEach((r) => {
-      total +=
-        (new Date(r.resolved_at) - new Date(r.created_at)) / 1000;
+      const resolvedTime = new Date(r.resolved_at).getTime();
+      const createdTime = new Date(r.created_at).getTime();
+      total += (resolvedTime - createdTime) / 1000; // Convert milliseconds to seconds
     });
 
     return formatTime(total / resolved.length);
