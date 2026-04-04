@@ -1,5 +1,6 @@
 import { Heart, ThumbsUp, Flag, Edit2, Trash2 } from "lucide-react";
 import { useState, useCallback, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useAuth } from "../../../../context/AuthContext";
 import { useReactions } from "../../hooks/useReactions";
 import useToast from "../../hooks/useToast";
@@ -233,7 +234,8 @@ const FeedCard = ({ item, onShoutoutDelete }) => {
       {canEdit && (
         <div className="flex gap-2 mt-3 pb-2 border-b border-slate-100">
           <button
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation();
               setEditingMessage(item.message);
               setEditingCategory(item.category);
               setIsEditModalOpen(true);
@@ -357,11 +359,20 @@ const FeedCard = ({ item, onShoutoutDelete }) => {
       </div>
 
       {/* REPORT MODAL */}
-      {/* EDIT MODAL */}
-      {isEditModalOpen && (
+      {/* EDIT MODAL - Rendered via Portal to avoid card interference */}
+      {isEditModalOpen && createPortal(
         <>
-          <div className="fixed inset-0 bg-black/50 z-40 backdrop-blur-sm" onClick={() => setIsEditModalOpen(false)} />
-          <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white rounded-2xl shadow-2xl z-50 p-6 space-y-4">
+          <div 
+            className="fixed inset-0 bg-black/50 z-40 backdrop-blur-sm" 
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsEditModalOpen(false);
+            }}
+          />
+          <div 
+            className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white rounded-2xl shadow-2xl z-50 p-6 space-y-4"
+            onClick={(e) => e.stopPropagation()}
+          >
             <h3 className="text-lg font-bold text-slate-900">Edit Shout-Out</h3>
             
             <div>
@@ -393,20 +404,27 @@ const FeedCard = ({ item, onShoutoutDelete }) => {
 
             <div className="flex gap-3">
               <button
-                onClick={handleEditShoutout}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleEditShoutout();
+                }}
                 className="flex-1 bg-indigo-600 text-white py-2 rounded-lg font-medium hover:bg-indigo-700 transition"
               >
                 Save Changes
               </button>
               <button
-                onClick={() => setIsEditModalOpen(false)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsEditModalOpen(false);
+                }}
                 className="flex-1 bg-slate-200 text-slate-700 py-2 rounded-lg font-medium hover:bg-slate-300 transition"
               >
                 Cancel
               </button>
             </div>
           </div>
-        </>
+        </>,
+        document.body
       )}
 
       <ReportShoutoutModal
