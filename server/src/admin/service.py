@@ -29,6 +29,18 @@ class AdminService:
     def get_user_by_id(self, user_id: int) -> Optional[User]:
         return self.db.query(User).filter(User.id == user_id).first()
     
+    def get_unresolved_reports_count(self) -> int:
+        """Get count of unresolved reports for notifications"""
+        from ..entities.report import Report
+        try:
+            count = self.db.query(Report).filter(
+                Report.status != "RESOLVED"
+            ).count()
+            return count
+        except Exception as e:
+            print(f"Error getting unresolved reports: {e}")
+            return 0
+    
     def get_dashboard_stats(self) -> Dict[str, Any]:
         """Get REAL dashboard statistics from database"""
         try:
@@ -46,6 +58,12 @@ class AdminService:
             
             # 5️⃣ TOTAL REPORTS
             total_reports = self.db.query(AdminReport).count()
+            
+            # 🚨 UNRESOLVED REPORTS (for notifications)
+            from ..entities.report import Report
+            unresolved_reports = self.db.query(Report).filter(
+                Report.status != "RESOLVED"
+            ).count()
             
             # 6️⃣ PENDING USERS (awaiting approval)
             pending_users = self.db.query(User).filter(User.status == "Pending").count()
@@ -75,6 +93,7 @@ class AdminService:
                 "total_shoutouts": total_posts,
                 "total_reactions": total_reactions,
                 "total_reports": total_reports,
+                "unresolved_reports": unresolved_reports,
                 "reports": total_reports,
                 "active_users_today": active_users_today,
                 "admin_count": admin_count,
@@ -91,6 +110,7 @@ class AdminService:
                 "total_posts": 0,
                 "total_reactions": 0,
                 "total_reports": 0,
+                "unresolved_reports": 0,
                 "reports": 0,
                 "active_users_today": 0,
                 "admin_count": 0,

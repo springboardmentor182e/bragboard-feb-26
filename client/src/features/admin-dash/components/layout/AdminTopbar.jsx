@@ -11,7 +11,8 @@ const AdminTopbar = () => {
 
   const [open, setOpen] = useState(false);
   const [profileModalOpen, setProfileModalOpen] = useState(false);
-  const [pendingCount, setPendingCount] = useState(0);
+  const [pendingUsers, setPendingUsers] = useState(0);
+  const [unresolvedReports, setUnresolvedReports] = useState(0);
   const dropdownRef = useRef();
 
   // 🔤 initials
@@ -30,19 +31,21 @@ const AdminTopbar = () => {
     navigate("/login");
   };
 
-  // 📊 Fetch pending count on load and refresh
+  // 📊 Fetch pending count and unresolved reports on load and refresh
   useEffect(() => {
-    const fetchPendingCount = async () => {
+    const fetchNotifications = async () => {
       try {
         const res = await adminAPI.getDashboardStats();
-        setPendingCount(res.data?.pending_users || 0);
+        setPendingUsers(res.data?.pending_users || 0);
+        setUnresolvedReports(res.data?.unresolved_reports || 0);
+        console.log("🔔 Notifications - Pending Users:", res.data?.pending_users, "Unresolved Reports:", res.data?.unresolved_reports);
       } catch (error) {
-        console.error("Error fetching pending:", error);
+        console.error("Error fetching notifications:", error);
       }
     };
 
-    fetchPendingCount();
-    const interval = setInterval(fetchPendingCount, 300000); // Refresh every 5 minutes
+    fetchNotifications();
+    const interval = setInterval(fetchNotifications, 30000); // Refresh every 30 seconds for real-time
     return () => clearInterval(interval);
   }, []);
 
@@ -60,8 +63,16 @@ const AdminTopbar = () => {
   }, []);
 
   const handleNotificationClick = () => {
-    navigate("/admin/employees");
+    // If both exist, prioritize pending users, otherwise go to reports if they exist
+    if (pendingUsers > 0) {
+      navigate("/admin/employees");
+    } else if (unresolvedReports > 0) {
+      navigate("/admin/reports");
+    }
   };
+
+  // Calculate total notifications
+  const totalNotifications = pendingUsers + unresolvedReports;
 
   return (
     <header className="bg-white px-8 py-4 flex items-center justify-end border-b border-slate-200 shadow-sm">
@@ -72,15 +83,19 @@ const AdminTopbar = () => {
         <div 
           className="relative cursor-pointer transition"
           onClick={handleNotificationClick}
-          title={pendingCount > 0 ? `${pendingCount} pending approval(s)` : "No pending requests"}
+          title={
+            totalNotifications > 0 
+              ? `${pendingUsers} pending user(s) • ${unresolvedReports} unresolved report(s)` 
+              : "No pending notifications"
+          }
         >
           <Bell 
-            className={pendingCount > 0 ? "text-yellow-500 hover:text-yellow-600" : "text-slate-600 hover:text-slate-700"} 
+            className={totalNotifications > 0 ? "text-yellow-500 hover:text-yellow-600" : "text-slate-600 hover:text-slate-700"} 
             size={20} 
           />
-          {pendingCount > 0 && (
+          {totalNotifications > 0 && (
             <span className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full border-2 border-white flex items-center justify-center text-white text-xs font-bold animate-pulse">
-              {pendingCount > 9 ? "9+" : pendingCount}
+              {totalNotifications > 9 ? "9+" : totalNotifications}
             </span>
           )}
         </div>
