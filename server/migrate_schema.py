@@ -64,6 +64,26 @@ try:
                     RAISE NOTICE 'Added updated_at column';
                 END IF;
             END $$;
+            """,
+            """
+            DO $$ 
+            BEGIN
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                              WHERE table_name='shoutouts' AND column_name='is_edited') THEN
+                    ALTER TABLE shoutouts ADD COLUMN is_edited BOOLEAN DEFAULT FALSE;
+                    RAISE NOTICE 'Added is_edited column';
+                END IF;
+            END $$;
+            """,
+            """
+            DO $$ 
+            BEGIN
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                              WHERE table_name='shoutouts' AND column_name='edited_at') THEN
+                    ALTER TABLE shoutouts ADD COLUMN edited_at TIMESTAMP DEFAULT NULL;
+                    RAISE NOTICE 'Added edited_at column';
+                END IF;
+            END $$;
             """
         ]
         

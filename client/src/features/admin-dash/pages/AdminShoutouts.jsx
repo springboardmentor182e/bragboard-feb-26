@@ -315,7 +315,14 @@ const AdminShoutouts = () => {
 
                     {/* Message */}
                     <div className="col-span-2">
-                      <p className="text-sm text-slate-700 truncate">{shoutout.message}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm text-slate-700 truncate">{shoutout.message}</p>
+                        {shoutout.is_edited && (
+                          <span title={shoutout.edited_at ? `Edited on ${new Date(shoutout.edited_at).toLocaleString()}` : "Edited"} className="inline-block px-2 py-1 bg-amber-100 text-amber-700 text-xs font-semibold rounded whitespace-nowrap flex-shrink-0">
+                            Edited
+                          </span>
+                        )}
+                      </div>
                     </div>
 
                     {/* Campaign/Category */}

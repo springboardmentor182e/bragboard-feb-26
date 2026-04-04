@@ -333,6 +333,7 @@ def edit_shoutout(db: Session, shoutout_id: int, message: str, category: str = N
     """
     Edit shoutout - update message and optionally category
     Updates propagate to all feeds automatically since they query the same Shoutout table
+    Tracks edit history with is_edited and edited_at fields
     """
     try:
         shoutout = db.query(Shoutout).filter(Shoutout.id == shoutout_id).first()
@@ -347,6 +348,10 @@ def edit_shoutout(db: Session, shoutout_id: int, message: str, category: str = N
         if category:
             shoutout.category = category
         
+        # Mark as edited and set edited timestamp
+        shoutout.is_edited = True
+        shoutout.edited_at = datetime.utcnow()
+        
         # Update timestamp
         shoutout.updated_at = datetime.utcnow()
         db.commit()
@@ -355,6 +360,8 @@ def edit_shoutout(db: Session, shoutout_id: int, message: str, category: str = N
             "id": shoutout.id,
             "message": shoutout.message,
             "category": shoutout.category,
+            "is_edited": shoutout.is_edited,
+            "edited_at": shoutout.edited_at.isoformat() if shoutout.edited_at else None,
             "updated_at": shoutout.updated_at.isoformat()
         }}
     except Exception as e:
@@ -371,7 +378,12 @@ def get_user_feed(db: Session, user_id: int, limit: int = 20, offset: int = 0):
     
     shoutouts = db.query(Shoutout).options(
         selectinload(Shoutout.sender),
+        selectinload(Shoutout.receiver),
         selectinload(Shoutout.recipients).selectinload(ShoutOutRecipient.user)
+    ).filter(
+        Shoutout.status == "APPROVED",
+        Shoutout.is_deleted == False,
+        Shoutout.is_archived == False
     ).order_by(Shoutout.created_at.desc()).limit(limit).offset(offset).all()
     
     # Get shoutout IDs for batch queries
@@ -407,6 +419,8 @@ def get_user_feed(db: Session, user_id: int, limit: int = 20, offset: int = 0):
             "points": shoutout.points,
             "status": shoutout.status,
             "created_at": shoutout.created_at.isoformat(),
+            "is_edited": shoutout.is_edited,
+            "edited_at": shoutout.edited_at.isoformat() if shoutout.edited_at else None,
             "reactions_count": reactions_counts.get(shoutout.id, {"like": 0, "clap": 0, "star": 0}),
             "comments_count": comments_counts.get(shoutout.id, 0),
         })

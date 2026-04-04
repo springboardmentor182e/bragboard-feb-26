@@ -24,6 +24,10 @@ class Shoutout(Base):
     is_archived = Column(Boolean, default=False)
     archived_at = Column(DateTime, nullable=True)
     
+    # Edit tracking
+    is_edited = Column(Boolean, default=False)
+    edited_at = Column(DateTime, nullable=True)
+    
     # Track updates
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     created_at = Column(DateTime, default=datetime.utcnow)
