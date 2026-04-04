@@ -11,9 +11,11 @@ const AdminTopbar = () => {
 
   const [open, setOpen] = useState(false);
   const [profileModalOpen, setProfileModalOpen] = useState(false);
+  const [notificationDropdownOpen, setNotificationDropdownOpen] = useState(false);
   const [pendingUsers, setPendingUsers] = useState(0);
   const [unresolvedReports, setUnresolvedReports] = useState(0);
   const dropdownRef = useRef();
+  const notificationRef = useRef();
 
   // 🔤 initials
   const getInitials = (name) => {
@@ -49,11 +51,14 @@ const AdminTopbar = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // 👇 close dropdown when clicked outside
+  // 👇 close dropdowns when clicked outside
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (!dropdownRef.current?.contains(e.target)) {
         setOpen(false);
+      }
+      if (!notificationRef.current?.contains(e.target)) {
+        setNotificationDropdownOpen(false);
       }
     };
 
@@ -62,14 +67,6 @@ const AdminTopbar = () => {
       document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleNotificationClick = () => {
-    // If both exist, prioritize pending users, otherwise go to reports if they exist
-    if (pendingUsers > 0) {
-      navigate("/admin/employees");
-    } else if (unresolvedReports > 0) {
-      navigate("/admin/reports");
-    }
-  };
 
   // Calculate total notifications
   const totalNotifications = pendingUsers + unresolvedReports;
@@ -81,22 +78,106 @@ const AdminTopbar = () => {
 
         {/* 🔔 NOTIFICATION */}
         <div 
-          className="relative cursor-pointer transition"
-          onClick={handleNotificationClick}
-          title={
-            totalNotifications > 0 
-              ? `${pendingUsers} pending user(s) • ${unresolvedReports} unresolved report(s)` 
-              : "No pending notifications"
-          }
+          ref={notificationRef}
+          className="relative"
         >
-          <Bell 
-            className={totalNotifications > 0 ? "text-yellow-500 hover:text-yellow-600" : "text-slate-600 hover:text-slate-700"} 
-            size={20} 
-          />
-          {totalNotifications > 0 && (
-            <span className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full border-2 border-white flex items-center justify-center text-white text-xs font-bold animate-pulse">
-              {totalNotifications > 9 ? "9+" : totalNotifications}
-            </span>
+          {/* BELL ICON */}
+          <div
+            className="cursor-pointer transition hover:scale-110"
+            onClick={() => setNotificationDropdownOpen(!notificationDropdownOpen)}
+            title={
+              totalNotifications > 0 
+                ? `${pendingUsers} pending user(s) • ${unresolvedReports} unresolved report(s)` 
+                : "No pending notifications"
+            }
+          >
+            <Bell 
+              className={totalNotifications > 0 ? "text-yellow-500 hover:text-yellow-600" : "text-slate-600 hover:text-slate-700"} 
+              size={20} 
+            />
+            {totalNotifications > 0 && (
+              <span className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full border-2 border-white flex items-center justify-center text-white text-xs font-bold animate-pulse">
+                {totalNotifications > 9 ? "9+" : totalNotifications}
+              </span>
+            )}
+          </div>
+
+          {/* 🔽 NOTIFICATION DROPDOWN */}
+          {notificationDropdownOpen && totalNotifications > 0 && (
+            <div className="absolute right-0 mt-3 w-72 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden z-50">
+
+              {/* HEADER */}
+              <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50">
+                <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                  📬 Notifications
+                </p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                  Total: {totalNotifications} pending action(s)
+                </p>
+              </div>
+
+              {/* NOTIFICATION ITEMS */}
+              <div className="overflow-y-auto max-h-80">
+                
+                {/* PENDING USERS */}
+                {pendingUsers > 0 && (
+                  <button
+                    onClick={() => {
+                      navigate("/admin/employees");
+                      setNotificationDropdownOpen(false);
+                    }}
+                    className="w-full flex items-center justify-between px-4 py-3 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition border-b border-slate-100 dark:border-slate-700 text-left"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/40 rounded-lg flex items-center justify-center">
+                        <span className="text-lg">👥</span>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                          Pending Users
+                        </p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">
+                          {pendingUsers} awaiting approval
+                        </p>
+                      </div>
+                    </div>
+                    <span className="bg-blue-500 text-white text-xs font-bold px-2.5 py-1 rounded-full">
+                      {pendingUsers}
+                    </span>
+                  </button>
+                )}
+
+                {/* UNRESOLVED REPORTS */}
+                {unresolvedReports > 0 && (
+                  <button
+                    onClick={() => {
+                      navigate("/admin/reports");
+                      setNotificationDropdownOpen(false);
+                    }}
+                    className="w-full flex items-center justify-between px-4 py-3 hover:bg-red-50 dark:hover:bg-red-900/20 transition border-b border-slate-100 dark:border-slate-700 text-left"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-red-100 dark:bg-red-900/40 rounded-lg flex items-center justify-center">
+                        <span className="text-lg">🚫</span>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                          Reported Shoutouts
+                        </p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">
+                          {unresolvedReports} awaiting resolution
+                        </p>
+                      </div>
+                    </div>
+                    <span className="bg-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-full">
+                      {unresolvedReports}
+                    </span>
+                  </button>
+                )}
+
+              </div>
+
+            </div>
           )}
         </div>
 
