@@ -1,5 +1,6 @@
 import React from "react";
 import { X, Archive, Trash2 } from "lucide-react";
+import AdminEditBadge from "../../../components/ui/AdminEditBadge";
 
 const ShoutoutDetailsModal = ({ isOpen, onClose, shoutout, onArchive, onDelete }) => {
   if (!isOpen || !shoutout) return null;
@@ -57,12 +58,10 @@ const ShoutoutDetailsModal = ({ isOpen, onClose, shoutout, onArchive, onDelete }
             <div className="bg-purple-50 rounded-lg border border-purple-200 p-4">
               <h3 className="text-xs font-bold text-slate-600 uppercase tracking-wide mb-3">Full Message</h3>
               <p className="text-sm text-slate-800 leading-relaxed mb-3">{shoutout.message}</p>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <span className="inline-block px-3 py-1 bg-orange-100 text-orange-700 text-xs font-semibold rounded">{shoutout.category || "General"}</span>
-                {shoutout.is_edited && (
-                  <span title={shoutout.edited_at ? `Edited on ${new Date(shoutout.edited_at).toLocaleString()}` : "Edited"} className="inline-block px-3 py-1 bg-amber-100 text-amber-700 text-xs font-semibold rounded">
-                    ✏️ Edited
-                  </span>
+                {shoutout.is_edited && shoutout.edited_at && (
+                  <AdminEditBadge editedAt={shoutout.edited_at} />
                 )}
               </div>
             </div>

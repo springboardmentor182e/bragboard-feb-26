@@ -40,6 +40,8 @@ class FeedItemResponse(BaseModel):
     points: int
     status: ShoutoutStatusType
     created_at: datetime
+    is_edited: bool = False
+    edited_at: Optional[datetime] = None
     sender: UserInfoResponse
     recipients: List[UserInfoResponse]
     recipients_count: int
@@ -64,6 +66,8 @@ class ShoutOutResponse(BaseModel):
     points: int
     status: ShoutoutStatusType
     created_at: datetime
+    is_edited: bool = False
+    edited_at: Optional[datetime] = None
     recipients: List[RecipientResponse]
     sender_name: Optional[str] = None
     reactions_count: Optional[dict] = None

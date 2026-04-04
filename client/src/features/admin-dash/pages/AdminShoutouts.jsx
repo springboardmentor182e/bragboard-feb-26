@@ -6,6 +6,7 @@ import ShoutoutDetailsModal from "../components/ShoutoutDetailsModal";
 import DeleteShoutoutModal from "../components/DeleteShoutoutModal";
 import EditShoutoutModal from "../components/EditShoutoutModal";
 import ArchiveShoutoutModal from "../components/ArchiveShoutoutModal";
+import AdminEditBadge from "../../../components/ui/AdminEditBadge";
 
 const AdminShoutouts = () => {
   const [shoutouts, setShoutouts] = useState([]);
@@ -317,10 +318,8 @@ const AdminShoutouts = () => {
                     <div className="col-span-2">
                       <div className="flex items-center gap-2">
                         <p className="text-sm text-slate-700 truncate">{shoutout.message}</p>
-                        {shoutout.is_edited && (
-                          <span title={shoutout.edited_at ? `Edited on ${new Date(shoutout.edited_at).toLocaleString()}` : "Edited"} className="inline-block px-2 py-1 bg-amber-100 text-amber-700 text-xs font-semibold rounded whitespace-nowrap flex-shrink-0">
-                            Edited
-                          </span>
+                        {shoutout.is_edited && shoutout.edited_at && (
+                          <AdminEditBadge editedAt={shoutout.edited_at} className="flex-shrink-0" />
                         )}
                       </div>
                     </div>

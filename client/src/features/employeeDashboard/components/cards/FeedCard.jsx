@@ -4,6 +4,7 @@ import { useReactions } from "../../hooks/useReactions";
 import useToast from "../../hooks/useToast";
 import CommentsViewer from "../../../../components/CommentsViewer";
 import ReportShoutoutModal from "../../../../components/ReportShoutoutModal";
+import AdminEditBadge from "../../../../components/ui/AdminEditBadge";
 
 const FeedCard = ({ item }) => {
   const [expanded, setExpanded] = useState(false);
@@ -125,11 +126,16 @@ const FeedCard = ({ item }) => {
       </div>
 
       {/* CATEGORY BADGE */}
-      {item.category && (
-        <div className="inline-block mt-4 text-xs px-3 py-1 rounded-lg border bg-indigo-100 text-indigo-600 border-indigo-200 font-medium">
-          {item.category}
-        </div>
-      )}
+      <div className="flex flex-wrap items-center gap-2 mt-4">
+        {item.category && (
+          <div className="inline-block text-xs px-3 py-1 rounded-lg border bg-indigo-100 text-indigo-600 border-indigo-200 font-medium">
+            {item.category}
+          </div>
+        )}
+        {item.is_edited && item.edited_at && (
+          <AdminEditBadge editedAt={item.edited_at} />
+        )}
+      </div>
 
       {/* MESSAGE */}
       <p className="text-sm text-slate-700 mt-4 leading-relaxed">
