@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
 import { getAllUsers } from "../../../services/shoutoutService";
 import { getUserStats } from "../../../services/userStatsService";
+import TeamMemberProfileModal from "../components/TeamMemberProfileModal";
 
 const Team = () => {
   const navigate = useNavigate();
@@ -11,6 +12,8 @@ const Team = () => {
   const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("All");
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Fetch team data on component mount
   useEffect(() => {
@@ -229,7 +232,10 @@ const Team = () => {
 
             {/* BUTTON */}
             <button
-              onClick={() => navigate(`/profile/${user.id}`)}
+              onClick={() => {
+                setSelectedUser({ id: user.id, name: user.name });
+                setIsModalOpen(true);
+              }}
               className="
                 mt-5 w-full
                 bg-gradient-to-r from-indigo-500 to-purple-600
@@ -246,6 +252,19 @@ const Team = () => {
         ))}
 
       </div>
+
+      {/* TEAM MEMBER PROFILE MODAL */}
+      {selectedUser && (
+        <TeamMemberProfileModal
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedUser(null);
+          }}
+          userId={selectedUser.id}
+          userName={selectedUser.name}
+        />
+      )}
 
     </div>
   );
