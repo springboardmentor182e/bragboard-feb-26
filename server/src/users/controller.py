@@ -1,10 +1,11 @@
 from typing import List
-from ..auth.dependencies import require_admin
+from ..auth.dependencies import require_admin, get_current_user
 from fastapi import APIRouter, HTTPException, Depends,status
 from sqlalchemy.orm import Session
 from ..database.core import get_db
 from . import service
 from . import schemas
+from . import models
 from .service import (
     get_users,
     add_user,
@@ -241,3 +242,70 @@ async def create_new_user(
     db.commit()
     db.refresh(db_user)
     return db_user
+
+
+# ========== SETTINGS ENDPOINTS ==========
+
+@router.get("/me/settings", response_model=models.UserSettingsResponse)
+async def get_user_settings(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    GET /users/me/settings
+    Get all settings for the currently authenticated user
+    """
+    user_settings = service.get_user_settings(db, current_user.id)
+    if not user_settings:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user_settings
+
+
+@router.put("/me/settings/{setting_key}", response_model=models.SettingUpdateResponse)
+async def update_user_setting(
+    setting_key: str,
+    request: models.SettingUpdateRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    PUT /users/me/settings/{setting_key}
+    Auto-save a single user setting
+    """
+    success, response = service.update_single_setting(
+        db, 
+        current_user.id,
+        setting_key,
+        request.value
+    )
+    
+    if not success:
+        raise HTTPException(status_code=400, detail=response["message"])
+    
+    return response
+
+
+@router.post("/me/change-password")
+async def change_password(
+    request: models.ChangePasswordRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    POST /users/me/change-password
+    Change the password for the currently authenticated user
+    """
+    success, message = service.change_user_password(
+        db,
+        current_user.id,
+        request.old_password,
+        request.new_password
+    )
+    
+    if not success:
+        raise HTTPException(status_code=400, detail=message)
+    
+    return {
+        "success": True,
+        "message": message
+    }

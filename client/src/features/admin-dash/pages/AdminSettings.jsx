@@ -1,36 +1,140 @@
-import React, { useState } from "react";
-import { Bell, Lock, Palette, Globe, Mail, Smartphone, Shield, Clock } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Bell, Lock, Palette, Globe, Mail, Smartphone, Shield, Clock, Settings } from "lucide-react";
+import settingsService from "../../../services/settingsService";
+import { ChangePasswordModal } from "../../../components/ChangePasswordModal";
 
 const AdminSettings = () => {
   const [activeTab, setActiveTab] = useState("notifications");
+  const [loading, setLoading] = useState(false);
+  const [savingField, setSavingField] = useState(null);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [passwordModalOpen, setPasswordModalOpen] = useState(false);
+  
+  // User settings + Admin-only settings combined
   const [settings, setSettings] = useState({
-    emailNotifications: true,
-    pushNotifications: true,
-    passwordLastChanged: "2024-01-15",
-    twoFactorEnabled: false,
+    // User settings
+    email_notifications: true,
+    push_notifications: true,
     theme: "dark",
-    compactMode: false,
-    fontSize: "medium",
+    compact_mode: false,
+    font_size: "medium",
     language: "English",
-    timezone: "India (IST)",
-    dateFormat: "MM/DD/YYYY",
-    timeFormat: "12-hour (12:00 PM)",
-    weekStart: "Monday",
+    timezone: "UTC",
+    date_format: "MM/DD/YYYY",
+    time_format: "12-hour",
+    week_start: "Monday",
     currency: "USD - US Dollar",
+    // Admin settings
+    password_min_length: 8,
+    require_special_chars: true,
+    session_timeout_minutes: 60,
+    max_login_attempts: 5,
+    shoutout_daily_limit: 5,
+    shoutout_weekly_limit: 20,
+    email_system_enabled: true,
   });
 
-  const handleToggle = (key) => {
+  // Load both user and admin settings on mount
+  useEffect(() => {
+    const fetchAllSettings = async () => {
+      setLoading(true);
+      try {
+        // Fetch user settings
+        const userSettings = await settingsService.getUserSettings();
+        // Fetch admin settings
+        const adminSettings = await settingsService.getAdminSettings();
+        
+        // Merge both
+        const merged = { ...userSettings, ...adminSettings };
+        console.log("✅ Loaded all settings:", merged);
+        setSettings(merged);
+        setError("");
+      } catch (err) {
+        console.error("❌ Error loading settings:", err);
+        setError("Failed to load settings");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAllSettings();
+  }, []);
+
+  const handleToggle = async (key) => {
+    // Determine if this is a user or admin setting
+    const isAdminSetting = [
+      "require_special_chars",
+      "email_system_enabled"
+    ].includes(key);
+    
+    // Optimistic update
+    const newValue = !settings[key];
     setSettings(prev => ({
       ...prev,
-      [key]: !prev[key]
+      [key]: newValue
     }));
+    setSavingField(key);
+    
+    try {
+      if (isAdminSetting) {
+        await settingsService.updateAdminSetting(key, newValue);
+      } else {
+        await settingsService.updateUserSetting(key, newValue);
+      }
+      setSuccess("✓ Setting saved");
+      setTimeout(() => setSuccess(""), 2000);
+    } catch (err) {
+      // Revert on error
+      setSettings(prev => ({
+        ...prev,
+        [key]: !newValue
+      }));
+      const errorMsg = err.response?.data?.detail || err.message || "Failed to save setting";
+      setError(errorMsg);
+      setTimeout(() => setError(""), 3000);
+    } finally {
+      setSavingField(null);
+    }
   };
 
-  const handleSelectChange = (key, value) => {
+  const handleSelectChange = async (key, value) => {
+    // Determine if this is a user or admin setting
+    const isAdminSetting = [
+      "password_min_length",
+      "session_timeout_minutes",
+      "max_login_attempts",
+      "shoutout_daily_limit",
+      "shoutout_weekly_limit"
+    ].includes(key);
+    
+    // Optimistic update
     setSettings(prev => ({
       ...prev,
       [key]: value
     }));
+    setSavingField(key);
+    
+    try {
+      if (isAdminSetting) {
+        await settingsService.updateAdminSetting(key, value);
+      } else {
+        await settingsService.updateUserSetting(key, value);
+      }
+      setSuccess("✓ Setting saved");
+      setTimeout(() => setSuccess(""), 2000);
+    } catch (err) {
+      // Revert on error (keep old value)
+      const newValue = Object.values(settings)[Object.keys(settings).indexOf(key)];
+      setSettings(prev => ({
+        ...prev,
+        [key]: newValue
+      }));
+      const errorMsg = err.response?.data?.detail || err.message || "Failed to save setting";
+      setError(errorMsg);
+      setTimeout(() => setError(""), 3000);
+    } finally {
+      setSavingField(null);
+    }
   };
 
   const tabs = [
@@ -38,7 +142,19 @@ const AdminSettings = () => {
     { id: "security", label: "Security", icon: Lock },
     { id: "appearance", label: "Appearance", icon: Palette },
     { id: "language", label: "Language & Region", icon: Globe },
+    { id: "system", label: "System Config", icon: Settings },
   ];
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-slate-600 font-medium">Loading settings...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
@@ -47,6 +163,18 @@ const AdminSettings = () => {
         <h1 className="text-3xl font-black text-slate-950">Settings</h1>
         <p className="text-slate-600 text-sm mt-1 font-medium">Manage application settings and preferences</p>
       </div>
+
+      {/* Global Messages */}
+      {error && (
+        <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded">
+          <p className="text-sm text-red-700 font-medium">{error}</p>
+        </div>
+      )}
+      {success && (
+        <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded">
+          <p className="text-sm text-green-700 font-medium">{success}</p>
+        </div>
+      )}
 
       {/* Layout: Sidebar + Content */}
       <div className="flex gap-8">
@@ -75,6 +203,7 @@ const AdminSettings = () => {
                       {tab.id === "security" && "Manage security settings"}
                       {tab.id === "appearance" && "Customize theme and display"}
                       {tab.id === "language" && "Set language and regional preferences"}
+                      {tab.id === "system" && "System-wide configuration"}
                     </p>
                   </div>
                 </button>
@@ -92,7 +221,8 @@ const AdminSettings = () => {
               <h2 className="text-xl font-bold text-slate-950 mb-6">Notifications</h2>
               
               {/* Email Notifications */}
-              <div className="bg-gradient-to-br from-slate-50 to-slate-100 p-6 rounded-xl border-2 border-slate-200">
+              <div className="bg-gradient-to-br from-slate-50 to-slate-100 p-6 rounded-xl border-2 border-slate-200 relative">
+                {savingField === "email_notifications" && <div className="absolute inset-0 bg-white bg-opacity-30 rounded-xl flex items-center justify-center"><div className="w-6 h-6 border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div></div>}
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-3">
                     <Mail size={20} className="text-indigo-600" />
@@ -104,18 +234,20 @@ const AdminSettings = () => {
                   <label className="relative w-14 h-8">
                     <input
                       type="checkbox"
-                      checked={settings.emailNotifications}
-                      onChange={() => handleToggle("emailNotifications")}
+                      checked={settings.email_notifications}
+                      onChange={() => handleToggle("email_notifications")}
                       className="sr-only peer"
+                      disabled={savingField === "email_notifications"}
                     />
-                    <div className={`w-full h-full rounded-full transition-all ${settings.emailNotifications ? "bg-blue-500" : "bg-slate-300"}`}></div>
-                    <div className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-all ${settings.emailNotifications ? "translate-x-6" : ""}`}></div>
+                    <div className={`w-full h-full rounded-full transition-all ${settings.email_notifications ? "bg-blue-500" : "bg-slate-300"}`}></div>
+                    <div className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-all ${settings.email_notifications ? "translate-x-6" : ""}`}></div>
                   </label>
                 </div>
               </div>
 
               {/* Push Notifications */}
-              <div className="bg-gradient-to-br from-slate-50 to-slate-100 p-6 rounded-xl border-2 border-slate-200">
+              <div className="bg-gradient-to-br from-slate-50 to-slate-100 p-6 rounded-xl border-2 border-slate-200 relative">
+                {savingField === "push_notifications" && <div className="absolute inset-0 bg-white bg-opacity-30 rounded-xl flex items-center justify-center"><div className="w-6 h-6 border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div></div>}
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-3">
                     <Smartphone size={20} className="text-indigo-600" />
@@ -127,12 +259,13 @@ const AdminSettings = () => {
                   <label className="relative w-14 h-8">
                     <input
                       type="checkbox"
-                      checked={settings.pushNotifications}
-                      onChange={() => handleToggle("pushNotifications")}
+                      checked={settings.push_notifications}
+                      onChange={() => handleToggle("push_notifications")}
                       className="sr-only peer"
+                      disabled={savingField === "push_notifications"}
                     />
-                    <div className={`w-full h-full rounded-full transition-all ${settings.pushNotifications ? "bg-blue-500" : "bg-slate-300"}`}></div>
-                    <div className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-all ${settings.pushNotifications ? "translate-x-6" : ""}`}></div>
+                    <div className={`w-full h-full rounded-full transition-all ${settings.push_notifications ? "bg-blue-500" : "bg-slate-300"}`}></div>
+                    <div className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-all ${settings.push_notifications ? "translate-x-6" : ""}`}></div>
                   </label>
                 </div>
               </div>
@@ -194,10 +327,13 @@ const AdminSettings = () => {
                       <p className="font-semibold text-slate-950">Change Password</p>
                       <p className="text-sm text-slate-600">Update your password regularly for security</p>
                     </div>
-                    <button className="text-indigo-600 font-bold hover:text-indigo-700">→</button>
+                    <button 
+                      onClick={() => setPasswordModalOpen(true)}
+                      className="text-indigo-600 font-bold hover:text-indigo-700">→</button>
                   </div>
 
-                  <div className="flex items-center justify-between p-4 border-2 border-slate-200 rounded-lg">
+                  <div className="flex items-center justify-between p-4 border-2 border-slate-200 rounded-lg relative">
+                    {savingField === "two_factor_enabled" && <div className="absolute inset-0 bg-white bg-opacity-30 rounded-lg flex items-center justify-center"><div className="w-4 h-4 border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div></div>}
                     <div>
                       <p className="font-semibold text-slate-950">Two-Factor Authentication</p>
                       <p className="text-sm text-slate-600">Add an extra layer of security to your account</p>
@@ -205,12 +341,13 @@ const AdminSettings = () => {
                     <label className="relative w-14 h-8">
                       <input
                         type="checkbox"
-                        checked={settings.twoFactorEnabled}
-                        onChange={() => handleToggle("twoFactorEnabled")}
+                        checked={settings.two_factor_enabled}
+                        onChange={() => handleToggle("two_factor_enabled")}
                         className="sr-only peer"
+                        disabled={savingField === "two_factor_enabled"}
                       />
-                      <div className={`w-full h-full rounded-full transition-all ${settings.twoFactorEnabled ? "bg-blue-500" : "bg-slate-300"}`}></div>
-                      <div className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-all ${settings.twoFactorEnabled ? "translate-x-6" : ""}`}></div>
+                      <div className={`w-full h-full rounded-full transition-all ${settings.two_factor_enabled ? "bg-blue-500" : "bg-slate-300"}`}></div>
+                      <div className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-all ${settings.two_factor_enabled ? "translate-x-6" : ""}`}></div>
                     </label>
                   </div>
                 </div>
@@ -223,19 +360,31 @@ const AdminSettings = () => {
                 <div className="space-y-3">
                   <label className="block">
                     <span className="font-semibold text-slate-700 mb-2 block">Session Timeout (minutes)</span>
-                    <select value={settings.sessionTimeout || "30"} onChange={(e) => handleSelectChange("sessionTimeout", e.target.value)} className="w-full border-2 border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                      <option>15 minutes</option>
-                      <option>30 minutes</option>
-                      <option>60 minutes</option>
+                    <select 
+                      value={settings.session_timeout || "30"} 
+                      onChange={(e) => handleSelectChange("session_timeout", parseInt(e.target.value))} 
+                      className="w-full border-2 border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      disabled={savingField === "session_timeout"}
+                    >
+                      <option value={15}>15 minutes</option>
+                      <option value={30}>30 minutes</option>
+                      <option value={60}>60 minutes</option>
                     </select>
                   </label>
 
-                  <div className="flex items-center justify-between p-4 border-2 border-slate-200 rounded-lg">
+                  <div className="flex items-center justify-between p-4 border-2 border-slate-200 rounded-lg relative">
+                    {savingField === "login_alerts_enabled" && <div className="absolute inset-0 bg-white bg-opacity-30 rounded-lg flex items-center justify-center"><div className="w-4 h-4 border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div></div>}
                     <div>
                       <p className="font-semibold text-slate-950">Login Alerts</p>
                       <p className="text-sm text-slate-600">Get alerts when your account is accessed</p>
                     </div>
-                    <input type="checkbox" defaultChecked className="w-5 h-5 accent-blue-500" />
+                    <input 
+                      type="checkbox" 
+                      checked={settings.login_alerts_enabled}
+                      onChange={() => handleToggle("login_alerts_enabled")}
+                      className="w-5 h-5 accent-blue-500"
+                      disabled={savingField === "login_alerts_enabled"}
+                    />
                   </div>
                 </div>
               </div>
@@ -251,22 +400,23 @@ const AdminSettings = () => {
               <div>
                 <h3 className="font-bold text-slate-950 mb-4">Theme</h3>
                 <div className="grid grid-cols-3 gap-4">
-                  {["Light", "Dark", "System"].map((theme) => (
+                  {["light", "dark", "system"].map((themeVal) => (
                     <button
-                      key={theme}
-                      onClick={() => handleSelectChange("theme", theme.toLowerCase())}
-                      className={`p-6 rounded-xl border-2 flex flex-col items-center gap-2 transition-all text-center ${
-                        settings.theme === theme.toLowerCase()
+                      key={themeVal}
+                      onClick={() => handleSelectChange("theme", themeVal)}
+                      className={`p-6 rounded-xl border-2 flex flex-col items-center gap-2 transition-all text-center relative ${
+                        settings.theme === themeVal
                           ? "border-indigo-500 bg-indigo-50"
                           : "border-slate-200 hover:border-slate-300"
                       }`}
                     >
+                      {savingField === "theme" && <div className="absolute inset-0 bg-white bg-opacity-30 rounded-xl flex items-center justify-center"><div className="w-4 h-4 border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div></div>}
                       <div className="text-2xl">
-                        {theme === "Light" && "☀️"}
-                        {theme === "Dark" && "🌙"}
-                        {theme === "System" && "💻"}
+                        {themeVal === "light" && "☀️"}
+                        {themeVal === "dark" && "🌙"}
+                        {themeVal === "system" && "💻"}
                       </div>
-                      <p className="font-bold text-slate-950">{theme}</p>
+                      <p className="font-bold text-slate-950 capitalize">{themeVal}</p>
                     </button>
                   ))}
                 </div>
@@ -277,7 +427,8 @@ const AdminSettings = () => {
                 <h3 className="font-bold text-slate-950 mb-4">Display</h3>
                 
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between p-4 border-2 border-slate-200 rounded-lg">
+                  <div className="flex items-center justify-between p-4 border-2 border-slate-200 rounded-lg relative">
+                    {savingField === "compact_mode" && <div className="absolute inset-0 bg-white bg-opacity-30 rounded-lg flex items-center justify-center"><div className="w-4 h-4 border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div></div>}
                     <div>
                       <p className="font-semibold text-slate-950">Compact Mode</p>
                       <p className="text-sm text-slate-600">Reduce spacing for a more compact layout</p>
@@ -285,12 +436,13 @@ const AdminSettings = () => {
                     <label className="relative w-14 h-8">
                       <input
                         type="checkbox"
-                        checked={settings.compactMode}
-                        onChange={() => handleToggle("compactMode")}
+                        checked={settings.compact_mode}
+                        onChange={() => handleToggle("compact_mode")}
                         className="sr-only peer"
+                        disabled={savingField === "compact_mode"}
                       />
-                      <div className={`w-full h-full rounded-full transition-all ${settings.compactMode ? "bg-blue-500" : "bg-slate-300"}`}></div>
-                      <div className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-all ${settings.compactMode ? "translate-x-6" : ""}`}></div>
+                      <div className={`w-full h-full rounded-full transition-all ${settings.compact_mode ? "bg-blue-500" : "bg-slate-300"}`}></div>
+                      <div className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-all ${settings.compact_mode ? "translate-x-6" : ""}`}></div>
                     </label>
                   </div>
 
@@ -298,17 +450,17 @@ const AdminSettings = () => {
                     <label className="block">
                       <span className="font-semibold text-slate-700 mb-2 block">Font Size</span>
                       <div className="flex gap-2">
-                        {["Small", "Medium", "Large"].map((size) => (
+                        {["small", "medium", "large"].map((size) => (
                           <button
                             key={size}
-                            onClick={() => handleSelectChange("fontSize", size.toLowerCase())}
+                            onClick={() => handleSelectChange("font_size", size)}
                             className={`flex-1 px-3 py-2 rounded text-sm font-bold transition-all ${
-                              settings.fontSize === size.toLowerCase()
+                              settings.font_size === size
                                 ? "bg-indigo-600 text-white"
                                 : "bg-slate-100 text-slate-700 hover:bg-slate-200"
                             }`}
                           >
-                            {size}
+                            {size.charAt(0).toUpperCase() + size.slice(1)}
                           </button>
                         ))}
                       </div>
@@ -352,6 +504,7 @@ const AdminSettings = () => {
                       value={settings.language}
                       onChange={(e) => handleSelectChange("language", e.target.value)}
                       className="w-full border-2 border-slate-300 rounded-lg px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      disabled={savingField === "language"}
                     >
                       <option>English</option>
                       <option>Spanish</option>
@@ -378,9 +531,10 @@ const AdminSettings = () => {
                         value={settings.timezone}
                         onChange={(e) => handleSelectChange("timezone", e.target.value)}
                         className="w-full border-2 border-slate-300 rounded-lg px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        disabled={savingField === "timezone"}
                       >
-                        <option>India (IST)</option>
                         <option>UTC</option>
+                        <option>India (IST)</option>
                         <option>US Eastern (ET)</option>
                         <option>US Pacific (PT)</option>
                         <option>Europe (GMT)</option>
@@ -394,9 +548,10 @@ const AdminSettings = () => {
                     <label className="block">
                       <span className="font-bold text-slate-700 mb-2 block">Date Format</span>
                       <select
-                        value={settings.dateFormat}
-                        onChange={(e) => handleSelectChange("dateFormat", e.target.value)}
+                        value={settings.date_format}
+                        onChange={(e) => handleSelectChange("date_format", e.target.value)}
                         className="w-full border-2 border-slate-300 rounded-lg px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        disabled={savingField === "date_format"}
                       >
                         <option>MM/DD/YYYY</option>
                         <option>DD/MM/YYYY</option>
@@ -410,12 +565,13 @@ const AdminSettings = () => {
                     <label className="block">
                       <span className="font-bold text-slate-700 mb-2 block">Time Format</span>
                       <select
-                        value={settings.timeFormat}
-                        onChange={(e) => handleSelectChange("timeFormat", e.target.value)}
+                        value={settings.time_format}
+                        onChange={(e) => handleSelectChange("time_format", e.target.value)}
                         className="w-full border-2 border-slate-300 rounded-lg px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        disabled={savingField === "time_format"}
                       >
-                        <option>12-hour (12:00 PM)</option>
-                        <option>24-hour (00:00)</option>
+                        <option value="12-hour">12-hour (12:00 PM)</option>
+                        <option value="24-hour">24-hour (00:00)</option>
                       </select>
                     </label>
                   </div>
@@ -425,9 +581,10 @@ const AdminSettings = () => {
                     <label className="block">
                       <span className="font-bold text-slate-700 mb-2 block">Week Starts On</span>
                       <select
-                        value={settings.weekStart}
-                        onChange={(e) => handleSelectChange("weekStart", e.target.value)}
+                        value={settings.week_start}
+                        onChange={(e) => handleSelectChange("week_start", e.target.value)}
                         className="w-full border-2 border-slate-300 rounded-lg px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        disabled={savingField === "week_start"}
                       >
                         <option>Monday</option>
                         <option>Sunday</option>
@@ -458,17 +615,167 @@ const AdminSettings = () => {
             </div>
           )}
 
-          {/* Save Button */}
-          <div className="flex gap-3 pt-8 border-t-2 border-slate-100 mt-8">
-            <button className="flex-1 px-4 py-3 rounded-lg border-2 border-slate-300 bg-white text-slate-700 font-bold hover:bg-slate-50 hover:border-slate-400 transition-all">
-              Cancel
-            </button>
-            <button className="flex-1 px-4 py-3 rounded-lg bg-gradient-to-r from-indigo-600 to-indigo-700 text-white font-bold shadow-lg hover:shadow-xl hover:from-indigo-700 hover:to-indigo-800 transition-all">
-              Save Changes
-            </button>
-          </div>
+          {/* System Config Tab (Admin Only) */}
+          {activeTab === "system" && (
+            <div className="space-y-8">
+              <h2 className="text-xl font-bold text-slate-950 mb-6">System Configuration</h2>
+              <p className="text-sm text-slate-600 mb-6">System-wide settings that apply to all users</p>
+
+              {/* Password Policy */}
+              <div>
+                <h3 className="font-bold text-slate-950 mb-4">Password Policy</h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block">
+                      <span className="font-semibold text-slate-700 mb-2 block">Minimum Password Length</span>
+                      <select
+                        value={settings.password_min_length || 8}
+                        onChange={(e) => handleSelectChange("password_min_length", parseInt(e.target.value))}
+                        className="w-full border-2 border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        disabled={savingField === "password_min_length"}
+                      >
+                        <option value={4}>4 characters</option>
+                        <option value={6}>6 characters</option>
+                        <option value={8}>8 characters</option>
+                        <option value={10}>10 characters</option>
+                        <option value={12}>12 characters</option>
+                      </select>
+                    </label>
+                  </div>
+
+                  <div className="flex items-center justify-between p-4 border-2 border-slate-200 rounded-lg relative">
+                    {savingField === "require_special_chars" && <div className="absolute inset-0 bg-white bg-opacity-30 rounded-lg flex items-center justify-center"><div className="w-4 h-4 border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div></div>}
+                    <div>
+                      <p className="font-semibold text-slate-950">Require Special Characters</p>
+                      <p className="text-sm text-slate-600">Passwords must contain !@#$%^&* etc.</p>
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={settings.require_special_chars}
+                      onChange={() => handleToggle("require_special_chars")}
+                      className="w-5 h-5 accent-blue-500"
+                      disabled={savingField === "require_special_chars"}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Session Management */}
+              <div>
+                <h3 className="font-bold text-slate-950 mb-4">Session Management</h3>
+                <div>
+                  <label className="block">
+                    <span className="font-semibold text-slate-700 mb-2 block">Session Timeout (minutes)</span>
+                    <select
+                      value={settings.session_timeout_minutes || 60}
+                      onChange={(e) => handleSelectChange("session_timeout_minutes", parseInt(e.target.value))}
+                      className="w-full border-2 border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      disabled={savingField === "session_timeout_minutes"}
+                    >
+                      <option value={15}>15 minutes</option>
+                      <option value={30}>30 minutes</option>
+                      <option value={60}>60 minutes</option>
+                      <option value={120}>2 hours</option>
+                      <option value={240}>4 hours</option>
+                      <option value={480}>8 hours</option>
+                    </select>
+                  </label>
+                </div>
+              </div>
+
+              {/* Security */}
+              <div>
+                <h3 className="font-bold text-slate-950 mb-4">Security</h3>
+                <div>
+                  <label className="block">
+                    <span className="font-semibold text-slate-700 mb-2 block">Max Login Attempts</span>
+                    <select
+                      value={settings.max_login_attempts || 5}
+                      onChange={(e) => handleSelectChange("max_login_attempts", parseInt(e.target.value))}
+                      className="w-full border-2 border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      disabled={savingField === "max_login_attempts"}
+                    >
+                      <option value={3}>3 attempts</option>
+                      <option value={5}>5 attempts</option>
+                      <option value={10}>10 attempts</option>
+                      <option value={15}>15 attempts</option>
+                    </select>
+                  </label>
+                </div>
+              </div>
+
+              {/* Shoutout Configuration */}
+              <div>
+                <h3 className="font-bold text-slate-950 mb-4">Shoutout Limits</h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block">
+                      <span className="font-semibold text-slate-700 mb-2 block">Daily Limit per User</span>
+                      <select
+                        value={settings.shoutout_daily_limit || 5}
+                        onChange={(e) => handleSelectChange("shoutout_daily_limit", parseInt(e.target.value))}
+                        className="w-full border-2 border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        disabled={savingField === "shoutout_daily_limit"}
+                      >
+                        <option value={1}>1 shoutout</option>
+                        <option value={3}>3 shoutouts</option>
+                        <option value={5}>5 shoutouts</option>
+                        <option value={10}>10 shoutouts</option>
+                      </select>
+                    </label>
+                  </div>
+
+                  <div>
+                    <label className="block">
+                      <span className="font-semibold text-slate-700 mb-2 block">Weekly Limit per User</span>
+                      <select
+                        value={settings.shoutout_weekly_limit || 20}
+                        onChange={(e) => handleSelectChange("shoutout_weekly_limit", parseInt(e.target.value))}
+                        className="w-full border-2 border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        disabled={savingField === "shoutout_weekly_limit"}
+                      >
+                        <option value={10}>10 shoutouts</option>
+                        <option value={15}>15 shoutouts</option>
+                        <option value={20}>20 shoutouts</option>
+                        <option value={50}>50 shoutouts</option>
+                      </select>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              {/* System Status */}
+              <div>
+                <h3 className="font-bold text-slate-950 mb-4">System Status</h3>
+                <div className="flex items-center justify-between p-4 border-2 border-slate-200 rounded-lg relative">
+                  {savingField === "email_system_enabled" && <div className="absolute inset-0 bg-white bg-opacity-30 rounded-lg flex items-center justify-center"><div className="w-4 h-4 border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div></div>}
+                  <div>
+                    <p className="font-semibold text-slate-950">Email System Enabled</p>
+                    <p className="text-sm text-slate-600">Allow system to send email notifications</p>
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={settings.email_system_enabled}
+                    onChange={() => handleToggle("email_system_enabled")}
+                    className="w-5 h-5 accent-blue-500"
+                    disabled={savingField === "email_system_enabled"}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Password Modal */}
+      <ChangePasswordModal 
+        isOpen={passwordModalOpen}
+        onClose={() => setPasswordModalOpen(false)}
+        onSuccess={() => {
+          setSuccess("✓ Password changed successfully");
+          setTimeout(() => setSuccess(""), 3000);
+        }}
+      />
     </div>
   );
 };

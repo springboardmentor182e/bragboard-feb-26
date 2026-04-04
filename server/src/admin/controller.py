@@ -6,6 +6,7 @@ from .models import AdminReport, UserContribution, ActivityLog
 from ..database.core import get_db
 from . import schemas, service
 from ..auth.utils import hash_password
+from ..auth.dependencies import require_admin
 from ..entities.user import User
 from ..users.schemas import UserResponse
 from ..reports.models import ReportResponse
@@ -217,4 +218,42 @@ async def get_dashboard_stats(db: Session = Depends(get_db)):
             "admin_count": 0,
             "pending_users": 0,
         }
+
+
+# ========== ADMIN SETTINGS ENDPOINTS ==========
+
+@router.get("/settings", response_model=schemas.AdminSettingsResponse)
+async def get_admin_settings(
+    current_user: User = Depends(require_admin),
+    db: Session = Depends(get_db)
+):
+    """
+    GET /admin/settings
+    Get system-wide admin settings (admin only)
+    """
+    admin_service = service.AdminService(db)
+    settings = admin_service.get_admin_settings()
+    if not settings:
+        raise HTTPException(status_code=500, detail="Failed to fetch admin settings")
+    return settings
+
+
+@router.put("/settings/{setting_key}", response_model=schemas.AdminSettingUpdateResponse)
+async def update_admin_setting(
+    setting_key: str,
+    request: schemas.AdminSettingUpdateRequest,
+    current_user: User = Depends(require_admin),
+    db: Session = Depends(get_db)
+):
+    """
+    PUT /admin/settings/{setting_key}
+    Update a single admin setting (admin only)
+    """
+    admin_service = service.AdminService(db)
+    response = admin_service.update_admin_setting(setting_key, request.value)
     
+    if not response.get("success"):
+        raise HTTPException(status_code=400, detail=response.get("message"))
+    
+    return response
+

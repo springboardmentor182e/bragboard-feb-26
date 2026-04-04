@@ -78,3 +78,38 @@ class DashboardStatsResponse(DashboardStatsBase):
     id: int
     updated_at: datetime
     model_config = ConfigDict(from_attributes=True)
+
+
+# ========== ADMIN SETTINGS SCHEMAS ==========
+
+class AdminSettingsResponse(BaseModel):
+    """System-wide admin settings"""
+    # Password Policy
+    password_min_length: int
+    require_special_chars: bool
+    
+    # Session Management
+    session_timeout_minutes: int
+    max_login_attempts: int
+    
+    # Shoutout Configuration
+    shoutout_daily_limit: int
+    shoutout_weekly_limit: int
+    
+    # System Status
+    email_system_enabled: bool
+    
+    model_config = ConfigDict(from_attributes=True)
+
+
+class AdminSettingUpdateRequest(BaseModel):
+    """Request body for PUT /admin/settings/{key}"""
+    value: Any
+
+
+class AdminSettingUpdateResponse(BaseModel):
+    """Response for admin setting update endpoints"""
+    success: bool
+    updated_field: str
+    new_value: Any
+    message: str

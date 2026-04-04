@@ -469,3 +469,121 @@ class AdminService:
             print(f"❌ Error updating contributions: {e}")
             self.db.rollback()
             return False
+    
+    # ========== ADMIN SETTINGS FUNCTIONS ==========
+    
+    def get_admin_settings(self) -> Dict[str, Any]:
+        """
+        Fetch system-wide admin settings
+        Returns first (or default) admin settings record
+        """
+        try:
+            from ..entities.admin_settings import AdminSettings
+            
+            # Get or create default settings
+            settings = self.db.query(AdminSettings).first()
+            if not settings:
+                # Create default admin settings
+                settings = AdminSettings()
+                self.db.add(settings)
+                self.db.commit()
+                self.db.refresh(settings)
+            
+            return {
+                # Password Policy
+                "password_min_length": settings.password_min_length,
+                "require_special_chars": settings.require_special_chars,
+                # Session Management
+                "session_timeout_minutes": settings.session_timeout_minutes,
+                "max_login_attempts": settings.max_login_attempts,
+                # Shoutout Configuration
+                "shoutout_daily_limit": settings.shoutout_daily_limit,
+                "shoutout_weekly_limit": settings.shoutout_weekly_limit,
+                # System Status
+                "email_system_enabled": settings.email_system_enabled,
+            }
+        except Exception as e:
+            print(f"Error fetching admin settings: {e}")
+            return {}
+    
+    def update_admin_setting(self, setting_key: str, value: Any) -> Dict[str, Any]:
+        """
+        Update a single admin setting with validation
+        Returns: response dict with success status and message
+        """
+        try:
+            from ..entities.admin_settings import AdminSettings
+            
+            # Define valid admin settings and constraints
+            valid_settings = {
+                # Password Policy (int/bool)
+                "password_min_length": (int, range(4, 20)),
+                "require_special_chars": (bool, None),
+                # Session Management
+                "session_timeout_minutes": (int, range(15, 480)),  # 15 mins - 8 hours
+                "max_login_attempts": (int, range(1, 20)),
+                # Shoutout Configuration
+                "shoutout_daily_limit": (int, range(1, 100)),
+                "shoutout_weekly_limit": (int, range(1, 500)),
+                # System Status
+                "email_system_enabled": (bool, None),
+            }
+            
+            # Validate setting exists
+            if setting_key not in valid_settings:
+                return {
+                    "success": False,
+                    "updated_field": setting_key,
+                    "new_value": None,
+                    "message": f"Unknown admin setting: {setting_key}"
+                }
+            
+            expected_type, allowed_values = valid_settings[setting_key]
+            
+            # Type validation
+            if not isinstance(value, expected_type):
+                return {
+                    "success": False,
+                    "updated_field": setting_key,
+                    "new_value": None,
+                    "message": f"Invalid type. Expected {expected_type.__name__}, got {type(value).__name__}"
+                }
+            
+            # Value validation (range check)
+            if allowed_values is not None:
+                if isinstance(allowed_values, range):
+                    if value not in allowed_values:
+                        return {
+                            "success": False,
+                            "updated_field": setting_key,
+                            "new_value": None,
+                            "message": f"{setting_key} must be between {allowed_values.start} and {allowed_values.stop - 1}"
+                        }
+            
+            # Get or create settings
+            settings = self.db.query(AdminSettings).first()
+            if not settings:
+                settings = AdminSettings()
+                self.db.add(settings)
+            
+            # Update setting
+            setattr(settings, setting_key, value)
+            self.db.commit()
+            self.db.refresh(settings)
+            
+            return {
+                "success": True,
+                "updated_field": setting_key,
+                "new_value": value,
+                "message": "Admin setting updated successfully"
+            }
+        
+        except Exception as e:
+            print(f"Error updating admin setting {setting_key}: {e}")
+            self.db.rollback()
+            return {
+                "success": False,
+                "updated_field": setting_key,
+                "new_value": None,
+                "message": f"Failed to update setting: {str(e)}"
+            }
