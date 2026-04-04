@@ -384,7 +384,11 @@ def edit_user_shoutout(db: Session, shoutout_id: int, user_id: int, message: str
             return {"error": "You can only edit your own shoutouts", "success": False}
         
         # Check 5-minute window
-        time_elapsed = datetime.now(timezone.utc) - shoutout.created_at
+        # Ensure created_at is timezone-aware
+        created_at = shoutout.created_at
+        if created_at.tzinfo is None:
+            created_at = created_at.replace(tzinfo=timezone.utc)
+        time_elapsed = datetime.now(timezone.utc) - created_at
         if time_elapsed.total_seconds() > 300:  # 300 seconds = 5 minutes
             minutes_passed = int(time_elapsed.total_seconds() / 60)
             return {"error": f"Can only edit within 5 minutes of creation. {minutes_passed} minutes have passed.", "success": False}
@@ -424,7 +428,11 @@ def delete_user_shoutout(db: Session, shoutout_id: int, user_id: int):
             return {"error": "You can only delete your own shoutouts", "success": False}
         
         # Check 5-minute window
-        time_elapsed = datetime.now(timezone.utc) - shoutout.created_at
+        # Ensure created_at is timezone-aware
+        created_at = shoutout.created_at
+        if created_at.tzinfo is None:
+            created_at = created_at.replace(tzinfo=timezone.utc)
+        time_elapsed = datetime.now(timezone.utc) - created_at
         if time_elapsed.total_seconds() > 300:  # 300 seconds = 5 minutes
             minutes_passed = int(time_elapsed.total_seconds() / 60)
             return {"error": f"Can only delete within 5 minutes of creation. {minutes_passed} minutes have passed.", "success": False}
