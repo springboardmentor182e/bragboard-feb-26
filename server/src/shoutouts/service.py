@@ -1,6 +1,6 @@
 from sqlalchemy import text, func, and_
 from sqlalchemy.orm import Session, selectinload
-from datetime import datetime, date
+from datetime import datetime, date, timezone
 from ..entities.shoutout import Shoutout
 from ..entities.shoutout_recipient import ShoutOutRecipient
 from ..entities.reaction import Reaction, ReactionType
@@ -348,12 +348,12 @@ def edit_shoutout(db: Session, shoutout_id: int, message: str, category: str = N
         if category:
             shoutout.category = category
         
-        # Mark as edited and set edited timestamp
+        # Mark as edited and set edited timestamp (timezone-aware UTC)
         shoutout.is_edited = True
-        shoutout.edited_at = datetime.utcnow()
+        shoutout.edited_at = datetime.now(timezone.utc)
         
-        # Update timestamp
-        shoutout.updated_at = datetime.utcnow()
+        # Update timestamp (timezone-aware UTC)
+        shoutout.updated_at = datetime.now(timezone.utc)
         db.commit()
         
         return {"message": "Shoutout updated successfully", "success": True, "data": {

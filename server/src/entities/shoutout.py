@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Boolean
 from sqlalchemy.orm import relationship
-from datetime import datetime
+from datetime import datetime, timezone
 from ..database.core import Base
 
 
@@ -26,11 +26,11 @@ class Shoutout(Base):
     
     # Edit tracking
     is_edited = Column(Boolean, default=False)
-    edited_at = Column(DateTime, nullable=True)
+    edited_at = Column(DateTime(timezone=True), nullable=True)
     
-    # Track updates
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    # Track updates (timezone-aware UTC)
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
     # Relationships
     sender = relationship("User", foreign_keys=[sender_id])
