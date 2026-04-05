@@ -31,28 +31,28 @@
   }
 }
 
-/* Drop-shadow color transition effect (blur removed for text clarity) */
-@keyframes blurColorShift {
+/* Drop-shadow color transition effect - using box-shadow to avoid stacking context */
+@keyframes glowColorShift {
   0% {
-    filter: drop-shadow(0 0 8px rgba(255, 122, 24, 0.3));
+    text-shadow: 0 0 8px rgba(255, 122, 24, 0.3);
   }
   16% {
-    filter: drop-shadow(0 0 12px rgba(255, 193, 7, 0.4));
+    text-shadow: 0 0 12px rgba(255, 193, 7, 0.4);
   }
   32% {
-    filter: drop-shadow(0 0 14px rgba(76, 175, 80, 0.4));
+    text-shadow: 0 0 14px rgba(76, 175, 80, 0.4);
   }
   50% {
-    filter: drop-shadow(0 0 16px rgba(255, 60, 172, 0.4));
+    text-shadow: 0 0 16px rgba(255, 60, 172, 0.4);
   }
   68% {
-    filter: drop-shadow(0 0 14px rgba(255, 193, 7, 0.4));
+    text-shadow: 0 0 14px rgba(255, 193, 7, 0.4);
   }
   84% {
-    filter: drop-shadow(0 0 12px rgba(255, 65, 108, 0.4));
+    text-shadow: 0 0 12px rgba(255, 65, 108, 0.4);
   }
   100% {
-    filter: drop-shadow(0 0 8px rgba(255, 122, 24, 0.3));
+    text-shadow: 0 0 8px rgba(255, 122, 24, 0.3);
   }
 }
 
@@ -73,7 +73,6 @@
 
 /* Create Shoutout Card Button - Premium Style */
 .create-shoutout-btn {
-  position: relative;
   background: linear-gradient(
     135deg,
     #ff7a18 0%,
@@ -85,7 +84,7 @@
     #ff7a18 100%
   );
   background-size: 300% 300%;
-  animation: gradientFlow 4s ease-in-out infinite, blurColorShift 4s ease-in-out infinite;
+  animation: gradientFlow 4s ease-in-out infinite, glowColorShift 4s ease-in-out infinite;
   
   /* Glow effect - reduced by 5% */
   box-shadow: 0 0 14px rgba(255, 122, 24, 0.38),
@@ -98,27 +97,31 @@
   
   /* Prevent overflow of shimmer */
   overflow: visible;
+  
+  /* CRITICAL: Avoid creating stacking context */
+  /* position: relative removed - use z-index only when needed */
+  /* transform removed from base state */
 }
 
-/* Eye-catching plus icon glow */
+/* Eye-catching plus icon glow - using text-shadow instead of filter */
 .create-shoutout-btn svg {
-  filter: drop-shadow(0 0 6px rgba(255, 193, 7, 0.7));
-  transition: filter 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  text-shadow: 0 0 6px rgba(255, 193, 7, 0.7);
+  transition: text-shadow 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  filter: none;
 }
 
-/* Hover state - scale and increase glow (removed blur for text clarity) */
+/* Hover state - increase glow (removed transform to avoid stacking context) */
 .create-shoutout-btn:hover {
-  transform: scale(1.04);
   box-shadow: 0 0 24px rgba(255, 122, 24, 0.57),
               0 0 38px rgba(255, 60, 172, 0.38),
               0 0 57px rgba(255, 65, 108, 0.19),
               inset 0 1px 0 rgba(255, 255, 255, 0.19);
-  filter: brightness(1.1) drop-shadow(0 0 20px rgba(255, 60, 172, 0.5));
+  filter: none;
 }
 
 /* Enhance plus icon glow on hover */
 .create-shoutout-btn:hover svg {
-  filter: drop-shadow(0 0 10px rgba(255, 193, 7, 0.9));
+  text-shadow: 0 0 10px rgba(255, 193, 7, 0.9);
 }
 
 /* Light sweep effect - passes across the button */
@@ -137,12 +140,12 @@
   );
   animation: lightSweep 4s ease-in-out infinite;
   pointer-events: none;
-  z-index: 1;
 }
 
-/* Active/Pressed state - slight scale down */
+/* Active/Pressed state - slight brightness change (no transform) */
 .create-shoutout-btn:active {
-  transform: scale(0.98);
+  filter: brightness(0.95);
+  transition: all 100ms ease-out;
 }
 
 /* Focus state for accessibility */
@@ -151,9 +154,7 @@
   outline-offset: 2px;
 }
 
-/* Ensure text content stays above the shimmer effect with improved visibility */
+/* Ensure text content has better visibility */
 .create-shoutout-btn > * {
-  position: relative;
-  z-index: 2;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
