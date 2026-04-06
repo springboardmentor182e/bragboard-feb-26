@@ -116,18 +116,18 @@ const ReportShoutoutModal = ({ isOpen, shoutoutId, onClose, onSuccess }) => {
         aria-modal="true"
       >
         <div
-          className={`bg-white rounded-2xl max-w-md w-full shadow-2xl transition-transform duration-300 ${
+          className={`bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full shadow-2xl transition-transform duration-300 border border-slate-200 dark:border-slate-800 ${
             isAnimating ? "scale-100" : "scale-95"
           }`}
           onClick={(e) => e.stopPropagation()}
         >
           {/* HEADER */}
-          <div className="flex items-center justify-between p-6 border-b border-slate-200">
+          <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-800 bg-gradient-to-r from-red-500 to-red-600">
             <div className="flex items-center gap-3">
-              <AlertCircle className="text-red-500 flex-shrink-0" size={24} />
+              <AlertCircle className="text-white flex-shrink-0" size={24} />
               <h2
                 id="report-modal-title"
-                className="text-xl font-bold text-slate-900"
+                className="text-xl font-bold text-white"
               >
                 Report Shoutout
               </h2>
@@ -135,10 +135,10 @@ const ReportShoutoutModal = ({ isOpen, shoutoutId, onClose, onSuccess }) => {
             <button
               onClick={handleClose}
               disabled={loading}
-              className="p-1 hover:bg-slate-100 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
+              className="p-1 hover:bg-red-400 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
               aria-label="Close modal"
             >
-              <X size={20} className="text-slate-400" />
+              <X size={20} className="text-white" />
             </button>
           </div>
 
@@ -146,7 +146,7 @@ const ReportShoutoutModal = ({ isOpen, shoutoutId, onClose, onSuccess }) => {
           <form onSubmit={handleSubmit} className="p-6 space-y-4">
             {/* REASON DROPDOWN */}
             <div className="flex flex-col gap-2">
-              <label htmlFor="reason" className="text-sm font-semibold text-slate-700">
+              <label htmlFor="reason" className="text-sm font-semibold text-slate-900 dark:text-white">
                 Reason for Reporting <span className="text-red-500">*</span>
               </label>
               <select
@@ -154,7 +154,7 @@ const ReportShoutoutModal = ({ isOpen, shoutoutId, onClose, onSuccess }) => {
                 value={selectedReason}
                 onChange={(e) => setSelectedReason(e.target.value)}
                 disabled={loading}
-                className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent disabled:bg-slate-100 disabled:cursor-not-allowed transition-colors"
+                className="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent disabled:bg-slate-100 dark:disabled:bg-slate-700 disabled:cursor-not-allowed transition-colors"
               >
                 <option value="">-- Select a reason --</option>
                 {REPORT_REASONS.map((reason) => (
@@ -167,14 +167,14 @@ const ReportShoutoutModal = ({ isOpen, shoutoutId, onClose, onSuccess }) => {
 
             {/* PRIORITY SELECTOR */}
             <div className="flex flex-col gap-2">
-              <label htmlFor="priority" className="text-sm font-semibold text-slate-700">
+              <label htmlFor="priority" className="text-sm font-semibold text-slate-900 dark:text-white">
                 Priority Level
               </label>
               <div className="flex gap-2">
                 {[
-                  { value: "LOW", label: "Low", color: "text-green-600 bg-green-50 border-green-300" },
-                  { value: "HIGH", label: "High", color: "text-orange-600 bg-orange-50 border-orange-300" },
-                  { value: "CRITICAL", label: "Critical", color: "text-red-600 bg-red-50 border-red-300" },
+                  { value: "LOW", label: "Low", color: "text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 border-green-300 dark:border-green-700" },
+                  { value: "HIGH", label: "High", color: "text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 border-orange-300 dark:border-orange-700" },
+                  { value: "CRITICAL", label: "Critical", color: "text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border-red-300 dark:border-red-700" },
                 ].map((option) => (
                   <button
                     key={option.value}
@@ -184,14 +184,14 @@ const ReportShoutoutModal = ({ isOpen, shoutoutId, onClose, onSuccess }) => {
                     className={`flex-1 px-3 py-2 rounded-lg border-2 font-medium text-sm transition-all ${
                       priority === option.value
                         ? `${option.color} border-current shadow-md`
-                        : "border-slate-200 text-slate-600 hover:border-slate-300 bg-slate-50"
+                        : "border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-600 bg-slate-50 dark:bg-slate-800"
                     } disabled:opacity-50 disabled:cursor-not-allowed`}
                   >
                     {option.label}
                   </button>
                 ))}
               </div>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-slate-600 dark:text-slate-400">
                 {priority === "LOW" && "Default: Low priority will be reviewed regularly"}
                 {priority === "HIGH" && "⚠️ High priority: Serious violation requiring expedited review"}
                 {priority === "CRITICAL" && "🚨 Critical: Severe violation requiring immediate action"}
@@ -200,7 +200,7 @@ const ReportShoutoutModal = ({ isOpen, shoutoutId, onClose, onSuccess }) => {
 
             {/* DESCRIPTION TEXTAREA - REQUIRED */}
             <div className="flex flex-col gap-2">
-              <label htmlFor="description" className="text-sm font-semibold text-slate-700">
+              <label htmlFor="description" className="text-sm font-semibold text-slate-900 dark:text-white">
                 Details <span className="text-red-500">*</span>
               </label>
               <textarea
@@ -211,12 +211,12 @@ const ReportShoutoutModal = ({ isOpen, shoutoutId, onClose, onSuccess }) => {
                 placeholder="Explain why you're reporting this shoutout (minimum 15 characters)..."
                 maxLength={500}
                 rows={4}
-                className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent resize-none disabled:bg-slate-100 disabled:cursor-not-allowed transition-colors ${
+                className={`w-full px-4 py-2.5 border rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:border-transparent resize-none disabled:bg-slate-100 dark:disabled:bg-slate-700 disabled:cursor-not-allowed transition-colors ${
                   descriptionLength > 0
                     ? isDescriptionValid
-                      ? "border-green-300 focus:ring-green-500"
-                      : "border-red-300 focus:ring-red-500"
-                    : "border-slate-300 focus:ring-slate-500"
+                      ? "border-green-300 dark:border-green-700 focus:ring-green-500"
+                      : "border-red-300 dark:border-red-700 focus:ring-red-500"
+                    : "border-slate-300 dark:border-slate-700 focus:ring-slate-500"
                 }`}
               />
               <div className="flex items-center justify-between">
@@ -224,30 +224,30 @@ const ReportShoutoutModal = ({ isOpen, shoutoutId, onClose, onSuccess }) => {
                   <p
                     className={`text-xs font-medium ${
                       descriptionLength === 0
-                        ? "text-slate-500"
+                        ? "text-slate-500 dark:text-slate-400"
                         : isDescriptionValid
-                          ? "text-green-600"
-                          : "text-red-600"
+                          ? "text-green-600 dark:text-green-400"
+                          : "text-red-600 dark:text-red-400"
                     }`}
                   >
                     {descriptionLength}/500 characters
                   </p>
                   {descriptionLength > 0 && !isDescriptionValid && (
-                    <span className="text-xs text-red-600 font-medium">
+                    <span className="text-xs text-red-600 dark:text-red-400 font-medium">
                       (Need {15 - descriptionLength} more)
                     </span>
                   )}
                 </div>
                 {isDescriptionValid && (
-                  <span className="text-xs text-green-600 font-medium">✓ Valid</span>
+                  <span className="text-xs text-green-600 dark:text-green-400 font-medium">✓ Valid</span>
                 )}
               </div>
             </div>
 
             {/* HELPER TEXT */}
-            <div className="flex gap-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-              <span className="text-blue-600 flex-shrink-0">ℹ️</span>
-              <p className="text-xs text-blue-700">
+            <div className="flex gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+              <span className="text-blue-600 dark:text-blue-400 flex-shrink-0">ℹ️</span>
+              <p className="text-xs text-blue-700 dark:text-blue-300">
                 Provide genuine details about why you're reporting this. False reports may result in action against your account. Minimum 15 characters required.
               </p>
             </div>
@@ -258,14 +258,14 @@ const ReportShoutoutModal = ({ isOpen, shoutoutId, onClose, onSuccess }) => {
                 type="button"
                 onClick={handleClose}
                 disabled={loading}
-                className="flex-1 px-4 py-2.5 border border-slate-300 text-slate-700 font-medium rounded-lg hover:bg-slate-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 px-4 py-2.5 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-medium rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={!isFormValid}
-                className="flex-1 px-4 py-2.5 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="flex-1 px-4 py-2.5 bg-red-600 dark:bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 dark:hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 title={
                   !selectedReason
                     ? "Select a reason to continue"

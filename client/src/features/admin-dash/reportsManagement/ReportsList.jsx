@@ -18,15 +18,15 @@ const priorityStyle = {
 };
 
 const priorityBadge = {
-  HIGH: "bg-orange-50 text-orange-600 border-orange-200",
-  CRITICAL: "bg-red-50 text-red-600 border-red-200",
-  LOW: "bg-green-50 text-green-600 border-green-200",
+  HIGH: "bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 border-orange-200 dark:border-orange-800",
+  CRITICAL: "bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border-red-200 dark:border-red-800",
+  LOW: "bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 border-green-200 dark:border-green-800",
 };
 
 const statusBadge = {
-  PENDING: "bg-yellow-50 text-yellow-600 border-yellow-200",
-  REVIEWING: "bg-blue-50 text-blue-600 border-blue-200",
-  RESOLVED: "bg-green-50 text-green-600 border-green-200",
+  PENDING: "bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400 border-yellow-200 dark:border-yellow-800",
+  REVIEWING: "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800",
+  RESOLVED: "bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 border-green-200 dark:border-green-800",
 };
 
 const ReportsList = ({ reports, refreshReports }) => {
@@ -51,7 +51,7 @@ const ReportsList = ({ reports, refreshReports }) => {
                 {/* HEADER TAGS */}
                 <div className="flex items-center gap-3 flex-wrap">
 
-                  <span className="font-semibold text-slate-700">
+                  <span className="font-semibold text-slate-700 dark:text-white">
                     RPT-{report.report_id}
                   </span>
 
@@ -70,21 +70,21 @@ const ReportsList = ({ reports, refreshReports }) => {
                 </div>
 
                 {/* TITLE */}
-                <h3 className="text-lg font-semibold text-slate-900">
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
                   {report.reason}
                 </h3>
 
                 {/* META INFO */}
-                <div className="flex items-center gap-6 text-sm text-slate-500 flex-wrap">
+                <div className="flex items-center gap-6 text-sm text-slate-500 dark:text-slate-400 flex-wrap">
 
                   <div className="flex items-center gap-2">
                     <User size={16} />
-                    Reported by: <span className="text-slate-700 font-medium">{report.reporter_name || 'Unknown'}</span>
+                    Reported by: <span className="text-slate-700 dark:text-slate-200 font-medium">{report.reporter_name || 'Unknown'}</span>
                   </div>
 
                   <div className="flex items-center gap-2">
                     <Flag size={16} />
-                    Posted by: <span className="text-slate-700 font-medium">{report.sender_name || 'Unknown'}</span>
+                    Posted by: <span className="text-slate-700 dark:text-slate-200 font-medium">{report.sender_name || 'Unknown'}</span>
                   </div>
 
                   <div className="flex items-center gap-2">
@@ -95,19 +95,19 @@ const ReportsList = ({ reports, refreshReports }) => {
                 </div>
 
                 {/* DESCRIPTION */}
-                <p className="text-sm text-slate-600">
+                <p className="text-sm text-slate-600 dark:text-slate-300">
                   {report.message}
                 </p>
 
                 {/* REPORTED CONTENT */}
-                <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
+                <div className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4">
 
-                  <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
+                  <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 mb-2">
                     <MessageSquare size={16} />
                     FLAGGED REASON
                   </div>
 
-                  <p className="text-sm text-slate-700 italic leading-relaxed">
+                  <p className="text-sm text-slate-700 dark:text-slate-300 italic leading-relaxed">
                     "{report.description}"
                   </p>
 
