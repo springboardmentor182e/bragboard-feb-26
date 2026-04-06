@@ -5,6 +5,20 @@ import { motion } from "framer-motion";
 import { createEmployee } from "@/services/employeeService";
 
 function AddEmployeeModal({ setShowModal, reloadEmployees }) {
+  // Common departments in the company
+  const departments = [
+    "Engineering",
+    "Design",
+    "Product",
+    "Analytics",
+    "Marketing",
+    "Sales",
+    "HR",
+    "Finance",
+    "Operations",
+    "Support",
+  ];
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -88,14 +102,20 @@ function AddEmployeeModal({ setShowModal, reloadEmployees }) {
             className="w-full border border-slate-200 rounded-lg px-4 py-2"
           />
 
-          <input
-            type="text"
+          <select
             name="department"
-            placeholder="Department"
-            required
+            value={formData.department}
             onChange={handleChange}
+            required
             className="w-full border border-slate-200 rounded-lg px-4 py-2"
-          />
+          >
+            <option value="">Select Department</option>
+            {departments.map((dept) => (
+              <option key={dept} value={dept}>
+                {dept}
+              </option>
+            ))}
+          </select>
 
           <select
             name="role"

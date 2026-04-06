@@ -11,6 +11,7 @@ const BADGE_CATEGORY_MAP = {
   "Data Wizard": "Innovation",
   "Problem Solver": "Achievement",
   "Going Above & Beyond": "Achievement",
+  "Vision Leader": "Leadership",
 };
 
 const badges = [
@@ -20,6 +21,7 @@ const badges = [
   { title: "Data Wizard", desc: "Insights & analytics", icon: "📊" },
   { title: "Problem Solver", desc: "Quick thinking", icon: "🧩" },
   { title: "Going Above & Beyond", desc: "Extra mile effort", icon: "🚀" },
+  { title: "Vision Leader", desc: "Strategic guidance", icon: "👑" },
 ];
 
 const POINTS_OPTIONS = [
@@ -246,7 +248,7 @@ const CreateShoutoutModal = ({ isOpen, onClose, onSuccess }) => {
             {/* BADGES */}
             <div>
               <label className="text-sm font-medium">
-                Choose a recognition badge
+                Choose a recognition category
               </label>
 
               <div className="grid grid-cols-2 gap-4 mt-3">
