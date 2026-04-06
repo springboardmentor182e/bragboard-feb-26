@@ -4,8 +4,10 @@ from datetime import date, datetime
 from ..database.core import get_db
 from .service import (
     get_all_shoutouts, 
+    get_archived_shoutouts,
     delete_shoutout,
     archive_shoutout,
+    unarchive_shoutout,
     edit_shoutout,
     get_all_shoutouts_feed,
     get_user_feed,
@@ -34,6 +36,11 @@ admin_router = APIRouter(prefix="/admin/shoutouts", tags=["Admin Shoutouts"])
 def fetch_shoutouts(db: Session = Depends(get_db)):
     return get_all_shoutouts(db)
 
+@admin_router.get("/archived")
+def fetch_archived_shoutouts(db: Session = Depends(get_db)):
+    """Get all archived shoutouts"""
+    return get_archived_shoutouts(db)
+
 @admin_router.delete("/{shoutout_id}")
 def remove_shoutout(shoutout_id: int, db: Session = Depends(get_db)):
     """Soft delete a shoutout"""
@@ -43,6 +50,11 @@ def remove_shoutout(shoutout_id: int, db: Session = Depends(get_db)):
 def archive_single_shoutout(shoutout_id: int, db: Session = Depends(get_db)):
     """Archive a shoutout"""
     return archive_shoutout(db, shoutout_id)
+
+@admin_router.post("/{shoutout_id}/unarchive")
+def unarchive_single_shoutout(shoutout_id: int, db: Session = Depends(get_db)):
+    """Unarchive a shoutout"""
+    return unarchive_shoutout(db, shoutout_id)
 
 @admin_router.put("/{shoutout_id}")
 def update_shoutout(

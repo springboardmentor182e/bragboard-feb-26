@@ -285,6 +285,78 @@ def get_all_shoutouts_feed(
     return feed
 
 
+def get_archived_shoutouts(db: Session):
+    """
+    Get all archived shoutouts with sender info, recipients, and engagement metrics for admin dashboard
+    Shows only ARCHIVED shoutouts (is_archived == True)
+    """
+    from ..entities.user import User
+    from ..entities.shoutout_recipient import ShoutOutRecipient
+    from ..entities.reaction import Reaction
+    from ..entities.comment import Comment
+    from sqlalchemy import func
+    
+    # Query shoutouts - only archived, exclude deleted
+    query = db.query(
+        Shoutout.id,
+        Shoutout.message,
+        Shoutout.category,
+        Shoutout.points,
+        Shoutout.status,
+        Shoutout.is_deleted,
+        Shoutout.is_archived,
+        Shoutout.created_at,
+        Shoutout.archived_at,
+        User.name.label("sender_name"),
+        User.department.label("sender_department")
+    ).join(User, Shoutout.sender_id == User.id).filter(
+        Shoutout.is_deleted == False,  # Exclude deleted
+        Shoutout.is_archived == True    # Only archived
+    ).order_by(Shoutout.archived_at.desc())
+    
+    shoutouts = query.all()
+    
+    # Process each shoutout to get recipients and engagement counts
+    result = []
+    for shout in shoutouts:
+        # Get recipients
+        recipients = db.query(
+            ShoutOutRecipient.user_id,
+            User.name
+        ).join(User, ShoutOutRecipient.user_id == User.id).filter(
+            ShoutOutRecipient.shoutout_id == shout.id
+        ).all()
+        
+        # Get reaction count
+        reaction_count = db.query(func.count(Reaction.id)).filter(
+            Reaction.shoutout_id == shout.id
+        ).scalar() or 0
+        
+        # Get comment count
+        comment_count = db.query(func.count(Comment.id)).filter(
+            Comment.shoutout_id == shout.id
+        ).scalar() or 0
+        
+        result.append({
+            "id": shout.id,
+            "sender_name": shout.sender_name,
+            "sender_department": shout.sender_department,
+            "message": shout.message,
+            "category": shout.category or "General",
+            "points": shout.points or 0,
+            "status": shout.status,
+            "created_at": shout.created_at.isoformat() if shout.created_at else None,
+            "archived_at": shout.archived_at.isoformat() if shout.archived_at else None,
+            "recipients": [{"id": r.user_id, "name": r.name} for r in recipients],
+            "engagement": {
+                "reactions": reaction_count,
+                "comments": comment_count
+            }
+        })
+    
+    return result
+
+
 def delete_shoutout(db: Session, shoutout_id: int):
     """
     Soft delete - marks shoutout as deleted instead of hard delete
@@ -324,6 +396,31 @@ def archive_shoutout(db: Session, shoutout_id: int):
         db.commit()
         
         return {"message": "Shoutout archived successfully", "success": True}
+    except Exception as e:
+        db.rollback()
+        return {"error": str(e), "success": False}
+
+
+def unarchive_shoutout(db: Session, shoutout_id: int):
+    """
+    Unarchive a shoutout - restore to active status
+    Unarchived shoutouts will reappear in active feeds
+    """
+    try:
+        shoutout = db.query(Shoutout).filter(Shoutout.id == shoutout_id).first()
+        if not shoutout:
+            return {"error": "Shoutout not found", "success": False}
+        
+        if not shoutout.is_archived:
+            return {"error": "Shoutout is not archived", "success": False}
+        
+        # Unarchive - mark as active again
+        shoutout.is_archived = False
+        shoutout.archived_at = None
+        shoutout.status = "APPROVED"
+        db.commit()
+        
+        return {"message": "Shoutout unarchived successfully", "success": True}
     except Exception as e:
         db.rollback()
         return {"error": str(e), "success": False}
@@ -869,7 +966,8 @@ def get_user_given_shoutouts(db: Session, user_id: int, limit: int = 20, offset:
     
     shoutouts = db.query(Shoutout).filter(
         Shoutout.sender_id == user_id,
-        Shoutout.is_deleted == False  # Exclude deleted shoutouts
+        Shoutout.is_deleted == False,  # Exclude deleted shoutouts
+        Shoutout.is_archived == False  # Exclude archived shoutouts (hidden from user view)
     ).options(
         selectinload(Shoutout.sender),
         selectinload(Shoutout.recipients).selectinload(ShoutOutRecipient.user)
@@ -918,12 +1016,13 @@ def get_user_received_shoutouts(db: Session, user_id: int, limit: int = 20, offs
     """Get shoutouts received by a user with engagement counts"""
     from ..entities.shoutout_recipient import ShoutOutRecipient
     
-    # Query shoutouts where user is a recipient, excluding deleted ones
+    # Query shoutouts where user is a recipient, excluding deleted and archived ones
     shoutouts = db.query(Shoutout).join(
         ShoutOutRecipient
     ).filter(
         ShoutOutRecipient.user_id == user_id,
-        Shoutout.is_deleted == False
+        Shoutout.is_deleted == False,  # Exclude deleted shoutouts
+        Shoutout.is_archived == False  # Exclude archived shoutouts (hidden from user view)
     ).options(
         selectinload(Shoutout.sender),
         selectinload(Shoutout.recipients).selectinload(ShoutOutRecipient.user)
