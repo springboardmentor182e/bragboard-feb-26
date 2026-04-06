@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "./context/ThemeContext";
+import { ShoutoutDeletionProvider } from "./features/employeeDashboard/context/ShoutoutDeletionContext";
 
 /* AUTH */
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -38,8 +39,9 @@ EMPLOYEE LAYOUT
 */
 function EmployeeLayout({ children }) {
   return (
-    <ToastProvider>
-      <div className="flex h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 transition-colors">
+    <ShoutoutDeletionProvider>
+      <ToastProvider>
+        <div className="flex h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 transition-colors">
         <Sidebar />
 
         <div className="flex-1 flex flex-col">
@@ -50,7 +52,8 @@ function EmployeeLayout({ children }) {
           </main>
         </div>
       </div>
-    </ToastProvider>
+      </ToastProvider>
+    </ShoutoutDeletionProvider>
   );
 }
 

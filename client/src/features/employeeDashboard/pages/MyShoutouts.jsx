@@ -13,6 +13,8 @@ import {
   getUserStats,
 } from "../../../services/shoutoutService";
 import FeedCard from "../components/cards/FeedCard";
+import useToast from "../hooks/useToast";
+import { useShoutoutDeletion } from "../context/ShoutoutDeletionContext";
 
 const MyShoutouts = () => {
   const [activeTab, setActiveTab] = useState("received");
@@ -27,6 +29,32 @@ const MyShoutouts = () => {
 
   const { user } = useAuth();
   const userId = user?.id;
+  const { showToast } = useToast();
+  const { deletionCounter, lastDeletedId } = useShoutoutDeletion();
+
+  // Refetch when a shoutout is deleted anywhere in the app
+  useEffect(() => {
+    if (deletionCounter > 0 && lastDeletedId) {
+      // Immediately remove from UI for instant feedback
+      setShoutouts((prev) => prev.filter((item) => item.id !== lastDeletedId));
+      
+      // Refetch to ensure backend consistency
+      const refetchAfterDelete = async () => {
+        try {
+          let data;
+          if (activeTab === "received") {
+            data = await getUserReceivedShoutouts(20, 0);
+          } else {
+            data = await getUserGivenShoutouts(20, 0);
+          }
+          setShoutouts(data);
+        } catch (err) {
+          console.error("Error refetching after delete:", err);
+        }
+      };
+      refetchAfterDelete();
+    }
+  }, [deletionCounter, activeTab, lastDeletedId]);
 
   // Fetch stats
   useEffect(() => {
@@ -71,6 +99,11 @@ const MyShoutouts = () => {
       fetchShoutouts();
     }
   }, [activeTab, userId]);
+
+  // Handle shoutout deletion for immediate UI update
+  const handleShoutoutDelete = (deletedId) => {
+    setShoutouts((prev) => prev.filter((item) => item.id !== deletedId));
+  };
 
   return (
     <div className="space-y-8">
@@ -174,7 +207,7 @@ const MyShoutouts = () => {
       {!loading && shoutouts.length > 0 && (
         <div className="space-y-6">
           {shoutouts.map((item) => (
-            <FeedCard key={item.id} item={item} />
+            <FeedCard key={item.id} item={item} onShoutoutDelete={handleShoutoutDelete} />
           ))}
         </div>
       )}

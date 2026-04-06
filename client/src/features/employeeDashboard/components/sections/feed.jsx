@@ -1,16 +1,39 @@
 import { useNavigate } from "react-router-dom";
 import { RotateCw } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import FeedCard from "../cards/FeedCard";
 import { useFeed } from "../../hooks/useFeed";
+import useToast from "../../hooks/useToast";
+import { useShoutoutDeletion } from "../../context/ShoutoutDeletionContext";
 
 const Feed = () => {
   const navigate = useNavigate();
   const { shoutouts, loading, error, refetch } = useFeed();
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const { showToast } = useToast();
+  const { deletionCounter, lastDeletedId } = useShoutoutDeletion();
+
+  // Refetch when a shoutout is deleted elsewhere in the app
+  useEffect(() => {
+    if (deletionCounter > 0 && lastDeletedId) {
+      // The useFeed hook will handle the deletion through its refetch mechanism
+      // This ensures consistency with the main feed
+      refetch();
+    }
+  }, [deletionCounter, lastDeletedId, refetch]);
 
   // Limit feed to 2 items on dashboard
   const limitedShoutouts = shoutouts.slice(0, 2);
+
+  // Handle shoutout deletion
+  const handleShoutoutDelete = async (deletedId) => {
+    // Refetch the feed to ensure consistency
+    try {
+      await refetch();
+    } catch (err) {
+      console.error("Error refetching after delete:", err);
+    }
+  };
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -101,7 +124,7 @@ const Feed = () => {
       {!loading && limitedShoutouts.length > 0 && (
         <div className="space-y-6">
           {limitedShoutouts.map((item) => (
-            <FeedCard key={item.id} item={item} />
+            <FeedCard key={item.id} item={item} onShoutoutDelete={handleShoutoutDelete} />
           ))}
         </div>
       )}

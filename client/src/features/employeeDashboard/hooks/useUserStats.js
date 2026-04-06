@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../../../context/AuthContext";
+import { useShoutoutDeletion } from "../context/ShoutoutDeletionContext";
 import { getUserStats } from "../../../services/userStatsService";
 
 /**
- * useUserStats Hook - Auto-fetches user stats on mount
+ * useUserStats Hook - Auto-fetches user stats on mount and when shoutouts are deleted
  * @returns {Object} { stats, loading, error, refetch }
  */
 export const useUserStats = () => {
   const { user } = useAuth();
+  const { deletionCounter } = useShoutoutDeletion();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -31,6 +33,13 @@ export const useUserStats = () => {
   useEffect(() => {
     fetchStats();
   }, [user?.id]);
+
+  // Refetch stats when a shoutout is deleted
+  useEffect(() => {
+    if (deletionCounter > 0) {
+      fetchStats();
+    }
+  }, [deletionCounter]);
 
   return {
     stats: stats || {

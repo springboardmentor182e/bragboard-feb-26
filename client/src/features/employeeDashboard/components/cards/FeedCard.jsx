@@ -4,6 +4,7 @@ import { createPortal } from "react-dom";
 import { useAuth } from "../../../../context/AuthContext";
 import { useReactions } from "../../hooks/useReactions";
 import useToast from "../../hooks/useToast";
+import { useShoutoutDeletion } from "../../context/ShoutoutDeletionContext";
 import CommentsViewer from "../../../../components/CommentsViewer";
 import ReportShoutoutModal from "../../../../components/ReportShoutoutModal";
 import AdminEditBadge from "../../../../components/ui/AdminEditBadge";
@@ -11,6 +12,7 @@ import { updateShoutout, deleteShoutout } from "../../../../services/shoutoutSer
 
 const FeedCard = ({ item, onShoutoutDelete }) => {
   const { user } = useAuth();
+  const { notifyShoutoutDeleted } = useShoutoutDeletion();
   const [expanded, setExpanded] = useState(false);
   const [showReactionPicker, setShowReactionPicker] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
@@ -139,6 +141,11 @@ const FeedCard = ({ item, onShoutoutDelete }) => {
       setIsDeleting(true);
       await deleteShoutout(item.id);
       showToast("Shoutout deleted successfully!", "success");
+      
+      // Notify all components that a shoutout was deleted
+      notifyShoutoutDeleted(item.id);
+      
+      // Also call the local callback if provided
       if (onShoutoutDelete) {
         onShoutoutDelete(item.id);
       }
@@ -219,7 +226,7 @@ const FeedCard = ({ item, onShoutoutDelete }) => {
 
       {/* MESSAGE */}
       <p className="text-sm text-slate-700 mt-4 leading-relaxed">
-        {expanded ? item.message : item.message?.slice(0, 120) + "..."}
+        {expanded ? item.message : item.message?.length > 120 ? item.message?.slice(0, 120) + "..." : item.message}
         {item.message?.length > 120 && (
           <span
             onClick={() => setExpanded(!expanded)}

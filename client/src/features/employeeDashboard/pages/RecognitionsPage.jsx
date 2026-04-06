@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { RotateCw } from "lucide-react";
 import FeedCard from "../components/cards/FeedCard.jsx";
 import { getUserFeed } from "../../../services/shoutoutService";
+import useToast from "../hooks/useToast";
+import { useShoutoutDeletion } from "../context/ShoutoutDeletionContext";
 
 const AllRecognitions = () => {
   const [shoutouts, setShoutouts] = useState([]);
@@ -11,8 +13,47 @@ const AllRecognitions = () => {
   const [hasMore, setHasMore] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const { showToast } = useToast();
+  const { deletionCounter, lastDeletedId } = useShoutoutDeletion();
 
   const LIMIT = 20;
+
+  // Refetch when a shoutout is deleted elsewhere in the app
+  useEffect(() => {
+    if (deletionCounter > 0 && lastDeletedId) {
+      // Immediately remove from UI for instant feedback
+      setShoutouts((prev) => prev.filter((item) => item.id !== lastDeletedId));
+      
+      // Refetch to ensure backend consistency
+      const refetchAfterDelete = async () => {
+        try {
+          const data = await getUserFeed(LIMIT, 0);
+          setShoutouts(data);
+          setOffset(LIMIT);
+          setHasMore(data.length >= LIMIT);
+        } catch (err) {
+          console.error("Error refetching after delete:", err);
+        }
+      };
+      refetchAfterDelete();
+    }
+  }, [deletionCounter, lastDeletedId]);
+
+  // Handle shoutout deletion
+  const handleShoutoutDelete = async (deletedId) => {
+    // Remove the deleted shoutout from the current list
+    setShoutouts((prev) => prev.filter((item) => item.id !== deletedId));
+    
+    // Refetch the feed to ensure consistency
+    try {
+      const data = await getUserFeed(LIMIT, 0);
+      setShoutouts(data);
+      setOffset(LIMIT);
+      setHasMore(data.length >= LIMIT);
+    } catch (err) {
+      console.error("Error refetching after delete:", err);
+    }
+  };
 
   // Fetch initial list
   useEffect(() => {
@@ -152,7 +193,7 @@ const AllRecognitions = () => {
       {shoutouts.length > 0 && (
         <div className="space-y-6">
           {shoutouts.map((item) => (
-            <FeedCard key={item.id} item={item} />
+            <FeedCard key={item.id} item={item} onShoutoutDelete={handleShoutoutDelete} />
           ))}
         </div>
       )}

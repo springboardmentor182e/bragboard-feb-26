@@ -517,13 +517,15 @@ def get_user_stats(db: Session, user_id: int):
     shoutouts_received = db.query(ShoutOutRecipient).filter(
         ShoutOutRecipient.user_id == user_id
     ).join(Shoutout).filter(
-        Shoutout.status.in_(valid_statuses)
+        Shoutout.status.in_(valid_statuses),
+        Shoutout.is_deleted == False  # Exclude deleted shoutouts
     ).count()
     
     # Count shoutouts SENT
     shoutouts_sent = db.query(Shoutout).filter(
         Shoutout.sender_id == user_id,
-        Shoutout.status.in_(valid_statuses)
+        Shoutout.status.in_(valid_statuses),
+        Shoutout.is_deleted == False  # Exclude deleted shoutouts
     ).count()
     
     # Calculate total points from received shoutouts using ShoutOutRecipient
@@ -531,7 +533,8 @@ def get_user_stats(db: Session, user_id: int):
         ShoutOutRecipient, Shoutout.id == ShoutOutRecipient.shoutout_id
     ).filter(
         ShoutOutRecipient.user_id == user_id,
-        Shoutout.status.in_(valid_statuses)
+        Shoutout.status.in_(valid_statuses),
+        Shoutout.is_deleted == False  # Exclude deleted shoutouts
     ).scalar() or 0
     
     # Count total reactions received on all shoutouts the user received
@@ -541,7 +544,8 @@ def get_user_stats(db: Session, user_id: int):
         ShoutOutRecipient, Shoutout.id == ShoutOutRecipient.shoutout_id
     ).filter(
         ShoutOutRecipient.user_id == user_id,
-        Shoutout.status.in_(valid_statuses)
+        Shoutout.status.in_(valid_statuses),
+        Shoutout.is_deleted == False  # Exclude deleted shoutouts
     ).scalar() or 0
     
     # Calculate level (500 points per level)
@@ -864,7 +868,8 @@ def get_user_given_shoutouts(db: Session, user_id: int, limit: int = 20, offset:
     """Get shoutouts given (sent) by a user with engagement counts"""
     
     shoutouts = db.query(Shoutout).filter(
-        Shoutout.sender_id == user_id
+        Shoutout.sender_id == user_id,
+        Shoutout.is_deleted == False  # Exclude deleted shoutouts
     ).options(
         selectinload(Shoutout.sender),
         selectinload(Shoutout.recipients).selectinload(ShoutOutRecipient.user)
@@ -913,11 +918,12 @@ def get_user_received_shoutouts(db: Session, user_id: int, limit: int = 20, offs
     """Get shoutouts received by a user with engagement counts"""
     from ..entities.shoutout_recipient import ShoutOutRecipient
     
-    # Query shoutouts where user is a recipient
+    # Query shoutouts where user is a recipient, excluding deleted ones
     shoutouts = db.query(Shoutout).join(
         ShoutOutRecipient
     ).filter(
-        ShoutOutRecipient.user_id == user_id
+        ShoutOutRecipient.user_id == user_id,
+        Shoutout.is_deleted == False
     ).options(
         selectinload(Shoutout.sender),
         selectinload(Shoutout.recipients).selectinload(ShoutOutRecipient.user)
