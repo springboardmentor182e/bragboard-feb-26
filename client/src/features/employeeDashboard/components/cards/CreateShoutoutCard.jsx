@@ -5,11 +5,11 @@ const CreateShoutoutCard = () => {
   return (
     <Card className="p-6">
 
-      <h3 className="font-semibold text-slate-900 mb-2">
+      <h3 className="font-semibold text-slate-900 dark:text-white mb-2">
         Create Shout-Out
       </h3>
 
-      <p className="text-sm text-slate-500 mb-4">
+      <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
         Recognize someone for their great work
       </p>
 

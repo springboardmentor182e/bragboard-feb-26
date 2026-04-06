@@ -72,7 +72,7 @@ const AdminTopbar = () => {
   const totalNotifications = pendingUsers + unresolvedReports;
 
   return (
-    <header className="bg-white px-8 py-4 flex items-center justify-end border-b border-slate-200 shadow-sm">
+    <header className="bg-white dark:bg-slate-900 px-8 py-4 flex items-center justify-end border-b border-slate-200 dark:border-slate-800 shadow-sm transition-colors duration-300">
 
       <div className="flex items-center gap-6">
 
@@ -92,11 +92,11 @@ const AdminTopbar = () => {
             }
           >
             <Bell 
-              className={totalNotifications > 0 ? "text-yellow-500 hover:text-yellow-600" : "text-slate-600 hover:text-slate-700"} 
+              className={totalNotifications > 0 ? "text-yellow-500 hover:text-yellow-600" : "text-slate-600 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"} 
               size={20} 
             />
             {totalNotifications > 0 && (
-              <span className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full border-2 border-white flex items-center justify-center text-white text-xs font-bold animate-pulse">
+              <span className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full border-2 border-white dark:border-slate-900 flex items-center justify-center text-white text-xs font-bold animate-pulse">
                 {totalNotifications > 9 ? "9+" : totalNotifications}
               </span>
             )}
@@ -187,25 +187,25 @@ const AdminTopbar = () => {
           {/* CLICK AREA */}
           <div
             onClick={() => setOpen(!open)}
-            className="flex items-center gap-3 cursor-pointer hover:bg-slate-50 px-3 py-2 rounded-lg transition"
+            className="flex items-center gap-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 px-3 py-2 rounded-lg transition-colors duration-300"
           >
             {/* avatar */}
-            <div className="w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center text-white font-semibold">
+            <div className="w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center text-white font-semibold shadow-md">
               {getInitials(user?.name)}
             </div>
 
             {/* name + role */}
             <div className="flex flex-col leading-tight">
-              <p className="text-sm font-semibold text-slate-900">
+              <p className="text-sm font-semibold text-slate-900 dark:text-white">
                 {user?.name || "User"}
               </p>
 
-              <span className="text-xs text-slate-500 capitalize">
+              <span className="text-xs text-slate-500 dark:text-slate-400 capitalize">
                 {user?.role || "user"}
               </span>
             </div>
 
-            <ChevronDown size={16} className="text-slate-500" />
+            <ChevronDown size={16} className="text-slate-500 dark:text-slate-400" />
           </div>
 
           {/* 🔽 DROPDOWN */}

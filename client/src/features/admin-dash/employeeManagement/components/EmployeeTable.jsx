@@ -22,12 +22,12 @@ function EmployeeTable({
   ];
 
   return (
-    <div className="bg-white rounded-[28px] shadow-sm border border-slate-200 overflow-hidden">
+    <div className="bg-white dark:bg-slate-900 rounded-[28px] shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden transition-colors duration-300">
       <div className="overflow-x-auto">
         <table className="w-full text-left">
 
           {/* HEADER */}
-          <thead className="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
+          <thead className="bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider transition-colors">
             <tr>
               <th className="px-10 py-6">Name</th>
               <th className="px-8 py-6">Department</th>
@@ -38,7 +38,7 @@ function EmployeeTable({
           </thead>
 
           {/* BODY */}
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-slate-100 dark:divide-slate-800 transition-colors">
             {employees.map((employee, index) => (
               <motion.tr
                 key={employee.id}
@@ -57,11 +57,11 @@ function EmployeeTable({
                     </div>
 
                     <div>
-                      <p className="font-semibold text-slate-800 text-sm">
+                      <p className="font-semibold text-slate-800 dark:text-white text-sm transition-colors">
                         {employee.name}
                       </p>
 
-                      <p className="text-xs text-slate-500 mt-1">
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 transition-colors">
                         {employee.email}
                       </p>
                     </div>
@@ -75,7 +75,7 @@ function EmployeeTable({
                     onChange={(e) =>
                       onDepartmentChange(employee.id, e.target.value)
                     }
-                    className="px-4 py-2 rounded-xl border border-slate-200 bg-white shadow-sm text-sm font-medium focus:ring-2 focus:ring-indigo-500 outline-none transition"
+                    className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm text-sm font-medium focus:ring-2 focus:ring-indigo-500 outline-none transition"
                   >
                     <option value="">Unassigned</option>
                     {departments.map((dept) => (
@@ -93,7 +93,7 @@ function EmployeeTable({
                     onChange={(e) =>
                       onRoleChange(employee.id, e.target.value)
                     }
-                    className="px-4 py-2 rounded-xl border border-slate-200 bg-white shadow-sm text-sm font-medium focus:ring-2 focus:ring-indigo-500 outline-none transition"
+                    className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm text-sm font-medium focus:ring-2 focus:ring-indigo-500 outline-none transition"
                   >
                     <option value="Admin">Admin</option>
                     <option value="Manager">Manager</option>
@@ -104,15 +104,15 @@ function EmployeeTable({
                 {/* STATUS */}
                 <td className="px-8 py-7">
                   {employee.status === "Pending" ? (
-                    <span className="px-4 py-1.5 text-xs font-semibold rounded-full bg-amber-100 text-amber-700">
+                    <span className="px-4 py-1.5 text-xs font-semibold rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 transition-colors">
                       Pending
                     </span>
                   ) : (
                     <span
-                      className={`px-4 py-1.5 text-xs font-semibold rounded-full ${
+                      className={`px-4 py-1.5 text-xs font-semibold rounded-full transition-colors ${
                         employee.status === "Active"
-                          ? "bg-emerald-100 text-emerald-700"
-                          : "bg-rose-100 text-rose-700"
+                          ? "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400"
+                          : "bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400"
                       }`}
                     >
                       {employee.status}
@@ -150,7 +150,7 @@ function EmployeeTable({
                     {/* Delete */}
                     <button
                       onClick={() => onDeleteEmployee(employee.id)}
-                      className="px-5 py-2.5 text-xs font-semibold rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-100 transition-all"
+                      className="px-5 py-2.5 text-xs font-semibold rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all"
                     >
                       Delete
                     </button>

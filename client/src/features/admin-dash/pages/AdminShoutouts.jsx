@@ -167,39 +167,39 @@ const AdminShoutouts = () => {
   return (
     <div className="space-y-8 pb-12">
       {/* Clean Header */}
-      <div className="pb-6 border-b border-slate-200">
+      <div className="pb-6 border-b border-slate-200 dark:border-slate-800">
         <div className="flex items-center justify-between mb-3">
           <div>
-            <p className="text-sm font-semibold text-indigo-600 uppercase tracking-widest mb-1">Moderation</p>
-            <h1 className="text-4xl font-black text-slate-950">Shout-Out Management</h1>
+            <p className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest mb-1">Moderation</p>
+            <h1 className="text-4xl font-black text-slate-950 dark:text-white">Shout-Out Management</h1>
           </div>
-          <div className="px-4 py-2 bg-emerald-50 rounded-lg border border-emerald-200">
-            <p className="text-xs font-bold text-emerald-700 flex items-center gap-1.5">
+          <div className="px-4 py-2 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg border border-emerald-200 dark:border-emerald-800">
+            <p className="text-xs font-bold text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-emerald-500"></span>LIVE
             </p>
           </div>
         </div>
-        <p className="text-slate-600 text-sm font-medium max-w-2xl">
+        <p className="text-slate-600 dark:text-slate-400 text-sm font-medium max-w-2xl">
           Monitor and manage all recognition posts with powerful filtering and moderation tools.
         </p>
       </div>
 
       {/* Simple Stats Grid */}
       <div>
-        <h2 className="text-xs font-bold text-slate-600 uppercase tracking-widest mb-4">Performance Overview</h2>
+        <h2 className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-widest mb-4">Performance Overview</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {stats.map((stat, index) => (
-            <div key={index} className="bg-white rounded-lg border border-slate-200 p-5 hover:border-slate-300 transition-colors">
+            <div key={index} className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-5 hover:border-slate-300 dark:hover:border-slate-700 transition-colors shadow-sm">
               <div className="flex items-start justify-between mb-3">
                 <span className="text-2xl">{stat.icon}</span>
               </div>
-              <h3 className="text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">{stat.label}</h3>
-              <p className="text-3xl font-black text-slate-950">{stat.value}</p>
+              <h3 className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">{stat.label}</h3>
+              <p className="text-3xl font-black text-slate-950 dark:text-white">{stat.value}</p>
               {stat.subtext && <p className={`text-xs font-semibold mt-1 ${
-                stat.color === 'green' ? 'text-green-600' : 
-                stat.color === 'red' ? 'text-red-600' : 
-                stat.color === 'purple' ? 'text-purple-600' : 
-                'text-indigo-600'
+                stat.color === 'green' ? 'text-green-600 dark:text-green-400' : 
+                stat.color === 'red' ? 'text-red-600 dark:text-red-400' : 
+                stat.color === 'purple' ? 'text-purple-600 dark:text-purple-400' : 
+                'text-indigo-600 dark:text-indigo-400'
               }`}>{stat.subtext}</p>}
             </div>
           ))}
@@ -209,19 +209,19 @@ const AdminShoutouts = () => {
       {/* Search & Filter - Simplified */}
       <div className="flex gap-3 items-center flex-col md:flex-row">
         <div className="flex-1 w-full relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" size={18} />
           <input
             type="text"
             placeholder="Search by sender, recipient, message, or ID..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm font-medium"
+            className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm font-medium transition-colors"
           />
         </div>
         <select
           value={department}
           onChange={(e) => setDepartment(e.target.value)}
-          className="px-4 py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent font-medium text-sm cursor-pointer"
+          className="px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent font-medium text-sm cursor-pointer transition-colors"
         >
           <option value="">All Departments</option>
           <option value="Engineering">Engineering</option>
@@ -234,16 +234,16 @@ const AdminShoutouts = () => {
       </div>
 
       {/* Results Info */}
-      <div className="text-xs font-medium text-slate-600">
+      <div className="text-xs font-medium text-slate-600 dark:text-slate-400">
         Showing {filteredShoutouts.length} of {shoutouts.length} shout-outs
       </div>
 
       {/* Clean Table */}
-      <div className="bg-white rounded-lg border border-slate-200 overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 overflow-hidden transition-colors">
         
         {/* Table Header */}
-        <div className="bg-slate-50 pl-0 pr-0 py-4 border-b border-slate-200">
-          <div className="grid grid-cols-12 gap-12 items-center text-xs font-bold text-slate-700 uppercase tracking-wide pl-6">
+        <div className="bg-slate-50 dark:bg-slate-800/50 pl-0 pr-0 py-4 border-b border-slate-200 dark:border-slate-800">
+          <div className="grid grid-cols-12 gap-12 items-center text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide pl-6">
             <div className="col-span-1">ID</div>
             <div className="col-span-2">Sender</div>
             <div className="col-span-1">Recipient(s)</div>
@@ -256,29 +256,29 @@ const AdminShoutouts = () => {
         </div>
 
         {/* Table Rows */}
-        <div className="divide-y divide-slate-200">
+        <div className="divide-y divide-slate-200 dark:divide-slate-800">
           {loading ? (
-            <div className="pl-0 pr-0 py-8 text-center text-slate-600">Loading shoutouts...</div>
+            <div className="pl-0 pr-0 py-8 text-center text-slate-600 dark:text-slate-400">Loading shoutouts...</div>
           ) : filteredShoutouts.length === 0 ? (
-            <div className="pl-0 pr-0 py-8 text-center text-slate-600">No shoutouts found</div>
+            <div className="pl-0 pr-0 py-8 text-center text-slate-600 dark:text-slate-400">No shoutouts found</div>
           ) : (
             filteredShoutouts.map((shoutout) => {
               const senderInitials = (shoutout.sender_name || "?").substring(0, 2).toUpperCase();
               const shoutoutId = `SO-${String(shoutout.id).padStart(3, "0")}`;
-              const statusBg = shoutout.status === "APPROVED" ? "bg-green-100 text-green-700" : 
-                               shoutout.status === "PENDING" ? "bg-yellow-100 text-yellow-700" : 
-                               "bg-gray-100 text-gray-700";
+              const statusBg = shoutout.status === "APPROVED" ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400" : 
+                               shoutout.status === "PENDING" ? "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400" : 
+                               "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-400";
               const statusLabel = shoutout.status === "APPROVED" ? "Active" : 
                                   shoutout.status === "PENDING" ? "Pending" : 
                                   "Archived";
               
               return (
-                <div key={shoutout.id} className="pl-0 pr-0 py-4 hover:bg-slate-50 transition-colors group">
+                <div key={shoutout.id} className="pl-0 pr-0 py-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
                   <div className="grid grid-cols-12 gap-12 items-center pl-6">
                     
                     {/* ID */}
                     <div className="col-span-1">
-                      <p className="text-sm font-semibold text-indigo-600">{shoutoutId}</p>
+                      <p className="text-sm font-semibold text-indigo-600 dark:text-indigo-400">{shoutoutId}</p>
                     </div>
                     
                     {/* Sender */}
@@ -288,8 +288,8 @@ const AdminShoutouts = () => {
                           {senderInitials}
                         </div>
                         <div className="min-w-0">
-                          <p className="text-sm font-semibold text-slate-900 truncate">{shoutout.sender_name}</p>
-                          <p className="text-xs text-slate-500 truncate">{shoutout.sender_department}</p>
+                          <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">{shoutout.sender_name}</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{shoutout.sender_department}</p>
                         </div>
                       </div>
                     </div>
@@ -302,14 +302,14 @@ const AdminShoutouts = () => {
                             const recInitials = recipient.name.substring(0, 1).toUpperCase();
                             const colors = ["bg-green-500", "bg-blue-500", "bg-teal-500"];
                             return (
-                              <div key={i} className={`w-7 h-7 rounded-full ${colors[i % 3]} text-white flex items-center justify-center text-xs font-bold flex-shrink-0 border border-white`} title={recipient.name}>
+                              <div key={i} className={`w-7 h-7 rounded-full ${colors[i % 3]} text-white flex items-center justify-center text-xs font-bold flex-shrink-0 border border-white dark:border-slate-900`} title={recipient.name}>
                                 {recInitials}
                               </div>
                             );
                           })
                         ) : null}
                         {shoutout.recipients && shoutout.recipients.length > 3 && (
-                          <div className="text-xs text-slate-500 font-medium">+{shoutout.recipients.length - 3}</div>
+                          <div className="text-xs text-slate-500 dark:text-slate-400 font-medium">+{shoutout.recipients.length - 3}</div>
                         )}
                       </div>
                     </div>
@@ -317,7 +317,7 @@ const AdminShoutouts = () => {
                     {/* Message */}
                     <div className="col-span-2">
                       <div className="flex items-center gap-2">
-                        <p className="text-sm text-slate-700 truncate">{shoutout.message}</p>
+                        <p className="text-sm text-slate-700 dark:text-slate-300 truncate">{shoutout.message}</p>
                         {shoutout.is_edited && shoutout.edited_at && (
                           <AdminEditBadge editedAt={shoutout.edited_at} className="flex-shrink-0" />
                         )}
@@ -326,7 +326,7 @@ const AdminShoutouts = () => {
 
                     {/* Campaign/Category */}
                     <div className="col-span-1">
-                      <span className="inline-block px-2 py-1 bg-orange-100 text-orange-700 text-xs font-semibold rounded">
+                      <span className="inline-block px-2 py-1 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 text-xs font-semibold rounded">
                         {shoutout.category || "General"}
                       </span>
                     </div>
@@ -336,11 +336,11 @@ const AdminShoutouts = () => {
                       <div className="flex items-center gap-3">
                         <div className="flex items-center gap-1">
                           <Heart size={14} className="text-red-500" />
-                          <span className="text-xs font-semibold text-slate-700">{shoutout.engagement?.reactions || 0}</span>
+                          <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{shoutout.engagement?.reactions || 0}</span>
                         </div>
                         <div className="flex items-center gap-1">
                           <MessageCircle size={14} className="text-blue-500" />
-                          <span className="text-xs font-semibold text-slate-700">{shoutout.engagement?.comments || 0}</span>
+                          <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{shoutout.engagement?.comments || 0}</span>
                         </div>
                       </div>
                     </div>
@@ -357,28 +357,28 @@ const AdminShoutouts = () => {
                       <div className="flex items-center gap-2">
                         <button 
                           onClick={() => handleOpenDetailsModal(shoutout)}
-                          className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors" 
+                          className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" 
                           title="View"
                         >
                           <Eye size={18} />
                         </button>
                         <button 
                           onClick={() => handleOpenEditModal(shoutout)}
-                          className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" 
+                          className="p-2 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors" 
                           title="Edit"
                         >
                           <Edit2 size={18} />
                         </button>
                         <button 
                           onClick={() => handleOpenDeleteModal(shoutout)}
-                          className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" 
+                          className="p-2 text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors" 
                           title="Delete"
                         >
                           <Trash2 size={18} />
                         </button>
                         <button 
                           onClick={() => handleOpenArchiveModal(shoutout)}
-                          className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors" 
+                          className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" 
                           title="Archive"
                         >
                           <Archive size={18} />

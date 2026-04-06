@@ -94,17 +94,17 @@ function AdminReports() {
 
       {/* HEADER */}
       <div>
-        <h1 className="text-3xl font-bold text-slate-900">
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-white transition-colors">
           Reports Management
         </h1>
-        <p className="text-slate-500 mt-2">
+        <p className="text-slate-500 dark:text-slate-400 mt-2 transition-colors">
           Monitor and manage all reported content
         </p>
       </div>
 
       {/* LOADING */}
       {loading ? (
-        <div className="text-center py-10 text-slate-500">
+        <div className="text-center py-10 text-slate-500 dark:text-slate-400 transition-colors">
           Loading reports...
         </div>
       ) : (
@@ -119,12 +119,12 @@ function AdminReports() {
             setPriorityFilter={setPriorityFilter}
           />
 
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-slate-500 dark:text-slate-400 transition-colors">
             Showing {filteredReports.length} of {reports.length} reports
           </p>
 
           {filteredReports.length === 0 ? (
-            <div className="text-center py-10 text-slate-500">
+            <div className="text-center py-10 text-slate-500 dark:text-slate-400 transition-colors">
               No reports found
             </div>
           ) : (

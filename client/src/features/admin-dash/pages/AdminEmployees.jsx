@@ -100,10 +100,10 @@ function AdminEmployees() {
       {/* HEADER */}
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-3xl font-bold text-slate-900">
+          <h2 className="text-3xl font-bold text-slate-900 dark:text-white transition-colors">
             User Management
           </h2>
-          <p className="text-slate-500 mt-2">
+          <p className="text-slate-500 dark:text-slate-400 mt-2 transition-colors">
             Manage employee roles, status and permissions
           </p>
         </div>
@@ -115,7 +115,7 @@ function AdminEmployees() {
 
       {/* LOADING */}
       {loading ? (
-        <div className="text-center py-10 text-slate-500">
+        <div className="text-center py-10 text-slate-500 dark:text-slate-400 transition-colors">
           Loading employees...
         </div>
       ) : (

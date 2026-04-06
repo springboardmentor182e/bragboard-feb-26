@@ -75,13 +75,13 @@ const SimpleReportedPosts = () => {
 
   if (loading) {
     return (
-      <div className="bg-gradient-to-br from-white to-slate-50 rounded-2xl p-8 shadow-sm border-2 border-gray-100">
-        <div className="mb-8 pb-6 border-b-2 border-gray-100">
-          <h2 className="text-2xl font-black text-gray-950 mb-1"><span className="text-2xl">🚨</span> Reported Posts</h2>
-          <p className="text-sm text-gray-600 font-medium">Posts requiring moderation</p>
+      <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 rounded-2xl p-8 shadow-sm border-2 border-gray-100 dark:border-slate-800 transition-colors duration-300">
+        <div className="mb-8 pb-6 border-b-2 border-gray-100 dark:border-slate-700">
+          <h2 className="text-2xl font-black text-gray-950 dark:text-white mb-1 transition-colors"><span className="text-2xl">🚨</span> Reported Posts</h2>
+          <p className="text-sm text-gray-600 dark:text-slate-400 font-medium transition-colors">Posts requiring moderation</p>
         </div>
         <div className="h-[280px] flex items-center justify-center">
-          <div className="animate-pulse text-sm text-gray-400">Loading...</div>
+          <div className="animate-pulse text-sm text-gray-400 dark:text-slate-500 transition-colors">Loading...</div>
         </div>
       </div>
     );
@@ -89,17 +89,17 @@ const SimpleReportedPosts = () => {
 
   if (error) {
     return (
-      <div className="bg-gradient-to-br from-white to-slate-50 rounded-2xl p-8 shadow-sm border-2 border-gray-100">
-        <div className="mb-8 pb-6 border-b-2 border-gray-100">
-          <h2 className="text-2xl font-black text-gray-950 mb-1"><span className="text-2xl">🚨</span> Reported Posts</h2>
-          <p className="text-sm text-gray-600 font-medium">Posts requiring moderation</p>
+      <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 rounded-2xl p-8 shadow-sm border-2 border-gray-100 dark:border-slate-800 transition-colors duration-300">
+        <div className="mb-8 pb-6 border-b-2 border-gray-100 dark:border-slate-700">
+          <h2 className="text-2xl font-black text-gray-950 dark:text-white mb-1 transition-colors"><span className="text-2xl">🚨</span> Reported Posts</h2>
+          <p className="text-sm text-gray-600 dark:text-slate-400 font-medium transition-colors">Posts requiring moderation</p>
         </div>
         <div className="h-[280px] flex items-center justify-center">
           <div className="text-center">
-            <p className="text-red-600 mb-3 font-medium">{error}</p>
+            <p className="text-red-600 dark:text-red-400 mb-3 font-medium transition-colors">{error}</p>
             <button 
               onClick={fetchReports}
-              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-medium"
+              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-medium shadow-md"
             >
               Retry
             </button>
@@ -110,45 +110,45 @@ const SimpleReportedPosts = () => {
   }
 
   return (
-    <div className="bg-gradient-to-br from-white to-slate-50 rounded-2xl p-8 shadow-sm border-2 border-gray-100 hover:shadow-xl hover:border-gray-200 transition-all duration-300">
+    <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 rounded-2xl p-8 shadow-sm border-2 border-gray-100 dark:border-slate-800 hover:shadow-xl hover:border-gray-200 dark:hover:border-slate-700 transition-all duration-300">
       {/* Section Heading - Consolidated */}
-      <div className="mb-8 pb-6 border-b-2 border-gray-100">
-        <h2 className="text-2xl font-black text-gray-950 mb-1"><span className="text-2xl">🚨</span> Reported Posts</h2>
-        <p className="text-sm text-gray-600 font-medium">{posts.length} posts requiring moderation</p>
+      <div className="mb-8 pb-6 border-b-2 border-gray-100 dark:border-slate-700 transition-colors">
+        <h2 className="text-2xl font-black text-gray-950 dark:text-white mb-1 transition-colors"><span className="text-2xl">🚨</span> Reported Posts</h2>
+        <p className="text-sm text-gray-600 dark:text-slate-400 font-medium transition-colors">{posts.length} posts requiring moderation</p>
       </div>
 
       {/* Posts List */}
       <div className="space-y-4">
         {posts.length === 0 ? (
           <div className="text-center py-8">
-            <p className="text-gray-600">No reported posts at this time</p>
+            <p className="text-gray-600 dark:text-slate-400 transition-colors">No reported posts at this time</p>
           </div>
         ) : (
           posts.map((post) => (
-            <div key={post.report_id} className="bg-white rounded-xl p-5 border border-gray-200 hover:border-red-300 transition">
+            <div key={post.report_id} className="bg-white dark:bg-slate-900 rounded-xl p-5 border border-gray-200 dark:border-slate-700 hover:border-red-300 dark:hover:border-red-900/50 transition-colors duration-300">
               {/* Post header */}
               <div className="flex items-start gap-3 mb-3">
-                <div className="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                <div className="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 shadow-sm">
                   {post.sender_name?.charAt(0) || 'U'}
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <p className="font-semibold text-gray-900">{post.sender_name || 'Unknown'}</p>
-                    <p className="text-xs text-gray-500">• {post.report_created_at || 'unknown'}</p>
+                    <p className="font-semibold text-gray-900 dark:text-white truncate transition-colors">{post.sender_name || 'Unknown'}</p>
+                    <p className="text-xs text-gray-500 dark:text-slate-500 whitespace-nowrap transition-colors">• {post.report_created_at || 'unknown'}</p>
                   </div>
-                  <p className="text-sm text-gray-700 mt-1">{post.message || 'No content'}</p>
+                  <p className="text-sm text-gray-700 dark:text-slate-300 mt-1 transition-colors">{post.message || 'No content'}</p>
                 </div>
               </div>
 
               {/* Report info */}
-              <div className="bg-gray-50 rounded-lg p-3 mb-3 flex flex-wrap items-center gap-3">
+              <div className="bg-gray-50 dark:bg-slate-800/50 rounded-lg p-3 mb-3 flex flex-wrap items-center gap-3 transition-colors">
                 <div>
-                  <span className="text-xs text-gray-600">Reported by:</span>
-                  <span className="ml-2 text-sm font-medium text-gray-900">{post.reporter_name || 'Anonymous'}</span>
+                  <span className="text-xs text-gray-600 dark:text-slate-400 transition-colors">Reported by:</span>
+                  <span className="ml-2 text-sm font-medium text-gray-900 dark:text-white transition-colors">{post.reporter_name || 'Anonymous'}</span>
                 </div>
                 <div className="flex items-center gap-2 ml-auto">
-                  <span className="text-xs text-gray-600">Reason:</span>
-                  <span className="px-2 py-1 bg-red-100 text-red-700 text-xs font-semibold rounded">
+                  <span className="text-xs text-gray-600 dark:text-slate-400 transition-colors">Reason:</span>
+                  <span className="px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-xs font-semibold rounded transition-colors">
                     {post.reason || 'Unknown'}
                   </span>
                 </div>
@@ -159,7 +159,7 @@ const SimpleReportedPosts = () => {
                 <button
                   onClick={() => handleResolve(post.report_id)}
                   disabled={resolving || deleting}
-                  className="px-3 py-1.5 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white text-sm font-semibold rounded-lg transition flex items-center gap-2"
+                  className="px-3 py-1.5 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 dark:disabled:bg-slate-700 text-white text-sm font-semibold rounded-lg transition flex items-center gap-2 shadow-sm"
                 >
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -169,7 +169,7 @@ const SimpleReportedPosts = () => {
                 <button
                   onClick={() => handleDelete(post.report_id)}
                   disabled={resolving || deleting}
-                  className="px-3 py-1.5 bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white text-sm font-semibold rounded-lg transition flex items-center gap-2"
+                  className="px-3 py-1.5 bg-red-600 hover:bg-red-700 disabled:bg-gray-400 dark:disabled:bg-slate-700 text-white text-sm font-semibold rounded-lg transition flex items-center gap-2 shadow-sm"
                 >
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
@@ -178,7 +178,7 @@ const SimpleReportedPosts = () => {
                 </button>
                 <button
                   onClick={() => setSelectedPost(post)}
-                  className="ml-auto px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg transition flex items-center gap-2"
+                  className="ml-auto px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg transition flex items-center gap-2 shadow-sm"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -194,22 +194,22 @@ const SimpleReportedPosts = () => {
 
       {/* Detail Modal */}
       {selectedPost && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-all duration-300">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-slate-200 dark:border-slate-800 transition-colors">
             {/* Modal Header */}
-            <div className="sticky top-0 bg-gradient-to-r from-indigo-600 to-indigo-700 px-6 py-4 flex items-center justify-between border-b">
+            <div className="sticky top-0 bg-gradient-to-r from-indigo-600 to-indigo-700 px-6 py-4 flex items-center justify-between border-b border-white/10 shadow-lg z-10">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-white bg-opacity-20 flex items-center justify-center text-white font-bold">
+                <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white font-bold shadow-inner">
                   {selectedPost.sender_name?.charAt(0) || 'U'}
                 </div>
                 <div>
                   <h2 className="text-lg font-bold text-white">{selectedPost.sender_name || 'Unknown'}</h2>
-                  <p className="text-indigo-100 text-sm">Report ID: #{selectedPost.report_id}</p>
+                  <p className="text-indigo-100 text-sm opacity-80">Report ID: #{selectedPost.report_id}</p>
                 </div>
               </div>
               <button
                 onClick={() => setSelectedPost(null)}
-                className="text-white hover:bg-white hover:bg-opacity-20 w-8 h-8 rounded-full flex items-center justify-center transition"
+                className="text-white hover:bg-white/20 w-8 h-8 rounded-full flex items-center justify-center transition-colors"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
@@ -221,41 +221,41 @@ const SimpleReportedPosts = () => {
             <div className="p-6 space-y-6">
               {/* Shoutout Content */}
               <div>
-                <h3 className="text-sm font-semibold text-gray-500 uppercase mb-2">Shoutout Message</h3>
-                <div className="bg-blue-50 border-l-4 border-indigo-500 p-4 rounded">
-                  <p className="text-gray-800 text-base">{selectedPost.message || 'No content'}</p>
+                <h3 className="text-sm font-semibold text-gray-500 dark:text-slate-400 uppercase mb-2 transition-colors">Shoutout Message</h3>
+                <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-indigo-500 p-4 rounded transition-colors">
+                  <p className="text-gray-800 dark:text-slate-200 text-base leading-relaxed transition-colors">{selectedPost.message || 'No content'}</p>
                 </div>
               </div>
 
               {/* Report Details */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <h4 className="text-xs font-semibold text-gray-500 uppercase mb-1">Reported By</h4>
-                  <p className="text-gray-900 font-medium">{selectedPost.reporter_name || 'Anonymous'}</p>
+                  <h4 className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase mb-1 transition-colors">Reported By</h4>
+                  <p className="text-gray-900 dark:text-white font-medium transition-colors">{selectedPost.reporter_name || 'Anonymous'}</p>
                 </div>
                 <div>
-                  <h4 className="text-xs font-semibold text-gray-500 uppercase mb-1">Report Reason</h4>
-                  <span className="inline-block px-3 py-1 bg-red-100 text-red-700 text-sm font-semibold rounded-full">
+                  <h4 className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase mb-1 transition-colors">Report Reason</h4>
+                  <span className="inline-block px-3 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-sm font-semibold rounded-full transition-colors">
                     {selectedPost.reason || 'Unknown'}
                   </span>
                 </div>
                 <div>
-                  <h4 className="text-xs font-semibold text-gray-500 uppercase mb-1">Priority</h4>
-                  <span className={`inline-block px-3 py-1 text-xs font-semibold rounded-full ${
-                    selectedPost.priority === 'CRITICAL' ? 'bg-red-100 text-red-700' :
-                    selectedPost.priority === 'HIGH' ? 'bg-orange-100 text-orange-700' :
-                    selectedPost.priority === 'MEDIUM' ? 'bg-yellow-100 text-yellow-700' :
-                    'bg-green-100 text-green-700'
+                  <h4 className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase mb-1 transition-colors">Priority</h4>
+                  <span className={`inline-block px-3 py-1 text-xs font-semibold rounded-full transition-colors ${
+                    selectedPost.priority === 'CRITICAL' ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400' :
+                    selectedPost.priority === 'HIGH' ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400' :
+                    selectedPost.priority === 'MEDIUM' ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400' :
+                    'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
                   }`}>
                     {selectedPost.priority || 'LOW'}
                   </span>
                 </div>
                 <div>
-                  <h4 className="text-xs font-semibold text-gray-500 uppercase mb-1">Status</h4>
-                  <span className={`inline-block px-3 py-1 text-xs font-semibold rounded-full ${
-                    selectedPost.status === 'PENDING' ? 'bg-yellow-100 text-yellow-700' :
-                    selectedPost.status === 'RESOLVED' ? 'bg-green-100 text-green-700' :
-                    'bg-blue-100 text-blue-700'
+                  <h4 className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase mb-1 transition-colors">Status</h4>
+                  <span className={`inline-block px-3 py-1 text-xs font-semibold rounded-full transition-colors ${
+                    selectedPost.status === 'PENDING' ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400' :
+                    selectedPost.status === 'RESOLVED' ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' :
+                    'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
                   }`}>
                     {selectedPost.status || 'PENDING'}
                   </span>
@@ -265,16 +265,16 @@ const SimpleReportedPosts = () => {
               {/* Description */}
               {selectedPost.description && (
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-500 uppercase mb-2">Report Description</h3>
-                  <p className="text-gray-700 bg-gray-50 p-3 rounded">{selectedPost.description}</p>
+                  <h3 className="text-sm font-semibold text-gray-500 dark:text-slate-400 uppercase mb-2 transition-colors">Report Description</h3>
+                  <p className="text-gray-700 dark:text-slate-300 bg-gray-50 dark:bg-slate-800 p-3 rounded transition-colors">{selectedPost.description}</p>
                 </div>
               )}
 
               {/* Shoutout Category */}
               {selectedPost.category && (
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-500 uppercase mb-2">Category</h3>
-                  <span className="inline-block px-4 py-2 bg-indigo-100 text-indigo-700 font-medium rounded-lg">
+                  <h3 className="text-sm font-semibold text-gray-500 dark:text-slate-400 uppercase mb-2 transition-colors">Category</h3>
+                  <span className="inline-block px-4 py-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 font-medium rounded-lg transition-colors">
                     {selectedPost.category}
                   </span>
                 </div>
@@ -283,10 +283,10 @@ const SimpleReportedPosts = () => {
               {/* Recipients */}
               {selectedPost.recipients && selectedPost.recipients.length > 0 && (
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-500 uppercase mb-3">Recipients</h3>
+                  <h3 className="text-sm font-semibold text-gray-500 dark:text-slate-400 uppercase mb-3 transition-colors">Recipients</h3>
                   <div className="flex flex-wrap gap-2">
                     {selectedPost.recipients.map((recipient) => (
-                      <span key={recipient.id} className="px-3 py-1 bg-blue-100 text-blue-700 text-sm font-medium rounded-full">
+                      <span key={recipient.id} className="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-sm font-medium rounded-full transition-colors">
                         {recipient.name}
                       </span>
                     ))}
@@ -295,7 +295,7 @@ const SimpleReportedPosts = () => {
               )}
 
               {/* Timestamp Info */}
-              <div className="border-t pt-4 flex items-center justify-between text-xs text-gray-500">
+              <div className="border-t dark:border-slate-800 pt-4 flex items-center justify-between text-xs text-gray-500 dark:text-slate-500 transition-colors">
                 <div>
                   <span className="font-semibold">Shoutout:</span> {selectedPost.shoutout_created_at ? new Date(selectedPost.shoutout_created_at).toLocaleString() : 'N/A'}
                 </div>
@@ -306,17 +306,17 @@ const SimpleReportedPosts = () => {
             </div>
 
             {/* Modal Footer */}
-            <div className="sticky bottom-0 bg-gray-50 px-6 py-4 border-t flex items-center gap-3 justify-end">
+            <div className="sticky bottom-0 bg-gray-50 dark:bg-slate-800 px-6 py-4 border-t dark:border-slate-700 flex items-center gap-3 justify-end transition-colors">
               <button
                 onClick={() => setSelectedPost(null)}
-                className="px-4 py-2 text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-lg font-medium transition"
+                className="px-4 py-2 text-gray-700 dark:text-slate-300 bg-gray-200 dark:bg-slate-700 hover:bg-gray-300 dark:hover:bg-slate-600 rounded-lg font-medium transition-colors"
               >
                 Close
               </button>
               <button
                 onClick={() => handleResolve(selectedPost.report_id)}
                 disabled={resolving || deleting}
-                className="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-lg font-medium transition flex items-center gap-2"
+                className="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 dark:disabled:bg-slate-700 text-white rounded-lg font-medium transition flex items-center gap-2"
               >
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -326,7 +326,7 @@ const SimpleReportedPosts = () => {
               <button
                 onClick={() => handleDelete(selectedPost.report_id)}
                 disabled={resolving || deleting}
-                className="px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white rounded-lg font-medium transition flex items-center gap-2"
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-gray-400 dark:disabled:bg-slate-700 text-white rounded-lg font-medium transition flex items-center gap-2"
               >
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
@@ -16,6 +16,11 @@ const Signup = () => {
 
   const { signup } = useAuth();
   const navigate = useNavigate();
+
+  // Force light theme on signup page
+  useEffect(() => {
+    document.documentElement.classList.remove("dark");
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

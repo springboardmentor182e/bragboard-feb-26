@@ -38,6 +38,15 @@ export const ThemeProvider = ({ children }) => {
   const applyTheme = (themeValue) => {
     const html = document.documentElement;
     
+    // Check if we are on a light-only page (login, signup, etc.)
+    const lightOnlyPages = ['/login', '/signup', '/forgot-password', '/pending-approval', '/suspended-account'];
+    const isLightOnlyPage = lightOnlyPages.some(page => window.location.pathname.includes(page));
+
+    if (isLightOnlyPage) {
+      html.classList.remove('dark');
+      return;
+    }
+
     if (themeValue === 'system') {
       // Check system preference
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;

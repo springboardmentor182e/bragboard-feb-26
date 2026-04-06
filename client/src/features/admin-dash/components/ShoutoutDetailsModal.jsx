@@ -14,7 +14,7 @@ const ShoutoutDetailsModal = ({ isOpen, onClose, shoutout, onArchive, onDelete }
     <>
       <div className={`fixed inset-0 z-40 transition-opacity duration-300 ${isOpen ? "opacity-100 bg-black/40" : "opacity-0 pointer-events-none"}`} onClick={onClose} />
       <div className={`fixed inset-0 z-50 flex items-center justify-center p-4 transition-all duration-300 ${isOpen ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"}`} onClick={onClose}>
-        <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()}>
+        <div className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col border border-slate-200 dark:border-slate-800 transition-colors" onClick={(e) => e.stopPropagation()}>
           <div className="bg-gradient-to-r from-purple-500 via-purple-600 to-pink-500 px-6 py-6 flex items-start justify-between">
             <div className="text-white">
               <h2 className="text-2xl font-bold">Shout-Out Details</h2>
@@ -25,29 +25,29 @@ const ShoutoutDetailsModal = ({ isOpen, onClose, shoutout, onArchive, onDelete }
             </button>
           </div>
 
-          <div className="flex-1 overflow-y-auto px-6 py-6 space-y-5">
-            <div className="bg-blue-50 rounded-lg border border-blue-200 p-4">
-              <h3 className="text-xs font-bold text-slate-600 uppercase tracking-wide mb-3">Sender</h3>
+          <div className="flex-1 overflow-y-auto px-6 py-6 space-y-5 bg-white dark:bg-slate-900 transition-colors">
+            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800 p-4 transition-colors">
+              <h3 className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-3">Sender</h3>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-purple-500 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">{senderInitials}</div>
                 <div className="flex-1">
-                  <p className="text-sm font-semibold text-slate-900">{shoutout.sender_name}</p>
-                  <p className="text-xs text-slate-600">{shoutout.sender_department}</p>
+                  <p className="text-sm font-semibold text-slate-900 dark:text-white">{shoutout.sender_name}</p>
+                  <p className="text-xs text-slate-600 dark:text-slate-400">{shoutout.sender_department}</p>
                 </div>
-                <span className="px-2.5 py-1 bg-indigo-100 text-indigo-700 text-xs font-semibold rounded-full">{shoutout.sender_department}</span>
+                <span className="px-2.5 py-1 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 text-xs font-semibold rounded-full">{shoutout.sender_department}</span>
               </div>
             </div>
 
             {recipients.length > 0 && (
-              <div className="bg-green-50 rounded-lg border border-green-200 p-4">
-                <h3 className="text-xs font-bold text-slate-600 uppercase tracking-wide mb-3">Recipients ({recipients.length})</h3>
+              <div className="bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800 p-4 transition-colors">
+                <h3 className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-3">Recipients ({recipients.length})</h3>
                 <div className="space-y-2">
                   {recipients.map((recipient, i) => {
                     const recInitials = (recipient.name || "?").substring(0, 1).toUpperCase();
                     return (
-                      <div key={i} className="flex items-center gap-3 bg-white rounded-lg p-3 border border-green-100">
+                      <div key={i} className="flex items-center gap-3 bg-white dark:bg-slate-800 rounded-lg p-3 border border-green-100 dark:border-green-900/30 transition-colors">
                         <div className="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-xs font-bold flex-shrink-0">{recInitials}</div>
-                        <span className="text-sm font-medium text-slate-900">{recipient.name}</span>
+                        <span className="text-sm font-medium text-slate-900 dark:text-white">{recipient.name}</span>
                       </div>
                     );
                   })}
@@ -55,11 +55,11 @@ const ShoutoutDetailsModal = ({ isOpen, onClose, shoutout, onArchive, onDelete }
               </div>
             )}
 
-            <div className="bg-purple-50 rounded-lg border border-purple-200 p-4">
-              <h3 className="text-xs font-bold text-slate-600 uppercase tracking-wide mb-3">Full Message</h3>
-              <p className="text-sm text-slate-800 leading-relaxed mb-3">{shoutout.message}</p>
+            <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800 p-4 transition-colors">
+              <h3 className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-3">Full Message</h3>
+              <p className="text-sm text-slate-800 dark:text-slate-200 leading-relaxed mb-3">{shoutout.message}</p>
               <div className="flex flex-wrap items-center gap-2">
-                <span className="inline-block px-3 py-1 bg-orange-100 text-orange-700 text-xs font-semibold rounded">{shoutout.category || "General"}</span>
+                <span className="inline-block px-3 py-1 bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300 text-xs font-semibold rounded">{shoutout.category || "General"}</span>
                 {shoutout.is_edited && shoutout.edited_at && (
                   <AdminEditBadge editedAt={shoutout.edited_at} />
                 )}
@@ -67,24 +67,24 @@ const ShoutoutDetailsModal = ({ isOpen, onClose, shoutout, onArchive, onDelete }
             </div>
 
             {shoutout.campaign && (
-              <div className="bg-purple-50 rounded-lg border border-purple-200 p-4">
-                <h3 className="text-xs font-bold text-slate-600 uppercase tracking-wide mb-3">Campaign</h3>
+              <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800 p-4 transition-colors">
+                <h3 className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-3">Campaign</h3>
                 <div className="flex items-center gap-2">
                   <span className="text-xl">🎯</span>
-                  <p className="text-sm font-semibold text-slate-900">{shoutout.campaign}</p>
+                  <p className="text-sm font-semibold text-slate-900 dark:text-white">{shoutout.campaign}</p>
                 </div>
               </div>
             )}
 
             {reactions.length > 0 && (
-              <div className="bg-red-50 rounded-lg border border-red-200 p-4">
-                <h3 className="text-xs font-bold text-slate-600 uppercase tracking-wide mb-3">All Reactions ({reactions.length})</h3>
+              <div className="bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800 p-4 transition-colors">
+                <h3 className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-3">All Reactions ({reactions.length})</h3>
                 <div className="max-h-40 overflow-y-auto space-y-2 pr-2">
                   {reactions.map((reaction, i) => (
-                    <div key={i} className="flex items-center justify-between bg-white rounded-lg p-2.5 border border-red-100">
+                    <div key={i} className="flex items-center justify-between bg-white dark:bg-slate-800 rounded-lg p-2.5 border border-red-100 dark:border-red-900/30 transition-colors">
                       <div className="flex items-center gap-2 flex-1 min-w-0">
                         <div className="w-7 h-7 rounded-full bg-red-400 text-white flex items-center justify-center text-xs font-bold flex-shrink-0">{(reaction.user_name || "?").substring(0, 1).toUpperCase()}</div>
-                        <span className="text-sm font-medium text-slate-900 truncate">{reaction.user_name}</span>
+                        <span className="text-sm font-medium text-slate-900 dark:text-white truncate">{reaction.user_name}</span>
                       </div>
                       <span className="text-lg ml-2 flex-shrink-0">{reaction.reaction_emoji || "👍"}</span>
                     </div>
@@ -94,19 +94,19 @@ const ShoutoutDetailsModal = ({ isOpen, onClose, shoutout, onArchive, onDelete }
             )}
 
             {comments.length > 0 && (
-              <div className="bg-blue-50 rounded-lg border border-blue-200 p-4">
-                <h3 className="text-xs font-bold text-slate-600 uppercase tracking-wide mb-3">All Comments ({comments.length})</h3>
+              <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800 p-4 transition-colors">
+                <h3 className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-3">All Comments ({comments.length})</h3>
                 <div className="max-h-48 overflow-y-auto space-y-3 pr-2">
                   {comments.map((comment, i) => (
-                    <div key={i} className="bg-white rounded-lg p-3 border border-blue-100">
+                    <div key={i} className="bg-white dark:bg-slate-800 rounded-lg p-3 border border-blue-100 dark:border-blue-900/30 transition-colors">
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex items-center gap-2 flex-1 min-w-0">
                           <div className="w-6 h-6 rounded-full bg-blue-400 text-white flex items-center justify-center text-xs font-bold flex-shrink-0">{(comment.user_name || "?").substring(0, 1).toUpperCase()}</div>
-                          <span className="text-sm font-semibold text-slate-900">{comment.user_name}</span>
+                          <span className="text-sm font-semibold text-slate-900 dark:text-white">{comment.user_name}</span>
                         </div>
-                        <span className="text-xs text-slate-500 ml-2 flex-shrink-0">{comment.created_at ? new Date(comment.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "now"}</span>
+                        <span className="text-xs text-slate-500 dark:text-slate-500 ml-2 flex-shrink-0">{comment.created_at ? new Date(comment.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "now"}</span>
                       </div>
-                      <p className="text-sm text-slate-700 leading-relaxed">{comment.text}</p>
+                      <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">{comment.text}</p>
                     </div>
                   ))}
                 </div>
@@ -114,25 +114,25 @@ const ShoutoutDetailsModal = ({ isOpen, onClose, shoutout, onArchive, onDelete }
             )}
 
             <div className="grid grid-cols-2 gap-3">
-              <div className="bg-slate-50 rounded-lg border border-slate-200 p-3">
-                <p className="text-xs font-bold text-slate-600 uppercase tracking-wide mb-1">Post ID</p>
-                <p className="text-sm font-semibold text-slate-900">{shoutoutId}</p>
+              <div className="bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-800 p-3 transition-colors">
+                <p className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-1">Post ID</p>
+                <p className="text-sm font-semibold text-slate-900 dark:text-white">{shoutoutId}</p>
               </div>
-              <div className="bg-slate-50 rounded-lg border border-slate-200 p-3">
-                <p className="text-xs font-bold text-slate-600 uppercase tracking-wide mb-1">Department</p>
-                <p className="text-sm font-semibold text-slate-900">{shoutout.sender_department}</p>
+              <div className="bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-800 p-3 transition-colors">
+                <p className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-1">Department</p>
+                <p className="text-sm font-semibold text-slate-900 dark:text-white">{shoutout.sender_department}</p>
               </div>
             </div>
 
-            <div className="bg-green-50 rounded-lg border border-green-200 p-4">
-              <h3 className="text-xs font-bold text-slate-600 uppercase tracking-wide mb-2">Status</h3>
-              <span className={`inline-block px-3 py-1.5 text-xs font-semibold rounded-lg ${shoutout.status === "APPROVED" ? "bg-green-100 text-green-700" : shoutout.status === "PENDING" ? "bg-yellow-100 text-yellow-700" : "bg-gray-100 text-gray-700"}`}>
+            <div className="bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800 p-4 transition-colors">
+              <h3 className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-2">Status</h3>
+              <span className={`inline-block px-3 py-1.5 text-xs font-semibold rounded-lg ${shoutout.status === "APPROVED" ? "bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400" : shoutout.status === "PENDING" ? "bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-400" : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-400"}`}>
                 {shoutout.status === "APPROVED" ? "Active" : shoutout.status === "PENDING" ? "Pending" : "Archived"}
               </span>
             </div>
           </div>
 
-          <div className="border-t border-slate-200 bg-slate-50 px-6 py-4 flex gap-3">
+          <div className="border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 px-6 py-4 flex gap-3 transition-colors">
             <button onClick={onArchive} className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-slate-600 text-white font-semibold rounded-lg hover:bg-slate-700 transition-colors">
               <Archive size={18} />
               Archive

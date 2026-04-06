@@ -6,6 +6,11 @@ import { forgotPassword, verifyOTP, resetPassword } from "../services/authServic
 const ForgotPassword = () => {
   const navigate = useNavigate();
 
+  // Force light theme on forgot password page
+  useEffect(() => {
+    document.documentElement.classList.remove("dark");
+  }, []);
+
   // 📋 State Management
   const [step, setStep] = useState(1); // 1: Enter Email, 2: Enter OTP & Password
   const [email, setEmail] = useState("");

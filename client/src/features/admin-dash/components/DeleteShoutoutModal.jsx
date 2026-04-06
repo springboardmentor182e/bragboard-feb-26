@@ -15,7 +15,7 @@ const DeleteShoutoutModal = ({ isOpen, onClose, shoutout, onConfirmDelete }) => 
     <>
       <div className={`fixed inset-0 z-40 transition-opacity duration-300 ${isOpen ? "opacity-100 bg-black/40" : "opacity-0 pointer-events-none"}`} onClick={onClose} />
       <div className={`fixed inset-0 z-50 flex items-center justify-center p-4 transition-all duration-300 ${isOpen ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"}`} onClick={onClose}>
-        <div className="bg-white rounded-xl shadow-2xl w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+        <div className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl w-full max-w-md border border-slate-200 dark:border-slate-800 transition-colors" onClick={(e) => e.stopPropagation()}>
           {/* Header */}
           <div className="bg-gradient-to-r from-purple-500 via-purple-600 to-pink-500 px-6 py-5 flex items-center justify-between">
             <div className="flex items-center gap-3 text-white">
@@ -31,30 +31,42 @@ const DeleteShoutoutModal = ({ isOpen, onClose, shoutout, onConfirmDelete }) => 
           </div>
 
           {/* Content */}
-          <div className="px-6 py-6">
-            <div className="bg-red-50 rounded-lg border border-red-200 p-4 flex items-start gap-3">
-              <Trash2 className="text-red-500 flex-shrink-0 mt-0.5" size={20} />
+          <div className="px-6 py-6 transition-colors">
+            <div className="bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800 p-4 flex items-start gap-3 transition-colors">
+              <Trash2 className="text-red-500 dark:text-red-400 flex-shrink-0 mt-0.5" size={20} />
               <div>
-                <h3 className="text-sm font-bold text-red-900 mb-1">Confirm Deletion</h3>
-                <p className="text-sm text-red-700 leading-relaxed">
-                  Are you sure you want to permanently delete this shout-out? This action cannot be undone and will remove all associated reactions and comments.
+                <h3 className="text-sm font-bold text-red-800 dark:text-red-300 mb-1">Permanent Action</h3>
+                <p className="text-xs text-red-700 dark:text-red-400 leading-relaxed font-medium">
+                  This shout-out will be permanently removed from the system. This action cannot be undone.
                 </p>
               </div>
             </div>
 
-            {/* Shoutout Preview */}
-            <div className="mt-4 p-3 bg-slate-50 rounded-lg border border-slate-200">
-              <p className="text-xs font-bold text-slate-600 uppercase tracking-wide mb-2">Message</p>
-              <p className="text-sm text-slate-700 line-clamp-2">{shoutout.message}</p>
+            <div className="mt-6 space-y-4">
+              <div>
+                <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">Shout-out ID</p>
+                <p className="text-sm font-bold text-slate-900 dark:text-white">{shoutoutId}</p>
+              </div>
+              <div>
+                <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">Original Message</p>
+                <p className="text-sm text-slate-700 dark:text-slate-300 italic border-l-4 border-slate-200 dark:border-slate-700 pl-3 py-1">
+                  "{shoutout.message}"
+                </p>
+              </div>
             </div>
           </div>
 
-          {/* Footer */}
-          <div className="border-t border-slate-200 bg-slate-50 px-6 py-4 flex gap-3">
-            <button onClick={onClose} className="flex-1 px-4 py-2.5 text-slate-700 font-semibold rounded-lg hover:bg-slate-100 transition-colors border border-slate-200">
+          <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 flex gap-3 transition-colors">
+            <button 
+              onClick={onClose}
+              className="flex-1 px-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-sm rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+            >
               Cancel
             </button>
-            <button onClick={handleDelete} className="flex-1 px-4 py-2.5 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors">
+            <button 
+              onClick={handleDelete}
+              className="flex-1 px-4 py-2.5 bg-red-600 text-white font-bold text-sm rounded-lg hover:bg-red-700 shadow-lg shadow-red-200 dark:shadow-none transition-all"
+            >
               Delete Permanently
             </button>
           </div>

@@ -38,7 +38,8 @@ const StatsCards = () => {
               group relative overflow-hidden
               rounded-2xl p-5
               bg-gradient-to-br from-white to-slate-50
-              border border-slate-200/70
+              dark:from-slate-900 dark:to-slate-800
+              border border-slate-200/70 dark:border-slate-800
               shadow-sm
               hover:shadow-xl hover:-translate-y-1
               transition-all duration-300
@@ -47,21 +48,21 @@ const StatsCards = () => {
 
             {/* Glow Background */}
             <div
-              className={`absolute -top-8 -right-8 w-28 h-28 bg-gradient-to-r ${stat.gradient} opacity-20 blur-3xl group-hover:opacity-30 transition`}
+              className={`absolute -top-8 -right-8 w-28 h-28 bg-gradient-to-r ${stat.gradient} opacity-20 dark:opacity-10 blur-3xl group-hover:opacity-30 dark:group-hover:opacity-20 transition`}
             />
 
             {/* Subtle Border Glow on Hover */}
-            <div className="absolute inset-0 rounded-2xl ring-1 ring-transparent group-hover:ring-indigo-200 transition" />
+            <div className="absolute inset-0 rounded-2xl ring-1 ring-transparent group-hover:ring-indigo-200 dark:group-hover:ring-indigo-800 transition" />
 
             <div className="flex items-center justify-between relative z-10">
 
               {/* TEXT */}
               <div>
-                <p className="text-xs text-slate-500 uppercase tracking-wide">
+                <p className="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wide">
                   {stat.title}
                 </p>
 
-                <p className="text-3xl font-bold text-slate-900 mt-1 tracking-tight">
+                <p className="text-3xl font-bold text-slate-900 dark:text-white mt-1 tracking-tight">
                   {loading ? "-" : stat.value}
                 </p>
               </div>
