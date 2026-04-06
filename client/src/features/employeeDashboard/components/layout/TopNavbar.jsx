@@ -39,14 +39,14 @@ const TopNavbar = () => {
   }, []);
 
   return (
-    <div className="h-16 bg-white border-b border-slate-200 px-6 flex items-center">
+    <div className="h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 flex items-center transition-colors duration-300">
 
       {/* RIGHT SIDE ONLY (pushed using ml-auto) */}
       <div className="flex items-center gap-4 ml-auto">
 
         {/* 🔔 NOTIFICATION */}
-        <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center cursor-pointer hover:bg-slate-200 transition">
-          <Bell size={18} />
+        <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+          <Bell size={18} className="text-slate-600 dark:text-slate-400" />
         </div>
 
         {/* 👤 PROFILE */}
@@ -54,7 +54,7 @@ const TopNavbar = () => {
 
           <div
             onClick={() => setOpen(!open)}
-            className="flex items-center gap-3 cursor-pointer hover:bg-slate-50 px-2 py-1 rounded-lg transition"
+            className="flex items-center gap-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 px-2 py-1 rounded-lg transition"
           >
 
             {/* AVATAR */}
@@ -64,27 +64,27 @@ const TopNavbar = () => {
 
             {/* INFO */}
             <div className="hidden sm:block text-right">
-              <p className="text-sm font-semibold text-slate-900">
+              <p className="text-sm font-semibold text-slate-900 dark:text-white">
                 {user?.name || "User"}
               </p>
-              <p className="text-xs text-slate-500 capitalize">
+              <p className="text-xs text-slate-500 dark:text-slate-400 capitalize">
                 {user?.role || "employee"}
               </p>
             </div>
 
-            <ChevronDown size={16} className="text-slate-500" />
+            <ChevronDown size={16} className="text-slate-500 dark:text-slate-400" />
           </div>
 
           {/* 🔽 DROPDOWN */}
           {open && (
-            <div className="absolute right-0 mt-2 w-52 bg-white border border-slate-200 rounded-xl shadow-lg overflow-hidden z-50">
+            <div className="absolute right-0 mt-2 w-52 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-lg overflow-hidden z-50">
 
               {/* USER INFO */}
-              <div className="px-4 py-3 border-b">
-                <p className="text-sm font-semibold text-slate-900">
+              <div className="px-4 py-3 border-b dark:border-slate-800">
+                <p className="text-sm font-semibold text-slate-900 dark:text-white">
                   {user?.name}
                 </p>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-slate-500 dark:text-slate-400">
                   {user?.email}
                 </p>
               </div>
@@ -95,7 +95,7 @@ const TopNavbar = () => {
                   setProfilePopupOpen(true);
                   setOpen(false);
                 }}
-                className="w-full flex items-center gap-2 px-4 py-3 text-sm text-indigo-600 hover:bg-indigo-50 transition"
+                className="w-full flex items-center gap-2 px-4 py-3 text-sm text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition"
               >
                 <User size={16} />
                 View Profile
@@ -104,7 +104,7 @@ const TopNavbar = () => {
               {/* LOGOUT BUTTON */}
               <button
                 onClick={handleLogout}
-                className="w-full flex items-center gap-2 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition border-t"
+                className="w-full flex items-center gap-2 px-4 py-3 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition border-t dark:border-slate-800"
               >
                 <LogOut size={16} />
                 Logout

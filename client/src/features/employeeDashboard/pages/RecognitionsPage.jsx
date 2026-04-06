@@ -135,10 +135,10 @@ const AllRecognitions = () => {
       {/* HEADER */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">
+          <h1 className="text-2xl font-semibold text-slate-900 dark:text-white">
             All Recognitions
           </h1>
-          <p className="text-slate-500 text-sm mt-1">
+          <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
             Complete history of team recognitions and activities
           </p>
         </div>
@@ -148,22 +148,22 @@ const AllRecognitions = () => {
           disabled={isRefreshing || loading}
           className="
             p-2 rounded-lg
-            bg-slate-100 hover:bg-slate-200 transition
+            bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition
             disabled:opacity-50 disabled:cursor-not-allowed
           "
           title="Refresh feed"
         >
           <RotateCw
             size={16}
-            className={`text-slate-600 ${isRefreshing ? "animate-spin" : ""}`}
+            className={`text-slate-600 dark:text-slate-400 ${isRefreshing ? "animate-spin" : ""}`}
           />
         </button>
       </div>
 
       {/* ERROR STATE */}
       {error && (
-        <div className="p-6 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-red-700">{error}</p>
+        <div className="p-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+          <p className="text-red-700 dark:text-red-400">{error}</p>
           <button
             onClick={handleRefresh}
             className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
@@ -177,7 +177,7 @@ const AllRecognitions = () => {
       {loading && (
         <div className="space-y-6">
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="h-40 bg-slate-200 rounded-lg animate-pulse" />
+            <div key={i} className="h-40 bg-slate-200 dark:bg-slate-800 rounded-lg animate-pulse" />
           ))}
         </div>
       )}
@@ -185,7 +185,7 @@ const AllRecognitions = () => {
       {/* EMPTY STATE */}
       {!loading && shoutouts.length === 0 && !error && (
         <div className="text-center py-10">
-          <p className="text-slate-500">No recognitions yet. Be the first to give one!</p>
+          <p className="text-slate-500 dark:text-slate-400">No recognitions yet. Be the first to give one!</p>
         </div>
       )}
 

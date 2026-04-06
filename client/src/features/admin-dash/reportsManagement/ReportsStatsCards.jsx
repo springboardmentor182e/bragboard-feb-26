@@ -7,25 +7,25 @@ const ReportsStatsCards = ({ stats }) => {
       title: "Pending",
       value: stats.pending,
       icon: AlertTriangle,
-      color: "bg-red-100 text-red-600",
+      color: "bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400",
     },
     {
       title: "Reviewing",
       value: stats.reviewing,
       icon: Eye,
-      color: "bg-blue-100 text-blue-600",
+      color: "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400",
     },
     {
       title: "Resolved",
       value: stats.resolved,
       icon: CheckCircle,
-      color: "bg-green-100 text-green-600",
+      color: "bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400",
     },
     {
       title: "Avg Response Time",
       value: stats.avgResponseTime || "0s", // ✅ UPDATED
       icon: Clock,
-      color: "bg-yellow-100 text-yellow-600",
+      color: "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400",
     },
   ];
 
@@ -38,18 +38,18 @@ const ReportsStatsCards = ({ stats }) => {
         return (
           <Card
             key={index}
-            className="p-6 flex items-center justify-between"
+            className="p-6 flex items-center justify-between transition-colors duration-300"
           >
             <div>
-              <p className="text-sm text-slate-500">{stat.title}</p>
+              <p className="text-sm text-slate-500 dark:text-slate-400 transition-colors">{stat.title}</p>
 
-              <p className="text-3xl font-bold text-slate-900 mt-1">
+              <p className="text-3xl font-bold text-slate-900 dark:text-white mt-1 transition-colors">
                 {stat.value}
               </p>
             </div>
 
             <div
-              className={`w-12 h-12 rounded-xl flex items-center justify-center ${stat.color}`}
+              className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${stat.color}`}
             >
               <Icon size={22} />
             </div>

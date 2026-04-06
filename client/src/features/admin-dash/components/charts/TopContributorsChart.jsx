@@ -41,13 +41,13 @@ const TopContributorsChart = () => {
 
   if (loading) {
     return (
-      <div className="bg-gradient-to-br from-white to-slate-50 rounded-2xl p-8 shadow-sm border-2 border-gray-100">
-        <div className="mb-8 pb-6 border-b-2 border-gray-100">
-          <h2 className="text-2xl font-black text-gray-950 mb-1"><span className="text-2xl">🌟</span> Top 5 Contributors</h2>
-          <p className="text-sm text-gray-600 font-medium">Your engagement champions</p>
+      <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 rounded-2xl p-8 shadow-sm border-2 border-gray-100 dark:border-slate-800 transition-colors duration-300">
+        <div className="mb-8 pb-6 border-b-2 border-gray-100 dark:border-slate-800">
+          <h2 className="text-2xl font-black text-gray-950 dark:text-white mb-1"><span className="text-2xl">🌟</span> Top 5 Contributors</h2>
+          <p className="text-sm text-gray-600 dark:text-slate-400 font-medium">Your engagement champions</p>
         </div>
         <div className="h-[280px] flex items-center justify-center">
-          <div className="animate-pulse text-sm text-gray-400">Loading...</div>
+          <div className="animate-pulse text-sm text-gray-400 dark:text-slate-500">Loading...</div>
         </div>
       </div>
     );
@@ -55,10 +55,10 @@ const TopContributorsChart = () => {
 
   if (error) {
     return (
-      <div className="bg-gradient-to-br from-white to-slate-50 rounded-2xl p-8 shadow-sm border-2 border-gray-100">
-        <div className="mb-8 pb-6 border-b-2 border-gray-100">
-          <h2 className="text-2xl font-black text-gray-950 mb-1"><span className="text-2xl">🌟</span> Top 5 Contributors</h2>
-          <p className="text-sm text-gray-600 font-medium">Your engagement champions</p>
+      <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 rounded-2xl p-8 shadow-sm border-2 border-gray-100 dark:border-slate-800 transition-colors duration-300">
+        <div className="mb-8 pb-6 border-b-2 border-gray-100 dark:border-slate-800">
+          <h2 className="text-2xl font-black text-gray-950 dark:text-white mb-1"><span className="text-2xl">🌟</span> Top 5 Contributors</h2>
+          <p className="text-sm text-gray-600 dark:text-slate-400 font-medium">Your engagement champions</p>
         </div>
         <div className="h-[280px] flex items-center justify-center">
           <button 
@@ -74,13 +74,13 @@ const TopContributorsChart = () => {
 
   if (!contributorsData.length) {
     return (
-      <div className="bg-gradient-to-br from-white to-slate-50 rounded-2xl p-8 shadow-sm border-2 border-gray-100">
-        <div className="mb-8 pb-6 border-b-2 border-gray-100">
-          <h2 className="text-2xl font-black text-gray-950 mb-1"><span className="text-2xl">🌟</span> Top 5 Contributors</h2>
-          <p className="text-sm text-gray-600 font-medium">Your engagement champions</p>
+      <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 rounded-2xl p-8 shadow-sm border-2 border-gray-100 dark:border-slate-800 transition-colors duration-300">
+        <div className="mb-8 pb-6 border-b-2 border-gray-100 dark:border-slate-800">
+          <h2 className="text-2xl font-black text-gray-950 dark:text-white mb-1"><span className="text-2xl">🌟</span> Top 5 Contributors</h2>
+          <p className="text-sm text-gray-600 dark:text-slate-400 font-medium">Your engagement champions</p>
         </div>
         <div className="h-[280px] flex items-center justify-center">
-          <p className="text-sm text-gray-500">No data available</p>
+          <p className="text-sm text-gray-500 dark:text-slate-500">No data available</p>
         </div>
       </div>
     );
@@ -96,11 +96,11 @@ const TopContributorsChart = () => {
   const totalReactions = contributorsData.reduce((sum, d) => sum + d.reactions, 0);
 
   return (
-    <div className="bg-gradient-to-br from-white to-slate-50 rounded-2xl p-6 shadow-sm border-2 border-gray-100 hover:shadow-xl hover:border-gray-200 transition-all duration-300 flex flex-col overflow-hidden">
+    <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 rounded-2xl p-6 shadow-sm border-2 border-gray-100 dark:border-slate-800 hover:shadow-xl hover:border-gray-200 dark:hover:border-slate-700 transition-all duration-300 flex flex-col overflow-hidden">
       {/* Header - Title and Subheading */}
-      <div className="mb-4 pb-3 border-b-2 border-gray-100">
-        <h2 className="text-xl font-black text-gray-950 mb-0.5"><span className="text-xl">🌟</span> Top 5 Contributors</h2>
-        <p className="text-xs text-gray-600 font-medium">Your engagement champions</p>
+      <div className="mb-4 pb-3 border-b-2 border-gray-100 dark:border-slate-800">
+        <h2 className="text-xl font-black text-gray-950 dark:text-white mb-0.5"><span className="text-xl">🌟</span> Top 5 Contributors</h2>
+        <p className="text-xs text-gray-600 dark:text-slate-400 font-medium">Your engagement champions</p>
       </div>
 
       {/* Content Area */}
@@ -140,10 +140,10 @@ const TopContributorsChart = () => {
             const percentage = (contributor.value / maxValue) * 100;
             const rankNum = index + 2;
             const rankColors = [
-              { bg: 'bg-blue-50', badge: 'bg-blue-500', text: 'text-blue-900', border: 'border-blue-200' },
-              { bg: 'bg-emerald-50', badge: 'bg-emerald-500', text: 'text-emerald-900', border: 'border-emerald-200' },
-              { bg: 'bg-amber-50', badge: 'bg-amber-500', text: 'text-amber-900', border: 'border-amber-200' },
-              { bg: 'bg-violet-50', badge: 'bg-violet-500', text: 'text-violet-900', border: 'border-violet-200' },
+              { bg: 'bg-blue-50 dark:bg-blue-900/20', badge: 'bg-blue-500', text: 'text-blue-900 dark:text-blue-300', border: 'border-blue-200 dark:border-blue-800' },
+              { bg: 'bg-emerald-50 dark:bg-emerald-900/20', badge: 'bg-emerald-500', text: 'text-emerald-900 dark:text-emerald-300', border: 'border-emerald-200 dark:border-emerald-800' },
+              { bg: 'bg-amber-50 dark:bg-amber-900/20', badge: 'bg-amber-500', text: 'text-amber-900 dark:text-amber-300', border: 'border-amber-200 dark:border-amber-800' },
+              { bg: 'bg-violet-50 dark:bg-violet-900/20', badge: 'bg-violet-500', text: 'text-violet-900 dark:text-violet-300', border: 'border-violet-200 dark:border-violet-800' },
             ];
             const colors = rankColors[index];
 
@@ -160,11 +160,11 @@ const TopContributorsChart = () => {
                   <div className="flex-1 min-w-0">
                     <p className={`text-xs font-bold ${colors.text} truncate`}>{contributor.fullName}</p>
                   </div>
-                  <p className="font-black text-gray-900 flex-shrink-0 text-base">{contributor.value}</p>
+                  <p className="font-black text-gray-900 dark:text-white flex-shrink-0 text-base">{contributor.value}</p>
                 </div>
 
                 {/* Progress Bar */}
-                <div className="h-1.5 bg-gray-300/50 rounded-full overflow-hidden mb-2">
+                <div className="h-1.5 bg-gray-300/50 dark:bg-slate-700 rounded-full overflow-hidden mb-2">
                   <div 
                     className={`${colors.badge} h-full transition-all duration-300`}
                     style={{ width: `${percentage}%` }}
@@ -190,21 +190,21 @@ const TopContributorsChart = () => {
       </div>
 
       {/* Summary Stats Footer */}
-      <div className="border-t-2 border-gray-100 mt-3 pt-3 grid grid-cols-3 gap-2">
+      <div className="border-t-2 border-gray-100 dark:border-slate-800 mt-3 pt-3 grid grid-cols-3 gap-2">
         <div className="text-center">
-          <p className="text-xs font-bold text-blue-600 mb-0.5"><span className="text-lg">📤</span> Total Sent</p>
-          <p className="text-lg font-black text-gray-900">{totalSent}</p>
-          <p className="text-xs text-gray-500 leading-none mt-0.5">Shout-outs</p>
+          <p className="text-xs font-bold text-blue-600 dark:text-blue-400 mb-0.5"><span className="text-lg">📤</span> Total Sent</p>
+          <p className="text-lg font-black text-gray-900 dark:text-white">{totalSent}</p>
+          <p className="text-xs text-gray-500 dark:text-slate-400 leading-none mt-0.5">Shout-outs</p>
         </div>
         <div className="text-center">
-          <p className="text-xs font-bold text-emerald-600 mb-0.5"><span className="text-lg">📥</span> Received</p>
-          <p className="text-lg font-black text-gray-900">{totalReceived}</p>
-          <p className="text-xs text-gray-500 leading-none mt-0.5">Appreciations</p>
+          <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400 mb-0.5"><span className="text-lg">📥</span> Received</p>
+          <p className="text-lg font-black text-gray-900 dark:text-white">{totalReceived}</p>
+          <p className="text-xs text-gray-500 dark:text-slate-400 leading-none mt-0.5">Appreciations</p>
         </div>
         <div className="text-center">
-          <p className="text-xs font-bold text-amber-600 mb-0.5"><span className="text-lg">👏</span> Reactions</p>
-          <p className="text-lg font-black text-gray-900">{totalReactions}</p>
-          <p className="text-xs text-gray-500 leading-none mt-0.5">Engagements</p>
+          <p className="text-xs font-bold text-amber-600 dark:text-amber-400 mb-0.5"><span className="text-lg">👏</span> Reactions</p>
+          <p className="text-lg font-black text-gray-900 dark:text-white">{totalReactions}</p>
+          <p className="text-xs text-gray-500 dark:text-slate-400 leading-none mt-0.5">Engagements</p>
         </div>
       </div>
     </div>

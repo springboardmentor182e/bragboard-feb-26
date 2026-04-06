@@ -172,24 +172,36 @@ const AdminSettings = () => {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 min-h-screen">
       {/* Header */}
-      <div className="pb-6 border-b-2 border-slate-100">
-        <h1 className="text-3xl font-black text-slate-950">Settings</h1>
-        <p className="text-slate-600 text-sm mt-1 font-medium">Manage application settings and preferences</p>
+      <div className="pb-6 border-b-2 border-slate-100 dark:border-slate-800">
+        <h1 className="text-3xl font-black text-slate-950 dark:text-white">Settings</h1>
+        <p className="text-slate-600 dark:text-slate-400 text-sm mt-1 font-medium">Manage application settings and preferences</p>
       </div>
 
-      {/* Global Messages */}
-      {error && (
-        <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded">
-          <p className="text-sm text-red-700 font-medium">{error}</p>
-        </div>
-      )}
-      {success && (
-        <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded">
-          <p className="text-sm text-green-700 font-medium">{success}</p>
-        </div>
-      )}
+      {/* Global Messages (Toast Notification) */}
+      <div className="fixed top-20 right-6 z-[100] w-full max-w-sm pointer-events-none px-4 flex flex-col items-end gap-3">
+        {error && (
+          <div className="bg-red-50 dark:bg-red-900/90 border-l-4 border-red-500 p-4 rounded-xl shadow-2xl animate-in fade-in slide-in-from-right-10 duration-300 pointer-events-auto backdrop-blur-md w-full border border-red-200 dark:border-red-800">
+            <div className="flex items-center gap-3">
+              <span className="flex-shrink-0 w-8 h-8 bg-red-100 dark:bg-red-800 rounded-lg flex items-center justify-center text-lg">⚠️</span>
+              <p className="text-sm text-red-700 dark:text-red-100 font-bold leading-tight">
+                {error}
+              </p>
+            </div>
+          </div>
+        )}
+        {success && (
+          <div className="bg-emerald-50 dark:bg-emerald-900/90 border-l-4 border-emerald-500 p-4 rounded-xl shadow-2xl animate-in fade-in slide-in-from-right-10 duration-300 pointer-events-auto backdrop-blur-md w-full border border-emerald-200 dark:border-emerald-800">
+            <div className="flex items-center gap-3">
+              <span className="flex-shrink-0 w-8 h-8 bg-emerald-100 dark:bg-emerald-800 rounded-lg flex items-center justify-center text-lg">✓</span>
+              <p className="text-sm text-emerald-700 dark:text-emerald-100 font-bold leading-tight">
+                {success}
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Layout: Sidebar + Content */}
       <div className="flex gap-8">
@@ -206,19 +218,19 @@ const AdminSettings = () => {
                   onClick={() => setActiveTab(tab.id)}
                   className={`w-full text-left px-5 py-4 rounded-xl transition-all border-2 flex items-center gap-3 ${
                     isActive
-                      ? "border-indigo-200 bg-indigo-50 text-indigo-700 font-bold"
-                      : "border-transparent text-slate-600 hover:bg-slate-50 font-medium"
+                      ? "border-indigo-200 bg-indigo-50 dark:bg-indigo-900/20 dark:border-indigo-800 text-indigo-700 dark:text-indigo-400 font-bold"
+                      : "border-transparent text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 font-medium"
                   }`}
                 >
                   <Icon size={18} />
                   <div className="flex-1">
                     <p className="text-sm">{tab.label}</p>
-                    <p className={`text-xs ${isActive ? "text-indigo-600" : "text-slate-600"}`}>
+                    <p className={`text-xs ${isActive ? "text-indigo-600 dark:text-indigo-400" : "text-slate-600 dark:text-slate-500"}`}>
                       {tab.id === "notifications" && "Configure notification preferences"}
-                      {tab.id === "security" && "Manage security settings"}
+                      {tab.id === "security" && "Manage your security"}
                       {tab.id === "appearance" && "Customize theme and display"}
                       {tab.id === "language" && "Set language and regional preferences"}
-                      {tab.id === "system" && "System-wide configuration"}
+                      {tab.id === "system" && "Configure global system settings"}
                     </p>
                   </div>
                 </button>
@@ -233,20 +245,20 @@ const AdminSettings = () => {
           {/* Notifications Tab */}
           {activeTab === "notifications" && (
             <div className="space-y-8">
-              <h2 className="text-xl font-bold text-slate-950 mb-6">Notifications</h2>
+              <h2 className="text-xl font-bold text-slate-950 dark:text-white mb-6">Notifications</h2>
               
               {/* Email Notifications */}
-              <div className="bg-gradient-to-br from-slate-50 to-slate-100 p-6 rounded-xl border-2 border-slate-200 relative">
-                {savingField === "email_notifications" && <div className="absolute inset-0 bg-white bg-opacity-30 rounded-xl flex items-center justify-center"><div className="w-6 h-6 border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div></div>}
+              <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-6 rounded-xl border-2 border-slate-200 dark:border-slate-800 relative transition-colors duration-300">
+                {savingField === "email_notifications" && <div className="absolute inset-0 bg-white/30 dark:bg-slate-950/30 rounded-xl flex items-center justify-center"><div className="w-6 h-6 border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div></div>}
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-3">
-                    <Mail size={20} className="text-indigo-600" />
+                    <Mail size={20} className="text-indigo-600 dark:text-indigo-400" />
                     <div>
-                      <h3 className="font-bold text-slate-950">Email Notifications</h3>
-                      <p className="text-sm text-slate-600">Receive notifications via email</p>
+                      <h3 className="font-bold text-slate-950 dark:text-white">Email Notifications</h3>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">Receive notifications via email</p>
                     </div>
                   </div>
-                  <label className="relative w-14 h-8">
+                  <label className="relative w-14 h-8 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={settings.email_notifications}
@@ -254,24 +266,24 @@ const AdminSettings = () => {
                       className="sr-only peer"
                       disabled={savingField === "email_notifications"}
                     />
-                    <div className={`w-full h-full rounded-full transition-all ${settings.email_notifications ? "bg-blue-500" : "bg-slate-300"}`}></div>
+                    <div className={`w-full h-full rounded-full transition-all ${settings.email_notifications ? "bg-blue-500" : "bg-slate-300 dark:bg-slate-700"}`}></div>
                     <div className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-all ${settings.email_notifications ? "translate-x-6" : ""}`}></div>
                   </label>
                 </div>
               </div>
 
               {/* Push Notifications */}
-              <div className="bg-gradient-to-br from-slate-50 to-slate-100 p-6 rounded-xl border-2 border-slate-200 relative">
-                {savingField === "push_notifications" && <div className="absolute inset-0 bg-white bg-opacity-30 rounded-xl flex items-center justify-center"><div className="w-6 h-6 border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div></div>}
+              <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-6 rounded-xl border-2 border-slate-200 dark:border-slate-800 relative transition-colors duration-300">
+                {savingField === "push_notifications" && <div className="absolute inset-0 bg-white/30 dark:bg-slate-950/30 rounded-xl flex items-center justify-center"><div className="w-6 h-6 border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div></div>}
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-3">
-                    <Smartphone size={20} className="text-indigo-600" />
+                    <Smartphone size={20} className="text-indigo-600 dark:text-indigo-400" />
                     <div>
-                      <h3 className="font-bold text-slate-950">Push Notifications</h3>
-                      <p className="text-sm text-slate-600">Receive real-time notifications in browser</p>
+                      <h3 className="font-bold text-slate-950 dark:text-white">Push Notifications</h3>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">Receive real-time notifications in browser</p>
                     </div>
                   </div>
-                  <label className="relative w-14 h-8">
+                  <label className="relative w-14 h-8 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={settings.push_notifications}
@@ -279,7 +291,7 @@ const AdminSettings = () => {
                       className="sr-only peer"
                       disabled={savingField === "push_notifications"}
                     />
-                    <div className={`w-full h-full rounded-full transition-all ${settings.push_notifications ? "bg-blue-500" : "bg-slate-300"}`}></div>
+                    <div className={`w-full h-full rounded-full transition-all ${settings.push_notifications ? "bg-blue-500" : "bg-slate-300 dark:bg-slate-700"}`}></div>
                     <div className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-all ${settings.push_notifications ? "translate-x-6" : ""}`}></div>
                   </label>
                 </div>
@@ -287,30 +299,30 @@ const AdminSettings = () => {
 
               {/* Alert Preferences */}
               <div className="space-y-4">
-                <h3 className="font-bold text-slate-950 text-base">Alert Preferences</h3>
+                <h3 className="font-bold text-slate-950 dark:text-white text-base">Alert Preferences</h3>
                 
-                <div className="flex items-center justify-between p-4 border-2 border-slate-200 rounded-lg">
+                <div className="flex items-center justify-between p-4 border-2 border-slate-200 dark:border-slate-800 rounded-lg transition-colors duration-300">
                   <div>
-                    <p className="font-semibold text-slate-950">Employee Alerts</p>
-                    <p className="text-sm text-slate-600">Get notified on employee-related actions</p>
+                    <p className="font-semibold text-slate-950 dark:text-white">Employee Alerts</p>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">Get notified on employee-related actions</p>
                   </div>
-                  <input type="checkbox" defaultChecked className="w-5 h-5 accent-blue-500" />
+                  <input type="checkbox" defaultChecked className="w-5 h-5 accent-blue-500 dark:bg-slate-800 dark:border-slate-700" />
                 </div>
 
-                <div className="flex items-center justify-between p-4 border-2 border-slate-200 rounded-lg">
+                <div className="flex items-center justify-between p-4 border-2 border-slate-200 dark:border-slate-800 rounded-lg transition-colors duration-300">
                   <div>
-                    <p className="font-semibold text-slate-950">Report Alerts</p>
-                    <p className="text-sm text-slate-600">Get notified when reports are submitted</p>
+                    <p className="font-semibold text-slate-950 dark:text-white">Report Alerts</p>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">Get notified when reports are submitted</p>
                   </div>
-                  <input type="checkbox" defaultChecked className="w-5 h-5 accent-blue-500" />
+                  <input type="checkbox" defaultChecked className="w-5 h-5 accent-blue-500 dark:bg-slate-800 dark:border-slate-700" />
                 </div>
 
-                <div className="flex items-center justify-between p-4 border-2 border-slate-200 rounded-lg">
+                <div className="flex items-center justify-between p-4 border-2 border-slate-200 dark:border-slate-800 rounded-lg transition-colors duration-300">
                   <div>
-                    <p className="font-semibold text-slate-950">System Alerts</p>
-                    <p className="text-sm text-slate-600">Get notified of system updates and maintenance</p>
+                    <p className="font-semibold text-slate-950 dark:text-white">System Alerts</p>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">Get notified of system updates and maintenance</p>
                   </div>
-                  <input type="checkbox" defaultChecked className="w-5 h-5 accent-blue-500" />
+                  <input type="checkbox" defaultChecked className="w-5 h-5 accent-blue-500 dark:bg-slate-800 dark:border-slate-700" />
                 </div>
               </div>
             </div>
@@ -319,41 +331,41 @@ const AdminSettings = () => {
           {/* Security Tab */}
           {activeTab === "security" && (
             <div className="space-y-8">
-              <h2 className="text-xl font-bold text-slate-950 mb-6">Security</h2>
+              <h2 className="text-xl font-bold text-slate-950 dark:text-white mb-6">Security</h2>
 
               {/* Security Status */}
-              <div className="bg-gradient-to-r from-emerald-50 to-teal-50 p-6 rounded-xl border-2 border-emerald-200">
+              <div className="bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-teal-950/20 p-6 rounded-xl border-2 border-emerald-200 dark:border-emerald-800 transition-colors duration-300">
                 <div className="flex items-center gap-3">
-                  <Shield className="text-emerald-600" size={24} />
+                  <Shield className="text-emerald-600 dark:text-emerald-400" size={24} />
                   <div>
-                    <p className="font-bold text-emerald-900">Security Status: Good</p>
-                    <p className="text-sm text-emerald-700">Last password change: 2024-01-15</p>
+                    <p className="font-bold text-emerald-900 dark:text-emerald-300">Security Status: Good</p>
+                    <p className="text-sm text-emerald-700 dark:text-emerald-500">Last password change: 2024-01-15</p>
                   </div>
                 </div>
               </div>
 
               {/* Authentication Section */}
               <div>
-                <h3 className="font-bold text-slate-950 mb-4">Authentication</h3>
+                <h3 className="font-bold text-slate-950 dark:text-white mb-4">Authentication</h3>
                 
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between p-4 border-2 border-slate-200 rounded-lg">
+                  <div className="flex items-center justify-between p-4 border-2 border-slate-200 dark:border-slate-800 rounded-lg transition-colors duration-300">
                     <div>
-                      <p className="font-semibold text-slate-950">Change Password</p>
-                      <p className="text-sm text-slate-600">Update your password regularly for security</p>
+                      <p className="font-semibold text-slate-950 dark:text-white">Change Password</p>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">Update your password regularly for security</p>
                     </div>
                     <button 
                       onClick={() => setPasswordModalOpen(true)}
-                      className="text-indigo-600 font-bold hover:text-indigo-700">→</button>
+                      className="text-indigo-600 dark:text-indigo-400 font-bold hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors">→</button>
                   </div>
 
-                  <div className="flex items-center justify-between p-4 border-2 border-slate-200 rounded-lg relative">
-                    {savingField === "two_factor_enabled" && <div className="absolute inset-0 bg-white bg-opacity-30 rounded-lg flex items-center justify-center"><div className="w-4 h-4 border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div></div>}
+                  <div className="flex items-center justify-between p-4 border-2 border-slate-200 dark:border-slate-800 rounded-lg relative transition-colors duration-300">
+                    {savingField === "two_factor_enabled" && <div className="absolute inset-0 bg-white/30 dark:bg-slate-950/30 rounded-lg flex items-center justify-center"><div className="w-4 h-4 border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div></div>}
                     <div>
-                      <p className="font-semibold text-slate-950">Two-Factor Authentication</p>
-                      <p className="text-sm text-slate-600">Add an extra layer of security to your account</p>
+                      <p className="font-semibold text-slate-950 dark:text-white">Two-Factor Authentication</p>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">Add an extra layer of security to your account</p>
                     </div>
-                    <label className="relative w-14 h-8">
+                    <label className="relative w-14 h-8 cursor-pointer">
                       <input
                         type="checkbox"
                         checked={settings.two_factor_enabled}
@@ -361,7 +373,7 @@ const AdminSettings = () => {
                         className="sr-only peer"
                         disabled={savingField === "two_factor_enabled"}
                       />
-                      <div className={`w-full h-full rounded-full transition-all ${settings.two_factor_enabled ? "bg-blue-500" : "bg-slate-300"}`}></div>
+                      <div className={`w-full h-full rounded-full transition-all ${settings.two_factor_enabled ? "bg-blue-500" : "bg-slate-300 dark:bg-slate-700"}`}></div>
                       <div className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-all ${settings.two_factor_enabled ? "translate-x-6" : ""}`}></div>
                     </label>
                   </div>
@@ -370,15 +382,15 @@ const AdminSettings = () => {
 
               {/* Session Management */}
               <div>
-                <h3 className="font-bold text-slate-950 mb-4">Session Management</h3>
+                <h3 className="font-bold text-slate-950 dark:text-white mb-4">Session Management</h3>
                 
                 <div className="space-y-3">
                   <label className="block">
-                    <span className="font-semibold text-slate-700 mb-2 block">Session Timeout (minutes)</span>
+                    <span className="font-semibold text-slate-700 dark:text-slate-300 mb-2 block">Session Timeout (minutes)</span>
                     <select 
                       value={settings.session_timeout || "30"} 
                       onChange={(e) => handleSelectChange("session_timeout", parseInt(e.target.value))} 
-                      className="w-full border-2 border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      className="w-full bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
                       disabled={savingField === "session_timeout"}
                     >
                       <option value={15}>15 minutes</option>
@@ -387,17 +399,17 @@ const AdminSettings = () => {
                     </select>
                   </label>
 
-                  <div className="flex items-center justify-between p-4 border-2 border-slate-200 rounded-lg relative">
-                    {savingField === "login_alerts_enabled" && <div className="absolute inset-0 bg-white bg-opacity-30 rounded-lg flex items-center justify-center"><div className="w-4 h-4 border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div></div>}
+                  <div className="flex items-center justify-between p-4 border-2 border-slate-200 dark:border-slate-800 rounded-lg relative transition-colors duration-300">
+                    {savingField === "login_alerts_enabled" && <div className="absolute inset-0 bg-white/30 dark:bg-slate-950/30 rounded-lg flex items-center justify-center"><div className="w-4 h-4 border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div></div>}
                     <div>
-                      <p className="font-semibold text-slate-950">Login Alerts</p>
-                      <p className="text-sm text-slate-600">Get alerts when your account is accessed</p>
+                      <p className="font-semibold text-slate-950 dark:text-white">Login Alerts</p>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">Get alerts when your account is accessed</p>
                     </div>
                     <input 
                       type="checkbox" 
                       checked={settings.login_alerts_enabled}
                       onChange={() => handleToggle("login_alerts_enabled")}
-                      className="w-5 h-5 accent-blue-500"
+                      className="w-5 h-5 accent-blue-500 dark:bg-slate-800 dark:border-slate-700"
                       disabled={savingField === "login_alerts_enabled"}
                     />
                   </div>
@@ -409,11 +421,11 @@ const AdminSettings = () => {
           {/* Appearance Tab */}
           {activeTab === "appearance" && (
             <div className="space-y-8">
-              <h2 className="text-xl font-bold text-slate-950 mb-6">Appearance</h2>
+              <h2 className="text-xl font-bold text-slate-950 dark:text-white mb-6">Appearance</h2>
 
               {/* Theme Selection */}
               <div>
-                <h3 className="font-bold text-slate-950 mb-4">Theme</h3>
+                <h3 className="font-bold text-slate-950 dark:text-white mb-4">Theme</h3>
                 <div className="grid grid-cols-3 gap-4">
                   {["light", "dark", "system"].map((themeVal) => (
                     <button
@@ -421,17 +433,17 @@ const AdminSettings = () => {
                       onClick={() => handleSelectChange("theme", themeVal)}
                       className={`p-6 rounded-xl border-2 flex flex-col items-center gap-2 transition-all text-center relative ${
                         settings.theme === themeVal
-                          ? "border-indigo-500 bg-indigo-50"
-                          : "border-slate-200 hover:border-slate-300"
+                          ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20"
+                          : "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800/50 hover:border-slate-300 dark:hover:border-slate-700"
                       }`}
                     >
-                      {savingField === "theme" && <div className="absolute inset-0 bg-white bg-opacity-30 rounded-xl flex items-center justify-center"><div className="w-4 h-4 border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div></div>}
+                      {savingField === "theme" && <div className="absolute inset-0 bg-white/30 dark:bg-slate-950/30 rounded-xl flex items-center justify-center"><div className="w-4 h-4 border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div></div>}
                       <div className="text-2xl">
                         {themeVal === "light" && "☀️"}
                         {themeVal === "dark" && "🌙"}
                         {themeVal === "system" && "💻"}
                       </div>
-                      <p className="font-bold text-slate-950 capitalize">{themeVal}</p>
+                      <p className="font-bold text-slate-950 dark:text-white capitalize">{themeVal}</p>
                     </button>
                   ))}
                 </div>
@@ -439,16 +451,16 @@ const AdminSettings = () => {
 
               {/* Display Options */}
               <div>
-                <h3 className="font-bold text-slate-950 mb-4">Display</h3>
+                <h3 className="font-bold text-slate-950 dark:text-white mb-4">Display</h3>
                 
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between p-4 border-2 border-slate-200 rounded-lg relative">
-                    {savingField === "compact_mode" && <div className="absolute inset-0 bg-white bg-opacity-30 rounded-lg flex items-center justify-center"><div className="w-4 h-4 border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div></div>}
+                  <div className="flex items-center justify-between p-4 border-2 border-slate-200 dark:border-slate-800 rounded-lg relative transition-colors duration-300">
+                    {savingField === "compact_mode" && <div className="absolute inset-0 bg-white/30 dark:bg-slate-950/30 rounded-lg flex items-center justify-center"><div className="w-4 h-4 border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div></div>}
                     <div>
-                      <p className="font-semibold text-slate-950">Compact Mode</p>
-                      <p className="text-sm text-slate-600">Reduce spacing for a more compact layout</p>
+                      <p className="font-semibold text-slate-950 dark:text-white">Compact Mode</p>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">Reduce spacing for a more compact layout</p>
                     </div>
-                    <label className="relative w-14 h-8">
+                    <label className="relative w-14 h-8 cursor-pointer">
                       <input
                         type="checkbox"
                         checked={settings.compact_mode}
@@ -456,14 +468,14 @@ const AdminSettings = () => {
                         className="sr-only peer"
                         disabled={savingField === "compact_mode"}
                       />
-                      <div className={`w-full h-full rounded-full transition-all ${settings.compact_mode ? "bg-blue-500" : "bg-slate-300"}`}></div>
+                      <div className={`w-full h-full rounded-full transition-all ${settings.compact_mode ? "bg-blue-500" : "bg-slate-300 dark:bg-slate-700"}`}></div>
                       <div className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-all ${settings.compact_mode ? "translate-x-6" : ""}`}></div>
                     </label>
                   </div>
 
-                  <div className="p-4 border-2 border-slate-200 rounded-lg">
+                  <div className="p-4 border-2 border-slate-200 dark:border-slate-800 rounded-lg transition-colors duration-300">
                     <label className="block">
-                      <span className="font-semibold text-slate-700 mb-2 block">Font Size</span>
+                      <span className="font-semibold text-slate-700 dark:text-slate-300 mb-2 block">Font Size</span>
                       <div className="flex gap-2">
                         {["small", "medium", "large"].map((size) => (
                           <button
@@ -472,7 +484,7 @@ const AdminSettings = () => {
                             className={`flex-1 px-3 py-2 rounded text-sm font-bold transition-all ${
                               settings.font_size === size
                                 ? "bg-indigo-600 text-white"
-                                : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                                : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
                             }`}
                           >
                             {size.charAt(0).toUpperCase() + size.slice(1)}
@@ -482,20 +494,20 @@ const AdminSettings = () => {
                     </label>
                   </div>
 
-                  <div className="flex items-center justify-between p-4 border-2 border-slate-200 rounded-lg">
+                  <div className="flex items-center justify-between p-4 border-2 border-slate-200 dark:border-slate-800 rounded-lg transition-colors duration-300">
                     <div>
-                      <p className="font-semibold text-slate-950">Animations</p>
-                      <p className="text-sm text-slate-600">Enable smooth transitions and animations</p>
+                      <p className="font-semibold text-slate-950 dark:text-white">Animations</p>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">Enable smooth transitions and animations</p>
                     </div>
-                    <input type="checkbox" defaultChecked className="w-5 h-5 accent-blue-500" />
+                    <input type="checkbox" defaultChecked className="w-5 h-5 accent-blue-500 dark:bg-slate-800 dark:border-slate-700" />
                   </div>
 
-                  <div className="flex items-center justify-between p-4 border-2 border-slate-200 rounded-lg">
+                  <div className="flex items-center justify-between p-4 border-2 border-slate-200 dark:border-slate-800 rounded-lg transition-colors duration-300">
                     <div>
-                      <p className="font-semibold text-slate-950">High Contrast</p>
-                      <p className="text-sm text-slate-600">Increase visual contrast for better readability</p>
+                      <p className="font-semibold text-slate-950 dark:text-white">High Contrast</p>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">Increase visual contrast for better readability</p>
                     </div>
-                    <input type="checkbox" className="w-5 h-5 accent-blue-500" />
+                    <input type="checkbox" className="w-5 h-5 accent-blue-500 dark:bg-slate-800 dark:border-slate-700" />
                   </div>
                 </div>
               </div>
@@ -505,20 +517,20 @@ const AdminSettings = () => {
           {/* Language & Region Tab */}
           {activeTab === "language" && (
             <div className="space-y-8">
-              <h2 className="text-xl font-bold text-slate-950 mb-6">Language & Region</h2>
+              <h2 className="text-xl font-bold text-slate-950 dark:text-white mb-6">Language & Region</h2>
 
               <div className="space-y-6">
                 {/* Language */}
                 <div>
                   <label className="flex flex-col">
-                    <span className="font-bold text-slate-700 mb-3 flex items-center gap-2">
+                    <span className="font-bold text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-2">
                       <Globe size={18} />
                       Interface Language
                     </span>
                     <select
                       value={settings.language}
                       onChange={(e) => handleSelectChange("language", e.target.value)}
-                      className="w-full border-2 border-slate-300 rounded-lg px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      className="w-full bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 rounded-lg px-4 py-3 text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
                       disabled={savingField === "language"}
                     >
                       <option>English</option>
@@ -532,20 +544,20 @@ const AdminSettings = () => {
                 </div>
 
                 {/* Region Settings */}
-                <div className="pt-4 border-t-2 border-slate-100 space-y-6">
-                  <h3 className="font-bold text-slate-950">Region</h3>
+                <div className="pt-4 border-t-2 border-slate-100 dark:border-slate-800 space-y-6">
+                  <h3 className="font-bold text-slate-950 dark:text-white">Region</h3>
 
                   {/* Timezone */}
                   <div>
                     <label className="flex flex-col">
-                      <span className="font-bold text-slate-700 mb-3 flex items-center gap-2">
+                      <span className="font-bold text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-2">
                         <Clock size={18} />
                         Timezone
                       </span>
                       <select
                         value={settings.timezone}
                         onChange={(e) => handleSelectChange("timezone", e.target.value)}
-                        className="w-full border-2 border-slate-300 rounded-lg px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className="w-full bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 rounded-lg px-4 py-3 text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
                         disabled={savingField === "timezone"}
                       >
                         <option>UTC</option>
@@ -561,11 +573,11 @@ const AdminSettings = () => {
                   {/* Date Format */}
                   <div>
                     <label className="block">
-                      <span className="font-bold text-slate-700 mb-2 block">Date Format</span>
+                      <span className="font-bold text-slate-700 dark:text-slate-300 mb-2 block">Date Format</span>
                       <select
                         value={settings.date_format}
                         onChange={(e) => handleSelectChange("date_format", e.target.value)}
-                        className="w-full border-2 border-slate-300 rounded-lg px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className="w-full bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 rounded-lg px-4 py-3 text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
                         disabled={savingField === "date_format"}
                       >
                         <option>MM/DD/YYYY</option>
@@ -578,11 +590,11 @@ const AdminSettings = () => {
                   {/* Time Format */}
                   <div>
                     <label className="block">
-                      <span className="font-bold text-slate-700 mb-2 block">Time Format</span>
+                      <span className="font-bold text-slate-700 dark:text-slate-300 mb-2 block">Time Format</span>
                       <select
                         value={settings.time_format}
                         onChange={(e) => handleSelectChange("time_format", e.target.value)}
-                        className="w-full border-2 border-slate-300 rounded-lg px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className="w-full bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 rounded-lg px-4 py-3 text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
                         disabled={savingField === "time_format"}
                       >
                         <option value="12-hour">12-hour (12:00 PM)</option>
@@ -594,11 +606,11 @@ const AdminSettings = () => {
                   {/* Week Start */}
                   <div>
                     <label className="block">
-                      <span className="font-bold text-slate-700 mb-2 block">Week Starts On</span>
+                      <span className="font-bold text-slate-700 dark:text-slate-300 mb-2 block">Week Starts On</span>
                       <select
                         value={settings.week_start}
                         onChange={(e) => handleSelectChange("week_start", e.target.value)}
-                        className="w-full border-2 border-slate-300 rounded-lg px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className="w-full bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 rounded-lg px-4 py-3 text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
                         disabled={savingField === "week_start"}
                       >
                         <option>Monday</option>
@@ -611,11 +623,11 @@ const AdminSettings = () => {
                   {/* Currency */}
                   <div>
                     <label className="block">
-                      <span className="font-bold text-slate-700 mb-2 block">Currency</span>
+                      <span className="font-bold text-slate-700 dark:text-slate-300 mb-2 block">Currency</span>
                       <select
                         value={settings.currency}
                         onChange={(e) => handleSelectChange("currency", e.target.value)}
-                        className="w-full border-2 border-slate-300 rounded-lg px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className="w-full bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 rounded-lg px-4 py-3 text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
                       >
                         <option>USD - US Dollar</option>
                         <option>EUR - Euro</option>
@@ -633,20 +645,20 @@ const AdminSettings = () => {
           {/* System Config Tab (Admin Only) */}
           {activeTab === "system" && (
             <div className="space-y-8">
-              <h2 className="text-xl font-bold text-slate-950 mb-6">System Configuration</h2>
-              <p className="text-sm text-slate-600 mb-6">System-wide settings that apply to all users</p>
+              <h2 className="text-xl font-bold text-slate-950 dark:text-white mb-6">System Configuration</h2>
+              <p className="text-sm text-slate-600 dark:text-slate-400 mb-6 font-medium">System-wide settings that apply to all users</p>
 
               {/* Password Policy */}
               <div>
-                <h3 className="font-bold text-slate-950 mb-4">Password Policy</h3>
+                <h3 className="font-bold text-slate-950 dark:text-white mb-4">Password Policy</h3>
                 <div className="space-y-4">
                   <div>
                     <label className="block">
-                      <span className="font-semibold text-slate-700 mb-2 block">Minimum Password Length</span>
+                      <span className="font-semibold text-slate-700 dark:text-slate-300 mb-2 block">Minimum Password Length</span>
                       <select
                         value={settings.password_min_length || 8}
                         onChange={(e) => handleSelectChange("password_min_length", parseInt(e.target.value))}
-                        className="w-full border-2 border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className="w-full bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
                         disabled={savingField === "password_min_length"}
                       >
                         <option value={4}>4 characters</option>
@@ -658,17 +670,17 @@ const AdminSettings = () => {
                     </label>
                   </div>
 
-                  <div className="flex items-center justify-between p-4 border-2 border-slate-200 rounded-lg relative">
-                    {savingField === "require_special_chars" && <div className="absolute inset-0 bg-white bg-opacity-30 rounded-lg flex items-center justify-center"><div className="w-4 h-4 border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div></div>}
+                  <div className="flex items-center justify-between p-4 border-2 border-slate-200 dark:border-slate-800 rounded-lg relative transition-colors duration-300">
+                    {savingField === "require_special_chars" && <div className="absolute inset-0 bg-white/30 dark:bg-slate-950/30 rounded-xl flex items-center justify-center"><div className="w-4 h-4 border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div></div>}
                     <div>
-                      <p className="font-semibold text-slate-950">Require Special Characters</p>
-                      <p className="text-sm text-slate-600">Passwords must contain !@#$%^&* etc.</p>
+                      <p className="font-semibold text-slate-950 dark:text-white">Require Special Characters</p>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">Passwords must contain !@#$%^&* etc.</p>
                     </div>
                     <input
                       type="checkbox"
                       checked={settings.require_special_chars}
                       onChange={() => handleToggle("require_special_chars")}
-                      className="w-5 h-5 accent-blue-500"
+                      className="w-5 h-5 accent-blue-500 dark:bg-slate-800 dark:border-slate-700"
                       disabled={savingField === "require_special_chars"}
                     />
                   </div>
@@ -677,14 +689,14 @@ const AdminSettings = () => {
 
               {/* Session Management */}
               <div>
-                <h3 className="font-bold text-slate-950 mb-4">Session Management</h3>
+                <h3 className="font-bold text-slate-950 dark:text-white mb-4">Session Management</h3>
                 <div>
                   <label className="block">
-                    <span className="font-semibold text-slate-700 mb-2 block">Session Timeout (minutes)</span>
+                    <span className="font-semibold text-slate-700 dark:text-slate-300 mb-2 block">Session Timeout (minutes)</span>
                     <select
                       value={settings.session_timeout_minutes || 60}
                       onChange={(e) => handleSelectChange("session_timeout_minutes", parseInt(e.target.value))}
-                      className="w-full border-2 border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      className="w-full bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
                       disabled={savingField === "session_timeout_minutes"}
                     >
                       <option value={15}>15 minutes</option>
@@ -700,14 +712,14 @@ const AdminSettings = () => {
 
               {/* Security */}
               <div>
-                <h3 className="font-bold text-slate-950 mb-4">Security</h3>
+                <h3 className="font-bold text-slate-950 dark:text-white mb-4">Security</h3>
                 <div>
                   <label className="block">
-                    <span className="font-semibold text-slate-700 mb-2 block">Max Login Attempts</span>
+                    <span className="font-semibold text-slate-700 dark:text-slate-300 mb-2 block">Max Login Attempts</span>
                     <select
                       value={settings.max_login_attempts || 5}
                       onChange={(e) => handleSelectChange("max_login_attempts", parseInt(e.target.value))}
-                      className="w-full border-2 border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      className="w-full bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
                       disabled={savingField === "max_login_attempts"}
                     >
                       <option value={3}>3 attempts</option>
@@ -721,15 +733,15 @@ const AdminSettings = () => {
 
               {/* Shoutout Configuration */}
               <div>
-                <h3 className="font-bold text-slate-950 mb-4">Shoutout Limits</h3>
+                <h3 className="font-bold text-slate-950 dark:text-white mb-4">Shoutout Limits</h3>
                 <div className="space-y-4">
                   <div>
                     <label className="block">
-                      <span className="font-semibold text-slate-700 mb-2 block">Daily Limit per User</span>
+                      <span className="font-semibold text-slate-700 dark:text-slate-300 mb-2 block">Daily Limit per User</span>
                       <select
                         value={settings.shoutout_daily_limit || 5}
                         onChange={(e) => handleSelectChange("shoutout_daily_limit", parseInt(e.target.value))}
-                        className="w-full border-2 border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className="w-full bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
                         disabled={savingField === "shoutout_daily_limit"}
                       >
                         <option value={1}>1 shoutout</option>
@@ -742,11 +754,11 @@ const AdminSettings = () => {
 
                   <div>
                     <label className="block">
-                      <span className="font-semibold text-slate-700 mb-2 block">Weekly Limit per User</span>
+                      <span className="font-semibold text-slate-700 dark:text-slate-300 mb-2 block">Weekly Limit per User</span>
                       <select
                         value={settings.shoutout_weekly_limit || 20}
                         onChange={(e) => handleSelectChange("shoutout_weekly_limit", parseInt(e.target.value))}
-                        className="w-full border-2 border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className="w-full bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
                         disabled={savingField === "shoutout_weekly_limit"}
                       >
                         <option value={10}>10 shoutouts</option>
@@ -761,18 +773,18 @@ const AdminSettings = () => {
 
               {/* System Status */}
               <div>
-                <h3 className="font-bold text-slate-950 mb-4">System Status</h3>
-                <div className="flex items-center justify-between p-4 border-2 border-slate-200 rounded-lg relative">
-                  {savingField === "email_system_enabled" && <div className="absolute inset-0 bg-white bg-opacity-30 rounded-lg flex items-center justify-center"><div className="w-4 h-4 border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div></div>}
+                <h3 className="font-bold text-slate-950 dark:text-white mb-4">System Status</h3>
+                <div className="flex items-center justify-between p-4 border-2 border-slate-200 dark:border-slate-800 rounded-lg relative transition-colors duration-300">
+                  {savingField === "email_system_enabled" && <div className="absolute inset-0 bg-white/30 dark:bg-slate-950/30 rounded-xl flex items-center justify-center"><div className="w-4 h-4 border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div></div>}
                   <div>
-                    <p className="font-semibold text-slate-950">Email System Enabled</p>
-                    <p className="text-sm text-slate-600">Allow system to send email notifications</p>
+                    <p className="font-semibold text-slate-950 dark:text-white">Email System Enabled</p>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">Allow system to send email notifications</p>
                   </div>
                   <input
                     type="checkbox"
                     checked={settings.email_system_enabled}
                     onChange={() => handleToggle("email_system_enabled")}
-                    className="w-5 h-5 accent-blue-500"
+                    className="w-5 h-5 accent-blue-500 dark:bg-slate-800 dark:border-slate-700"
                     disabled={savingField === "email_system_enabled"}
                   />
                 </div>

@@ -57,14 +57,14 @@ const ProfilePopup = ({ isOpen, onClose }) => {
       ></div>
 
       {/* POPUP MODAL */}
-      <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white rounded-2xl shadow-2xl z-50 max-h-[90vh] overflow-y-auto">
+      <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl shadow-2xl z-50 max-h-[90vh] overflow-y-auto">
         
         {/* CLOSE BUTTON */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 hover:bg-slate-100 rounded-lg transition z-10"
+          className="absolute top-4 right-4 p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition z-10"
         >
-          <X size={20} className="text-slate-500" />
+          <X size={20} className="text-slate-500 dark:text-slate-400" />
         </button>
 
         {/* HEADER SECTION */}
@@ -92,17 +92,17 @@ const ProfilePopup = ({ isOpen, onClose }) => {
         <div className="p-6 space-y-6">
           {loading ? (
             <div className="text-center py-8">
-              <p className="text-slate-500">Loading profile...</p>
+              <p className="text-slate-500 dark:text-slate-400">Loading profile...</p>
             </div>
           ) : (
             <>
               {/* RANK BADGE */}
               {stats?.rank && (
-                <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-4 text-center border border-indigo-200">
-                  <p className="text-slate-600 text-xs uppercase tracking-wide font-semibold">
+                <div className="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-xl p-4 text-center border border-indigo-200 dark:border-indigo-800">
+                  <p className="text-slate-600 dark:text-slate-400 text-xs uppercase tracking-wide font-semibold">
                     Your Rank
                   </p>
-                  <p className="text-3xl font-bold text-indigo-600 mt-1">
+                  <p className="text-3xl font-bold text-indigo-600 dark:text-indigo-400 mt-1">
                     #{stats.rank}
                   </p>
                 </div>
@@ -110,46 +110,46 @@ const ProfilePopup = ({ isOpen, onClose }) => {
 
               {/* STATS */}
               <div className="grid grid-cols-2 gap-3">
-                <div className="bg-slate-50 rounded-lg p-4 text-center border border-slate-200">
-                  <p className="text-xs text-slate-500 mb-1">Points</p>
-                  <p className="text-2xl font-bold text-indigo-600">
+                <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4 text-center border border-slate-200 dark:border-slate-800">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Points</p>
+                  <p className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
                     {stats?.total_points || 0}
                   </p>
                 </div>
 
-                <div className="bg-slate-50 rounded-lg p-4 text-center border border-slate-200">
-                  <p className="text-xs text-slate-500 mb-1">Level</p>
-                  <p className="text-2xl font-bold text-purple-600">
+                <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4 text-center border border-slate-200 dark:border-slate-800">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Level</p>
+                  <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">
                     {stats?.current_level || 1}
                   </p>
                 </div>
 
-                <div className="bg-slate-50 rounded-lg p-4 text-center border border-slate-200">
-                  <p className="text-xs text-slate-500 mb-1">Received</p>
-                  <p className="text-2xl font-bold text-blue-600">
+                <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4 text-center border border-slate-200 dark:border-slate-800">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Received</p>
+                  <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                     {stats?.shoutouts_received || 0}
                   </p>
                 </div>
 
-                <div className="bg-slate-50 rounded-lg p-4 text-center border border-slate-200">
-                  <p className="text-xs text-slate-500 mb-1">Sent</p>
-                  <p className="text-2xl font-bold text-green-600">
+                <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4 text-center border border-slate-200 dark:border-slate-800">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Sent</p>
+                  <p className="text-2xl font-bold text-green-600 dark:text-green-400">
                     {stats?.shoutouts_sent || 0}
                   </p>
                 </div>
               </div>
 
               {/* LEVEL PROGRESS BAR */}
-              <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
+              <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4 border border-slate-200 dark:border-slate-800">
                 <div className="flex justify-between items-center mb-2">
-                  <p className="text-xs font-semibold text-slate-600">
+                  <p className="text-xs font-semibold text-slate-600 dark:text-slate-400">
                     Level {stats?.current_level || 1} Progress
                   </p>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-slate-500 dark:text-slate-500">
                     {stats?.points_to_next_level || 500} pts left
                   </p>
                 </div>
-                <div className="w-full bg-slate-200 rounded-full h-2">
+                <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
                   <div
                     className="bg-gradient-to-r from-indigo-500 to-purple-600 h-2 rounded-full transition-all duration-500"
                     style={{
@@ -164,7 +164,7 @@ const ProfilePopup = ({ isOpen, onClose }) => {
               {/* BADGES SHOWCASE */}
               {levelProgress?.badges && (
                 <div>
-                  <h3 className="text-sm font-semibold text-slate-900 mb-3">
+                  <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-3">
                     Achievements
                   </h3>
                   <div className="grid grid-cols-5 gap-2">
@@ -184,7 +184,7 @@ const ProfilePopup = ({ isOpen, onClose }) => {
                           className={`rounded-lg p-3 flex flex-col items-center justify-center text-center transition-all ${
                             badge.unlocked
                               ? `bg-gradient-to-br ${colorMap[badge.icon]} text-white shadow-md`
-                              : "bg-slate-200 text-slate-400"
+                              : "bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-600"
                           }`}
                           title={badge.description}
                         >
@@ -197,9 +197,9 @@ const ProfilePopup = ({ isOpen, onClose }) => {
               )}
 
               {/* EMAIL */}
-              <div className="text-center border-t pt-4">
-                <p className="text-xs text-slate-500 mb-1">Email</p>
-                <p className="text-sm font-medium text-slate-900 break-all">
+              <div className="text-center border-t dark:border-slate-800 pt-4">
+                <p className="text-xs text-slate-500 dark:text-slate-400">Email</p>
+                <p className="text-sm font-medium text-slate-900 dark:text-white break-all">
                   {user?.email}
                 </p>
               </div>

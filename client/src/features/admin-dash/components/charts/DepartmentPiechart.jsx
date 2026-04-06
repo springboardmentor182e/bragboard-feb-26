@@ -39,13 +39,13 @@ const DepartmentPiechart = () => {
 
   if (loading) {
     return (
-      <div className="bg-gradient-to-br from-white to-slate-50 rounded-2xl p-8 shadow-sm border-2 border-gray-100">
-        <div className="mb-8 pb-6 border-b-2 border-gray-100">
-          <h2 className="text-2xl font-black text-gray-950 mb-1">Department Engagement</h2>
-          <p className="text-sm text-gray-600 font-medium">Shout-outs by department</p>
+      <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 rounded-2xl p-8 shadow-sm border-2 border-gray-100 dark:border-slate-800 transition-colors duration-300">
+        <div className="mb-8 pb-6 border-b-2 border-gray-100 dark:border-slate-800">
+          <h2 className="text-2xl font-black text-gray-950 dark:text-white mb-1">Department Engagement</h2>
+          <p className="text-sm text-gray-600 dark:text-slate-400 font-medium">Shout-outs by department</p>
         </div>
-        <div className="h-[ 280px] flex items-center justify-center">
-          <p className="text-gray-400">Loading data...</p>
+        <div className="h-[280px] flex items-center justify-center">
+          <p className="text-gray-400 dark:text-slate-500">Loading data...</p>
         </div>
       </div>
     );
@@ -53,17 +53,17 @@ const DepartmentPiechart = () => {
 
   if (error) {
     return (
-      <div className="bg-gradient-to-br from-white to-slate-50 rounded-2xl p-8 shadow-sm border-2 border-gray-100">
-        <div className="mb-8 pb-6 border-b-2 border-gray-100">
-          <h2 className="text-2xl font-black text-gray-950 mb-1">Department Engagement</h2>
-          <p className="text-sm text-gray-600 font-medium">Shout-outs by department</p>
+      <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 rounded-2xl p-8 shadow-sm border-2 border-gray-100 dark:border-slate-800 transition-colors duration-300">
+        <div className="mb-8 pb-6 border-b-2 border-gray-100 dark:border-slate-800">
+          <h2 className="text-2xl font-black text-gray-950 dark:text-white mb-1">Department Engagement</h2>
+          <p className="text-sm text-gray-600 dark:text-slate-400 font-medium">Shout-outs by department</p>
         </div>
         <div className="h-[280px] flex items-center justify-center">
           <div className="text-center">
             <p className="text-red-500 mb-3">{error}</p>
             <button 
               onClick={fetchDepartmentData}
-              className="px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition"
+              className="px-4 py-2 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/40 transition"
             >
               Retry
             </button>
@@ -75,13 +75,13 @@ const DepartmentPiechart = () => {
 
   if (!departments.length) {
     return (
-      <div className="bg-gradient-to-br from-white to-slate-50 rounded-2xl p-8 shadow-sm border-2 border-gray-100">
-        <div className="mb-8 pb-6 border-b-2 border-gray-100">
-          <h2 className="text-2xl font-black text-gray-950 mb-1">Department Engagement</h2>
-          <p className="text-sm text-gray-600 font-medium">Shout-outs by department</p>
+      <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 rounded-2xl p-8 shadow-sm border-2 border-gray-100 dark:border-slate-800 transition-colors duration-300">
+        <div className="mb-8 pb-6 border-b-2 border-gray-100 dark:border-slate-800">
+          <h2 className="text-2xl font-black text-gray-950 dark:text-white mb-1">Department Engagement</h2>
+          <p className="text-sm text-gray-600 dark:text-slate-400 font-medium">Shout-outs by department</p>
         </div>
         <div className="h-[280px] flex items-center justify-center">
-          <p className="text-gray-400">No department data available</p>
+          <p className="text-gray-400 dark:text-slate-500">No department data available</p>
         </div>
       </div>
     );
@@ -94,7 +94,7 @@ const DepartmentPiechart = () => {
     if (active && payload && payload[0]) {
       const data = payload[0].payload;
       return (
-        <div className="bg-gray-900 text-white px-4 py-3 rounded-xl shadow-lg border border-gray-700 text-sm">
+        <div className="bg-gray-900 dark:bg-slate-950 text-white px-4 py-3 rounded-xl shadow-lg border border-gray-700 dark:border-slate-800 text-sm">
           <p className="font-bold">{data.name}</p>
           <p className="text-indigo-300">Percentage: {data.value}%</p>
           <p className="text-blue-300">Shout-outs: {data.shoutouts}</p>
@@ -110,10 +110,10 @@ const DepartmentPiechart = () => {
   const renderCustomLabel = ({ name, value }) => `${name} ${value}%`;
 
   return (
-    <div className="bg-gradient-to-br from-white to-slate-50 rounded-2xl p-8 shadow-sm border-2 border-gray-100 hover:shadow-xl hover:border-gray-200 transition-all duration-300">
-      <div className="mb-8 pb-6 border-b-2 border-gray-100">
-        <h2 className="text-2xl font-black text-gray-950 mb-1">Department Engagement</h2>
-        <p className="text-sm text-gray-600 font-medium">Shout-outs by department</p>
+    <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 rounded-2xl p-8 shadow-sm border-2 border-gray-100 dark:border-slate-800 hover:shadow-xl hover:border-gray-200 dark:hover:border-slate-700 transition-all duration-300">
+      <div className="mb-8 pb-6 border-b-2 border-gray-100 dark:border-slate-800">
+        <h2 className="text-2xl font-black text-gray-950 dark:text-white mb-1">Department Engagement</h2>
+        <p className="text-sm text-gray-600 dark:text-slate-400 font-medium">Shout-outs by department</p>
       </div>
       
       <div className="flex flex-col items-center">
@@ -138,7 +138,7 @@ const DepartmentPiechart = () => {
             <Legend 
               verticalAlign="bottom" 
               height={36}
-              formatter={(value, entry) => `${entry.payload.name}`}
+              formatter={(value, entry) => <span className="text-gray-600 dark:text-slate-400">{entry.payload.name}</span>}
               wrapperStyle={{ paddingTop: '20px', fontSize: '12px' }}
             />
           </PieChart>
@@ -146,13 +146,13 @@ const DepartmentPiechart = () => {
 
         <div className="mt-6 flex flex-wrap justify-center gap-2 w-full max-w-full">
           {departments.map((dept, i) => (
-            <div key={i} className="p-3 bg-slate-50 rounded-lg border border-gray-100 text-center hover:bg-slate-100 transition-colors duration-200 w-24">
+            <div key={i} className="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-gray-100 dark:border-slate-700 text-center hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-200 w-24">
               <div 
                 className="w-3 h-3 rounded-full mx-auto mb-2 shadow-md" 
                 style={{ backgroundColor: COLORS[i % COLORS.length] }}
               ></div>
-              <p className="text-xs font-semibold text-gray-800 truncate">{dept.name}</p>
-              <p className="text-sm font-bold text-indigo-600 mt-1">{dept.value}%</p>
+              <p className="text-xs font-semibold text-gray-800 dark:text-slate-200 truncate">{dept.name}</p>
+              <p className="text-sm font-bold text-indigo-600 dark:text-indigo-400 mt-1">{dept.value}%</p>
             </div>
           ))}
         </div>

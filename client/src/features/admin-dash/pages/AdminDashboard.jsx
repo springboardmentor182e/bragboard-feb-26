@@ -57,13 +57,13 @@ const AdminDashboard = () => {
   if (loading) {
     return (
       <div className="space-y-10 pb-12">
-        <div className="pt-4 pb-8 border-b border-gray-200">
-          <h1 className="text-5xl font-black text-gray-950 tracking-tight">Admin Dashboard</h1>
-          <p className="text-gray-600 mt-3">Loading dashboard data...</p>
+        <div className="pt-4 pb-8 border-b border-gray-200 dark:border-slate-800">
+          <h1 className="text-5xl font-black text-gray-950 dark:text-white tracking-tight transition-colors">Admin Dashboard</h1>
+          <p className="text-gray-600 dark:text-slate-400 mt-3 transition-colors">Loading dashboard data...</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
           {[...Array(5)].map((_, i) => (
-            <div key={i} className="h-40 bg-gray-100 rounded-2xl animate-pulse" />
+            <div key={i} className="h-40 bg-gray-100 dark:bg-slate-900 rounded-2xl animate-pulse transition-colors" />
           ))}
         </div>
       </div>
@@ -71,31 +71,31 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="space-y-10 pb-12">
+    <div className="space-y-10 pb-12 transition-colors">
       {/* Premium Header Section */}
-      <div className="pt-4 pb-8 border-b border-gray-200 flex items-end justify-between">
+      <div className="pt-4 pb-8 border-b border-gray-200 dark:border-slate-800 flex items-end justify-between transition-colors">
         <div>
-          <p className="text-sm font-semibold text-indigo-600 uppercase tracking-widest mb-2">Platform</p>
-          <h1 className="text-5xl font-black text-gray-950 tracking-tight">Admin Dashboard</h1>
-          <p className="text-base text-gray-600 leading-relaxed max-w-2xl mt-3">
+          <p className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest mb-2 transition-colors">Platform</p>
+          <h1 className="text-5xl font-black text-gray-950 dark:text-white tracking-tight transition-colors">Admin Dashboard</h1>
+          <p className="text-base text-gray-600 dark:text-slate-400 leading-relaxed max-w-2xl mt-3 transition-colors">
             Comprehensive platform oversight with real-time analytics and moderation controls
           </p>
         </div>
         <div className="hidden md:flex flex-col items-end gap-2">
-          <div className="px-4 py-2 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl border border-indigo-100">
-            <p className="text-xs font-semibold text-indigo-700">🔄 LIVE</p>
+          <div className="px-4 py-2 bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-900/20 dark:to-blue-900/20 rounded-xl border border-indigo-100 dark:border-indigo-900/30 transition-colors">
+            <p className="text-xs font-semibold text-indigo-700 dark:text-indigo-400 transition-colors">🔄 LIVE</p>
           </div>
-          <p className="text-xs text-gray-500">Updated {getLastUpdatedText()}</p>
+          <p className="text-xs text-gray-500 dark:text-slate-500 transition-colors">Updated {getLastUpdatedText()}</p>
         </div>
       </div>
 
       {/* Key Metrics Section */}
       <div>
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-sm font-bold text-gray-600 uppercase tracking-widest">Performance Metrics</h2>
+          <h2 className="text-sm font-bold text-gray-600 dark:text-slate-400 uppercase tracking-widest transition-colors">Performance Metrics</h2>
           <button
             onClick={fetchDashboardData}
-            className="text-xs px-3 py-1.5 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition font-medium"
+            className="text-xs px-3 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 transition font-medium transition-colors"
           >
             ↻ Refresh
           </button>
@@ -137,7 +137,7 @@ const AdminDashboard = () => {
 
       {/* Analytics Section */}
       <div className="pt-4">
-        <h2 className="text-sm font-bold text-gray-600 uppercase tracking-widest mb-6">📊 Engagement Analytics</h2>
+        <h2 className="text-sm font-bold text-gray-600 dark:text-slate-400 uppercase tracking-widest mb-6 transition-colors">📊 Engagement Analytics</h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <TopContributorsChart />
           <DepartmentPiechart />
@@ -146,7 +146,7 @@ const AdminDashboard = () => {
 
       {/* Moderation Section */}
       <div className="pt-4">
-        <h2 className="text-sm font-bold text-gray-600 uppercase tracking-widest mb-6">🚨 Moderation Section</h2>
+        <h2 className="text-sm font-bold text-gray-600 dark:text-slate-400 uppercase tracking-widest mb-6 transition-colors">🚨 Moderation Section</h2>
         <SimpleReportedPosts />
       </div>
     </div>

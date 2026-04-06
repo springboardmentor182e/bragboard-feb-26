@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { Lock } from "lucide-react";
@@ -5,6 +6,11 @@ import { Lock } from "lucide-react";
 export default function SuspendedAccount() {
   const { logout } = useAuth();
   const navigate = useNavigate();
+
+  // Force light theme on suspended account page
+  useEffect(() => {
+    document.documentElement.classList.remove("dark");
+  }, []);
 
   const handleLogout = () => {
     logout();

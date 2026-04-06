@@ -116,7 +116,7 @@ const CommentsViewer = ({ shoutoutId, initialCommentCount = 0 }) => {
       {/* COMMENT BUTTON - Toggle Comments Section */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-full text-sm text-slate-600 hover:bg-slate-200 transition"
+        className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-full text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition"
       >
         <MessageCircle size={14} />
         <span>{totalCommentCount}</span>
@@ -128,7 +128,7 @@ const CommentsViewer = ({ shoutoutId, initialCommentCount = 0 }) => {
 
       {/* COMMENTS SECTION - Expandable */}
       {isOpen && (
-        <div className="mt-4 space-y-3 border-t border-slate-200 pt-3">
+        <div className="mt-4 space-y-3 border-t border-slate-200 dark:border-slate-800 pt-3">
           
           {/* ADD COMMENT INPUT - Always Visible */}
           <form onSubmit={handleAddComment} className="flex gap-2">
@@ -138,7 +138,7 @@ const CommentsViewer = ({ shoutoutId, initialCommentCount = 0 }) => {
               value={newCommentText}
               onChange={(e) => setNewCommentText(e.target.value)}
               disabled={isAddingComment}
-              className="flex-1 text-xs px-3 py-1.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="flex-1 text-xs px-3 py-1.5 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
             />
             <button
               type="submit"
@@ -152,7 +152,7 @@ const CommentsViewer = ({ shoutoutId, initialCommentCount = 0 }) => {
           {/* LOADING STATE */}
           {isLoading && comments.length === 0 && (
             <div className="text-center py-4">
-              <p className="text-xs text-slate-500">Loading comments...</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Loading comments...</p>
             </div>
           )}
 
@@ -162,21 +162,21 @@ const CommentsViewer = ({ shoutoutId, initialCommentCount = 0 }) => {
               {comments.map((comment) => (
                 <div 
                   key={comment.id} 
-                  className="bg-slate-50 p-3 rounded-lg text-xs"
+                  className="bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg text-xs"
                 >
                   <div className="flex justify-between items-start gap-2">
                     <div className="flex-1">
-                      <p className="font-semibold text-slate-900">
+                      <p className="font-semibold text-slate-900 dark:text-white">
                         {comment.user_name}
                       </p>
-                      <p className="text-slate-700 mt-1">{comment.text}</p>
-                      <p className="text-slate-400 mt-2">
+                      <p className="text-slate-700 dark:text-slate-300 mt-1">{comment.text}</p>
+                      <p className="text-slate-400 dark:text-slate-500 mt-2">
                         {formatTime(comment.created_at)}
                       </p>
                     </div>
                     <button
                       onClick={() => handleDeleteComment(comment.id)}
-                      className="text-slate-400 hover:text-red-500 transition flex-shrink-0"
+                      className="text-slate-400 dark:text-slate-600 hover:text-red-500 dark:hover:text-red-400 transition flex-shrink-0"
                       title="Delete comment"
                     >
                       ✕
@@ -190,7 +190,7 @@ const CommentsViewer = ({ shoutoutId, initialCommentCount = 0 }) => {
           {/* NO COMMENTS STATE */}
           {comments.length === 0 && !isLoading && (
             <div className="text-center py-4">
-              <p className="text-xs text-slate-500">No comments yet</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">No comments yet</p>
             </div>
           )}
 

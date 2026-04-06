@@ -54,8 +54,8 @@ const RightPanel = () => {
         <div
           onClick={() => navigate("/my-shoutouts")}
           className="
-            bg-indigo-50 rounded-xl p-4
-            border border-indigo-100
+            bg-indigo-50 dark:bg-indigo-900/20 rounded-xl p-4
+            border border-indigo-100 dark:border-indigo-900/40
             shadow-sm hover:shadow-md
             transition-all duration-200
             hover:-translate-y-0.5 cursor-pointer
@@ -63,21 +63,21 @@ const RightPanel = () => {
         >
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-indigo-100 flex items-center justify-center text-indigo-600">
+              <div className="w-10 h-10 rounded-lg bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
                 <MessageSquare size={18} />
               </div>
 
               <div>
-                <p className="text-sm font-semibold text-slate-900">
+                <p className="text-sm font-semibold text-slate-900 dark:text-white">
                   My Shout-Outs
                 </p>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-slate-500 dark:text-slate-400">
                   {stats?.shoutouts_sent || 0} given · {stats?.shoutouts_received || 0} received
                 </p>
               </div>
             </div>
 
-            <ArrowRight size={16} className="text-slate-400" />
+            <ArrowRight size={16} className="text-slate-400 dark:text-slate-500" />
           </div>
         </div>
 
@@ -85,8 +85,8 @@ const RightPanel = () => {
         <div
           onClick={() => navigate("/leaderboard")}
           className="
-            bg-amber-50 rounded-xl p-4
-            border border-yellow-100
+            bg-amber-50 dark:bg-amber-900/20 rounded-xl p-4
+            border border-yellow-100 dark:border-amber-900/40
             shadow-sm hover:shadow-md
             transition-all duration-200
             hover:-translate-y-0.5 cursor-pointer
@@ -94,21 +94,21 @@ const RightPanel = () => {
         >
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-yellow-100 flex items-center justify-center text-yellow-600">
+              <div className="w-10 h-10 rounded-lg bg-yellow-100 dark:bg-amber-900/40 flex items-center justify-center text-yellow-600 dark:text-amber-400">
                 <Trophy size={18} />
               </div>
 
               <div>
-                <p className="text-sm font-semibold text-slate-900">
+                <p className="text-sm font-semibold text-slate-900 dark:text-white">
                   Leaderboard
                 </p>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-slate-500 dark:text-slate-400">
                   You're rank #{stats?.rank || "N/A"}
                 </p>
               </div>
             </div>
 
-            <ArrowRight size={16} className="text-slate-400" />
+            <ArrowRight size={16} className="text-slate-400 dark:text-slate-500" />
           </div>
         </div>
 

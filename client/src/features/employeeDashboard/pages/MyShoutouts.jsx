@@ -115,10 +115,10 @@ const MyShoutouts = () => {
         </div>
 
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
             My Shout-Outs
           </h1>
-          <p className="text-slate-500">
+          <p className="text-slate-500 dark:text-slate-400">
             Track your recognition journey
           </p>
         </div>
@@ -144,18 +144,18 @@ const MyShoutouts = () => {
       </div>
 
       {/* 🎯 FILTER BAR */}
-      <div className="flex items-center justify-between bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+      <div className="flex items-center justify-between bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm transition-colors">
 
         {/* TABS */}
-        <div className="flex gap-2 bg-slate-100 p-1 rounded-xl">
+        <div className="flex gap-2 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
           {["received", "given"].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`px-5 py-2 rounded-lg text-sm font-medium transition ${
                 activeTab === tab
-                  ? "bg-white shadow text-slate-900"
-                  : "text-slate-500 hover:text-slate-700"
+                  ? "bg-white dark:bg-slate-700 shadow text-slate-900 dark:text-white"
+                  : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
               }`}
             >
               {tab === "received" ? "Received" : "Given"}
@@ -164,16 +164,16 @@ const MyShoutouts = () => {
         </div>
 
         {/* FILTER ICON */}
-        <button className="p-2 rounded-lg hover:bg-slate-100 transition">
-          <Filter size={18} className="text-slate-400" />
+        <button className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+          <Filter size={18} className="text-slate-400 dark:text-slate-500" />
         </button>
 
       </div>
 
       {/* ERROR STATE */}
       {error && (
-        <div className="p-6 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-red-700">{error}</p>
+        <div className="p-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+          <p className="text-red-700 dark:text-red-400">{error}</p>
           <button
             onClick={() => window.location.reload()}
             className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
@@ -187,7 +187,7 @@ const MyShoutouts = () => {
       {loading && (
         <div className="space-y-4">
           {[...Array(2)].map((_, i) => (
-            <div key={i} className="h-40 bg-slate-200 rounded-lg animate-pulse" />
+            <div key={i} className="h-40 bg-slate-200 dark:bg-slate-800 rounded-lg animate-pulse" />
           ))}
         </div>
       )}
@@ -195,7 +195,7 @@ const MyShoutouts = () => {
       {/* EMPTY STATE */}
       {!loading && shoutouts.length === 0 && !error && (
         <div className="text-center py-10">
-          <p className="text-slate-500">
+          <p className="text-slate-500 dark:text-slate-400">
             {activeTab === "received"
               ? "No shoutouts received yet. Keep up the great work!"
               : "No shoutouts given yet. Recognize someone's contributions!"}
@@ -231,16 +231,17 @@ const StatCard = ({ title, value, color }) => {
       relative overflow-hidden
       rounded-2xl p-6
       bg-gradient-to-br from-white to-slate-50
-      border border-slate-200
+      dark:from-slate-900 dark:to-slate-800
+      border border-slate-200 dark:border-slate-800
       shadow-sm hover:shadow-lg hover:-translate-y-1
       transition-all duration-300
     ">
 
       {/* Glow */}
-      <div className={`absolute -top-6 -right-6 w-24 h-24 bg-gradient-to-r ${colors[color]} opacity-20 blur-2xl`} />
+      <div className={`absolute -top-6 -right-6 w-24 h-24 bg-gradient-to-r ${colors[color]} opacity-20 dark:opacity-10 blur-2xl`} />
 
-      <p className="text-sm text-slate-500">{title}</p>
-      <p className="text-3xl font-bold text-slate-900 mt-1">{value}</p>
+      <p className="text-sm text-slate-500 dark:text-slate-400">{title}</p>
+      <p className="text-3xl font-bold text-slate-900 dark:text-white mt-1">{value}</p>
 
     </div>
   );
