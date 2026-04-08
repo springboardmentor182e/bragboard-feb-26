@@ -1,6 +1,6 @@
 # Web Framework
-fastapi==0.92.0
-uvicorn[standard]==0.22.0
+fastapi==0.103.2
+uvicorn[standard]==0.23.2
 
 # Database
 sqlalchemy==2.0.23
@@ -14,9 +14,7 @@ pydantic==1.10.13
 passlib[bcrypt]==1.7.4
 python-jose[cryptography]==3.3.0
 python-multipart==0.0.6
-email-validator>=2.0.0
+email-validator==2.0.0
 
 # Utilities
 python-dotenv==1.0.0
-wheel==0.45.1
-setuptools==75.8.0

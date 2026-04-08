@@ -1,20 +1,31 @@
 import { useState } from "react";
 
+// Helpers
 const getEmployeeName = (employees, id) =>
-  employees.find((e) => e.id === id)?.name ?? "Unknown";
+  employees?.find((e) => e.id === id)?.name ?? "Unknown";
 
 const getInitials = (name = "?") => name.charAt(0).toUpperCase();
 
 const formatDate = (dateStr) => {
   if (!dateStr) return "";
   return new Date(dateStr).toLocaleDateString("en-IN", {
-    day: "numeric", month: "short", year: "numeric",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
   });
 };
 
-const ShoutoutFeed = ({ shoutouts, employees = [], onReact, onComment }) => {
-  const [commentText, setCommentText]   = useState({});
+const ShoutoutFeed = ({
+  shoutouts = [], // ✅ DEFAULT VALUE FIX
+  employees = [],
+  onReact,
+  onComment,
+}) => {
+  const [commentText, setCommentText] = useState({});
   const [userReactions, setUserReactions] = useState({});
+
+  // ✅ SAFETY FIX (VERY IMPORTANT)
+  const safeShoutouts = Array.isArray(shoutouts) ? shoutouts : [];
 
   const handleReact = (shoutoutId, reaction) => {
     if (userReactions[shoutoutId] === reaction) return;
@@ -35,18 +46,25 @@ const ShoutoutFeed = ({ shoutouts, employees = [], onReact, onComment }) => {
         Shoutout Feed
       </h2>
 
-      {shoutouts.length === 0 && (
+      {/* EMPTY STATE */}
+      {safeShoutouts.length === 0 && (
         <div className="text-center py-10 text-gray-400 dark:text-slate-500">
           <p className="text-3xl mb-2">🎉</p>
-          <p className="text-sm">No shoutouts yet. Be the first to give one!</p>
+          <p className="text-sm">
+            No shoutouts yet. Be the first to give one!
+          </p>
         </div>
       )}
 
+      {/* LIST */}
       <div className="space-y-4">
-        {shoutouts.map((item) => {
-          const senderName    = getEmployeeName(employees, item.sender_id);
-          const recipientName = getEmployeeName(employees, item.recipient_id);
-          const userReaction  = userReactions[item.id];
+        {safeShoutouts.map((item) => {
+          const senderName = getEmployeeName(employees, item.sender_id);
+          const recipientName = getEmployeeName(
+            employees,
+            item.recipient_id
+          );
+          const userReaction = userReactions[item.id];
 
           return (
             <div
@@ -90,15 +108,18 @@ const ShoutoutFeed = ({ shoutouts, employees = [], onReact, onComment }) => {
                         : ""
                     }`}
                   >
-                    {emoji} {item[key]}
+                    {emoji} {item[key] ?? 0}
                   </button>
                 ))}
               </div>
 
               {/* Comments */}
               <div className="mt-4 space-y-1">
-                {item.comments?.map((c) => (
-                  <p key={c.id} className="text-sm text-gray-500 dark:text-slate-400">
+                {(item.comments || []).map((c) => (
+                  <p
+                    key={c.id}
+                    className="text-sm text-gray-500 dark:text-slate-400"
+                  >
                     💬 {c.text}
                   </p>
                 ))}

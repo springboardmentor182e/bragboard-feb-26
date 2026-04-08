@@ -4,13 +4,18 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 from typing import Generator
 
-load_dotenv()  # reads .env file before os.getenv runs
+load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./bragboard.db")
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
+if not DATABASE_URL:
+    raise RuntimeError("DATABASE_URL is not set. Check your .env file.")
 
-engine = create_engine(DATABASE_URL, connect_args=connect_args)
+# Render gives "postgres://" but SQLAlchemy needs "postgresql://"
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+
+engine = create_engine(DATABASE_URL)
 
 SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
 

@@ -1,28 +1,32 @@
 import { useEffect, useState } from "react";
-import { getLeaderboard } from "../services/employeeService";
+import api from "../services/api"; // adjust path if needed
 
-const useLeaderboard = (refreshKey = 0) => {
+const useLeaderboard = (refreshKey) => {
   const [leaders, setLeaders] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError]     = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetch = async () => {
-      setLoading(true);
+    const fetchLeaderboard = async () => {
       try {
-        const res = await getLeaderboard();
+        setLoading(true);
+
+        const res = await api.get("/employees/leaderboard");
+
+        // ✅ IMPORTANT FIX
         setLeaders(res.data);
+
       } catch (err) {
-        console.error("Leaderboard fetch failed", err);
-        setError("Failed to load leaderboard.");
+        console.error("Leaderboard error:", err);
+        setLeaders([]);
       } finally {
         setLoading(false);
       }
     };
-    fetch();
+
+    fetchLeaderboard();
   }, [refreshKey]);
 
-  return { leaders, loading, error };
+  return { leaders, loading };
 };
 
 export default useLeaderboard;

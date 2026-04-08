@@ -2,8 +2,10 @@ services:
   - type: web
     name: bragboard-api
     runtime: python
-    buildCommand: cd server && pip install -r requirements.txt
-    startCommand: cd server && uvicorn src.main:app --host 0.0.0.0 --port $PORT
+    rootDir: server
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn src.main:app --host 0.0.0.0 --port $PORT
+    plan: free
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -16,3 +18,4 @@ databases:
   - name: bragboard-db
     databaseName: bragboard_db
     user: bragboard_user
+    plan: free

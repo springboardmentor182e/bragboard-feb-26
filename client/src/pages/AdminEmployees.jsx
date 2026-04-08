@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import AdminLayout from "../layout/AdminLayout";
 import StatsCards from "../features/employeeManagement/components/StatsCards";
-import SearchFilterBar from "../features/employeeManagement/components/SearchFilterBar";
 import EmployeeTable from "../features/employeeManagement/components/EmployeeTable";
 import AddEmployeeModal from "../features/employeeManagement/components/AddEmployeeModal";
 import PrimaryButton from "../components/ui/PrimaryButton";
@@ -21,7 +20,6 @@ function AdminEmployees() {
   const [statusFilter, setStatusFilter] = useState("All");
   const [showModal, setShowModal] = useState(false);
 
-  // Load employees when page loads
   useEffect(() => {
     loadEmployees();
   }, []);
@@ -91,7 +89,6 @@ function AdminEmployees() {
               Manage employee roles, status and permissions
             </p>
           </div>
-
           <PrimaryButton onClick={() => setShowModal(true)}>
             + Add Employee
           </PrimaryButton>
@@ -100,15 +97,34 @@ function AdminEmployees() {
         {/* Stats */}
         <StatsCards employees={employees} />
 
-        {/* Filters */}
-        <SearchFilterBar
-          search={search}
-          setSearch={setSearch}
-          roleFilter={roleFilter}
-          setRoleFilter={setRoleFilter}
-          statusFilter={statusFilter}
-          setStatusFilter={setStatusFilter}
-        />
+        {/* Search - inline without component */}
+        <div className="flex flex-wrap gap-4 items-center bg-white p-4 rounded-xl shadow-sm">
+          <input
+            type="text"
+            placeholder="Search by name or email..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="border border-slate-200 rounded-lg px-4 py-2 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+          />
+          <select
+            value={roleFilter}
+            onChange={(e) => setRoleFilter(e.target.value)}
+            className="border border-slate-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
+          >
+            <option value="All">All Roles</option>
+            <option value="admin">Admin</option>
+            <option value="employee">Employee</option>
+          </select>
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="border border-slate-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
+          >
+            <option value="All">All Status</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
 
         {/* Employee Table */}
         <EmployeeTable
