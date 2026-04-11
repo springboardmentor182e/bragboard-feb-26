@@ -2,6 +2,15 @@
 
 BragBoard is a recognition and employee engagement platform. This project consists of a FastAPI backend and a React (Vite) frontend.
 
+#LOgin Page
+<img width="1904" height="878" alt="image" src="https://github.com/user-attachments/assets/c1f03d6f-4689-4656-a691-6cc271b8634e" />
+#Employee Dashboard
+<img width="1916" height="873" alt="image" src="https://github.com/user-attachments/assets/46c8c924-fa89-4f96-9428-55028469f234" />
+#Amin Dashboard
+<img width="1884" height="863" alt="image" src="https://github.com/user-attachments/assets/da34dc77-a288-4bed-a920-558bf356701a" />
+#Analytics Section
+<img width="1883" height="860" alt="image" src="https://github.com/user-attachments/assets/a25e8d13-2cbb-4f0d-bc75-4dd8c1382f60" />
+
 ## Project Structure
 
 - `client/`: React frontend built with Vite and Tailwind CSS.
